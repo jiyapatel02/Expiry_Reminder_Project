@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Base.Theme.Expiry_Reminder_Project"
+        parent="Theme.Material3.DayNight.NoActionBar">
+
+        <item name="colorPrimary">@color/purple_primary</item>
+        <item name="colorPrimaryContainer">@color/purple_light</item>
+
+    </style>
+
+    <style name="Theme.Expiry_Reminder_Project"
+        parent="Base.Theme.Expiry_Reminder_Project">
+    </style>
+
+</resources>
