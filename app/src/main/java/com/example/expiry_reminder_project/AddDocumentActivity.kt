@@ -8,6 +8,8 @@ import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import org.json.JSONArray
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -23,8 +25,8 @@ class AddDocumentActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_add_document)
+
         val btnBack = findViewById<Button>(R.id.btnBack)
 
         btnBack.setOnClickListener {
@@ -110,9 +112,19 @@ class AddDocumentActivity : AppCompatActivity() {
     private fun saveDocument() {
 
         val name = etDocumentName.text.toString().trim()
-        val category = spCategory.selectedItem.toString()
-        val issueDate = etIssueDate.text.toString().trim()
-        val expiryDate = etExpiryDate.text.toString().trim()
+
+        val category =
+            spCategory.selectedItem.toString()
+
+        val issueDate =
+            etIssueDate.text.toString().trim()
+
+        val expiryDate =
+            etExpiryDate.text.toString().trim()
+
+        val notes =
+            etNotes.text.toString().trim()
+
 
         if (name.isEmpty()) {
             etDocumentName.error = "Enter document name"
@@ -120,37 +132,76 @@ class AddDocumentActivity : AppCompatActivity() {
         }
 
         if (category == "Select Category") {
+
             Toast.makeText(
                 this,
                 "Please select a category",
                 Toast.LENGTH_SHORT
             ).show()
+
             return
         }
 
         if (issueDate.isEmpty()) {
+
             Toast.makeText(
                 this,
                 "Select issue date",
                 Toast.LENGTH_SHORT
             ).show()
+
             return
         }
 
         if (expiryDate.isEmpty()) {
+
             Toast.makeText(
                 this,
                 "Select expiry date",
                 Toast.LENGTH_SHORT
             ).show()
+
             return
         }
+
+        val preferences = getSharedPreferences(
+            "ExpiryReminder",
+            MODE_PRIVATE
+        )
+
+        val oldDocuments =
+            preferences.getString(
+                "documents",
+                "[]"
+            ) ?: "[]"
+
+        val documents = JSONArray(oldDocuments)
+
+        val document = JSONObject()
+
+        document.put("name", name)
+        document.put("category", category)
+        document.put("issueDate", issueDate)
+        document.put("expiryDate", expiryDate)
+        document.put("notes", notes)
+
+        // Add document
+        documents.put(document)
+
+        // Save all documents
+        preferences.edit()
+            .putString(
+                "documents",
+                documents.toString()
+            )
+            .apply()
 
         Toast.makeText(
             this,
             "Document saved successfully!",
             Toast.LENGTH_SHORT
         ).show()
+
 
         finish()
     }
