@@ -1,11 +1,12 @@
 package com.example.expiry_reminder_project
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.json.JSONArray
@@ -13,44 +14,51 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.UUID
 
 class AddDocumentActivity : AppCompatActivity() {
 
     private lateinit var etDocumentName: EditText
-    private lateinit var spCategory: Spinner
-    private lateinit var etIssueDate: EditText
-    private lateinit var etExpiryDate: EditText
+    private lateinit var spinnerCategory: Spinner
+    private lateinit var tvIssueDate: TextView
+    private lateinit var tvExpiryDate: TextView
     private lateinit var etNotes: EditText
-    private lateinit var btnSaveDocument: Button
+    private lateinit var btnSave: TextView
+    private lateinit var btnBack: TextView
+
+    private var issueDateMillis: Long? = null
+    private var expiryDateMillis: Long? = null
+
+    private val displayFormat =
+        SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_document)
 
-        val btnBack = findViewById<Button>(R.id.btnBack)
+        etDocumentName = findViewById(R.id.etDocumentName)
+        spinnerCategory = findViewById(R.id.spinnerCategory)
+        tvIssueDate = findViewById(R.id.tvIssueDate)
+        tvExpiryDate = findViewById(R.id.tvExpiryDate)
+        etNotes = findViewById(R.id.etNotes)
+        btnSave = findViewById(R.id.btnSave)
+        btnBack = findViewById(R.id.btnBack)
+
+        setupCategorySpinner()
 
         btnBack.setOnClickListener {
             finish()
         }
 
-        etDocumentName = findViewById(R.id.etDocumentName)
-        spCategory = findViewById(R.id.spCategory)
-        etIssueDate = findViewById(R.id.etIssueDate)
-        etExpiryDate = findViewById(R.id.etExpiryDate)
-        etNotes = findViewById(R.id.etNotes)
-        btnSaveDocument = findViewById(R.id.btnSaveDocument)
-
-        setupCategorySpinner()
-
-        etIssueDate.setOnClickListener {
-            showDatePicker(etIssueDate)
+        tvIssueDate.setOnClickListener {
+            showDatePicker(true)
         }
 
-        etExpiryDate.setOnClickListener {
-            showDatePicker(etExpiryDate)
+        tvExpiryDate.setOnClickListener {
+            showDatePicker(false)
         }
 
-        btnSaveDocument.setOnClickListener {
+        btnSave.setOnClickListener {
             saveDocument()
         }
     }
@@ -60,78 +68,125 @@ class AddDocumentActivity : AppCompatActivity() {
         val categories = arrayOf(
             "Select Category",
             "Government ID",
+            "Identity Document",
             "Education",
-            "Transport",
-            "Travel",
+            "Vehicle",
+            "Insurance",
             "Financial",
             "Other"
         )
 
         val adapter = ArrayAdapter(
             this,
-            android.R.layout.simple_spinner_dropdown_item,
+            android.R.layout.simple_spinner_item,
             categories
         )
 
-        spCategory.adapter = adapter
+        adapter.setDropDownViewResource(
+            android.R.layout.simple_spinner_dropdown_item
+        )
+
+        spinnerCategory.adapter = adapter
     }
 
-    private fun showDatePicker(editText: EditText) {
+    private fun showDatePicker(isIssueDate: Boolean) {
 
         val calendar = Calendar.getInstance()
 
-        val datePicker = DatePickerDialog(
+        val selectedDate = if (isIssueDate) {
+            issueDateMillis
+        } else {
+            expiryDateMillis
+        }
+
+        if (selectedDate != null) {
+            calendar.timeInMillis = selectedDate
+        }
+
+        val dialog = DatePickerDialog(
             this,
             { _, year, month, dayOfMonth ->
 
-                val selectedDate = Calendar.getInstance()
+                val selectedCalendar = Calendar.getInstance()
 
-                selectedDate.set(
+                selectedCalendar.set(
                     year,
                     month,
-                    dayOfMonth
+                    dayOfMonth,
+                    0,
+                    0,
+                    0
                 )
 
-                val format = SimpleDateFormat(
-                    "dd/MM/yyyy",
-                    Locale.getDefault()
+                selectedCalendar.set(
+                    Calendar.MILLISECOND,
+                    0
                 )
 
-                editText.setText(
-                    format.format(selectedDate.time)
-                )
+                val millis = selectedCalendar.timeInMillis
+
+                if (isIssueDate) {
+
+                    if (expiryDateMillis != null &&
+                        millis >= expiryDateMillis!!
+                    ) {
+
+                        Toast.makeText(
+                            this,
+                            "Issue date must be before expiry date",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        return@DatePickerDialog
+                    }
+
+                    issueDateMillis = millis
+
+                    tvIssueDate.text =
+                        displayFormat.format(selectedCalendar.time)
+
+                } else {
+
+                    if (issueDateMillis != null &&
+                        millis <= issueDateMillis!!
+                    ) {
+
+                        Toast.makeText(
+                            this,
+                            "Expiry date must be after issue date",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        return@DatePickerDialog
+                    }
+
+                    expiryDateMillis = millis
+
+                    tvExpiryDate.text =
+                        displayFormat.format(selectedCalendar.time)
+                }
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         )
 
-        datePicker.show()
+        dialog.show()
     }
 
     private fun saveDocument() {
 
         val name = etDocumentName.text.toString().trim()
-
-        val category =
-            spCategory.selectedItem.toString()
-
-        val issueDate =
-            etIssueDate.text.toString().trim()
-
-        val expiryDate =
-            etExpiryDate.text.toString().trim()
-
-        val notes =
-            etNotes.text.toString().trim()
-
+        val category = spinnerCategory.selectedItem.toString()
+        val notes = etNotes.text.toString().trim()
 
         if (name.isEmpty()) {
             etDocumentName.error = "Enter document name"
+            etDocumentName.requestFocus()
             return
         }
 
-        if (category == "Select Category") {
+        if (spinnerCategory.selectedItemPosition == 0) {
 
             Toast.makeText(
                 this,
@@ -142,66 +197,93 @@ class AddDocumentActivity : AppCompatActivity() {
             return
         }
 
-        if (issueDate.isEmpty()) {
+        if (issueDateMillis == null) {
 
             Toast.makeText(
                 this,
-                "Select issue date",
+                "Please select issue date",
                 Toast.LENGTH_SHORT
             ).show()
 
             return
         }
 
-        if (expiryDate.isEmpty()) {
+        if (expiryDateMillis == null) {
 
             Toast.makeText(
                 this,
-                "Select expiry date",
+                "Please select expiry date",
                 Toast.LENGTH_SHORT
             ).show()
 
             return
         }
-
-        val preferences = getSharedPreferences(
-            "ExpiryReminder",
-            MODE_PRIVATE
-        )
-
-        val oldDocuments =
-            preferences.getString(
-                "documents",
-                "[]"
-            ) ?: "[]"
-
-        val documents = JSONArray(oldDocuments)
 
         val document = JSONObject()
 
-        document.put("name", name)
-        document.put("category", category)
-        document.put("issueDate", issueDate)
-        document.put("expiryDate", expiryDate)
-        document.put("notes", notes)
+        document.put(
+            "id",
+            UUID.randomUUID().toString()
+        )
 
-        // Add document
-        documents.put(document)
+        document.put(
+            "name",
+            name
+        )
 
-        // Save all documents
+        document.put(
+            "category",
+            category
+        )
+
+        document.put(
+            "issueDate",
+            issueDateMillis
+        )
+
+        document.put(
+            "expiryDate",
+            expiryDateMillis
+        )
+
+        document.put(
+            "notes",
+            notes
+        )
+
+        val preferences = getSharedPreferences(
+            "DocumentStorage",
+            MODE_PRIVATE
+        )
+
+        val existingDocuments = JSONArray(
+            preferences.getString(
+                "documents",
+                "[]"
+            )
+        )
+
+        existingDocuments.put(document)
+
         preferences.edit()
             .putString(
                 "documents",
-                documents.toString()
+                existingDocuments.toString()
             )
             .apply()
 
         Toast.makeText(
             this,
-            "Document saved successfully!",
+            "Document saved successfully",
             Toast.LENGTH_SHORT
         ).show()
 
+        val intent = Intent(
+            this,
+            DocumentsActivity::class.java
+        )
+
+        startActivity(intent)
 
         finish()
     }

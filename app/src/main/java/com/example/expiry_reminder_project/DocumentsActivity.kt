@@ -4,170 +4,389 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import com.google.android.material.card.MaterialCardView
 import org.json.JSONArray
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class DocumentsActivity : AppCompatActivity() {
 
     private lateinit var documentsContainer: ConstraintLayout
     private lateinit var tvDocumentCount: TextView
+    private lateinit var tvEmptyMessage: TextView
+    private lateinit var btnBack: TextView
+
+    private val displayFormat =
+        SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_documents)
 
-        val btnBack = findViewById<Button>(R.id.btnBack)
+        documentsContainer =
+            findViewById(R.id.documentsContainer)
+
+        tvDocumentCount =
+            findViewById(R.id.tvDocumentCount)
+
+        tvEmptyMessage =
+            findViewById(R.id.tvEmptyMessage)
+
+        btnBack =
+            findViewById(R.id.btnBack)
+
         btnBack.setOnClickListener {
             finish()
         }
 
-        documentsContainer = findViewById(R.id.documentsContainer)
-        tvDocumentCount = findViewById(R.id.tvDocumentCount)
+        loadDocuments()
     }
 
     override fun onResume() {
         super.onResume()
-        loadDocuments()
+
+        if (::documentsContainer.isInitialized) {
+            loadDocuments()
+        }
     }
 
     private fun loadDocuments() {
 
-        documentsContainer.removeAllViews()
+        if (documentsContainer.childCount > 1) {
+            documentsContainer.removeViews(
+                1,
+                documentsContainer.childCount - 1
+            )
+        }
 
-        val preferences =
-            getSharedPreferences("ExpiryReminder", MODE_PRIVATE)
+        val preferences = getSharedPreferences(
+            "DocumentStorage",
+            MODE_PRIVATE
+        )
 
-        val savedDocuments =
-            preferences.getString("documents", "[]")
+        val jsonString = preferences.getString(
+            "documents",
+            "[]"
+        )
 
-        val documents = JSONArray(savedDocuments)
+        val documents = JSONArray(jsonString)
 
         tvDocumentCount.text =
-            "${documents.length()} document(s) saved"
+            if (documents.length() == 1) {
+                "1 Document"
+            } else {
+                "${documents.length()} Documents"
+            }
 
         if (documents.length() == 0) {
-
-            val emptyText = TextView(this)
-
-            emptyText.id = View.generateViewId()
-            emptyText.text = "📁\n\nNo documents added yet"
-            emptyText.textSize = 18f
-            emptyText.gravity = Gravity.CENTER
-            emptyText.setTextColor(Color.GRAY)
-
-            val params = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_PARENT,
-                250
-            )
-
-            emptyText.layoutParams = params
-
-            documentsContainer.addView(emptyText)
-
+            tvEmptyMessage.visibility = View.VISIBLE
             return
         }
+
+        tvEmptyMessage.visibility = View.GONE
+
+        var previousId = R.id.tvDocumentCount
 
         for (i in 0 until documents.length()) {
 
             val document = documents.getJSONObject(i)
 
-            createDocumentCard(
-                document.getString("name"),
-                document.getString("category"),
-                document.getString("issueDate"),
-                document.getString("expiryDate"),
-                document.getString("notes")
+            val card = createDocumentCard(
+                document,
+                i
             )
+
+            documentsContainer.addView(card)
+
+            val params =
+                card.layoutParams as ConstraintLayout.LayoutParams
+
+            params.width = 0
+            params.height =
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+
+            params.topToBottom = previousId
+            params.startToStart =
+                ConstraintLayout.LayoutParams.PARENT_ID
+            params.endToEnd =
+                ConstraintLayout.LayoutParams.PARENT_ID
+
+            params.setMargins(
+                0,
+                if (i == 0) 8 else 12,
+                0,
+                0
+            )
+
+            card.layoutParams = params
+
+            previousId = card.id
         }
     }
 
     private fun createDocumentCard(
-        name: String,
-        category: String,
-        issueDate: String,
-        expiryDate: String,
-        notes: String
-    ) {
+        document: org.json.JSONObject,
+        index: Int
+    ): MaterialCardView {
 
-        val card = CardView(this)
+        val card = MaterialCardView(this)
 
-        card.radius = 20f
-        card.cardElevation = 5f
-        card.setContentPadding(20, 20, 20, 20)
+        card.id = View.generateViewId()
 
-        val cardLayout = ConstraintLayout(this)
-
-        cardLayout.layoutParams = ConstraintLayout.LayoutParams(
-            ConstraintLayout.LayoutParams.MATCH_PARENT,
-            180
+        card.radius = 18f
+        card.cardElevation = 3f
+        card.setCardBackgroundColor(
+            Color.WHITE
         )
 
-        val title = TextView(this)
+        card.strokeWidth = 1
+        card.strokeColor =
+            Color.parseColor("#E2E9E7")
 
-        title.id = View.generateViewId()
-        title.text = name
-        title.textSize = 20f
-        title.setTextColor(Color.BLACK)
-        title.setTypeface(null, android.graphics.Typeface.BOLD)
+        val cardLayout =
+            ConstraintLayout(this)
 
-        val details = TextView(this)
+        cardLayout.layoutParams =
+            ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
 
-        details.id = View.generateViewId()
-
-        details.text =
-            "Category: $category\n" +
-                    "Issue Date: $issueDate\n" +
-                    "Expiry Date: $expiryDate\n" +
-                    if (notes.isNotEmpty()) {
-                        "Notes: $notes"
-                    } else {
-                        ""
-                    }
-
-        details.textSize = 14f
-        details.setTextColor(Color.DKGRAY)
-
-        cardLayout.addView(title)
-        cardLayout.addView(details)
-
-        val titleParams =
-            title.layoutParams as ConstraintLayout.LayoutParams
-
-        titleParams.startToStart =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        titleParams.topToTop =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        title.layoutParams = titleParams
-
-        val detailsParams =
-            details.layoutParams as ConstraintLayout.LayoutParams
-
-        detailsParams.startToStart =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        detailsParams.topToBottom = title.id
-
-        detailsParams.topMargin = 10
-
-        details.layoutParams = detailsParams
+        cardLayout.setPadding(
+            18,
+            18,
+            18,
+            18
+        )
 
         card.addView(cardLayout)
 
-        val cardParams = ConstraintLayout.LayoutParams(
-            ConstraintLayout.LayoutParams.MATCH_PARENT,
-            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        val nameText = TextView(this)
+
+        nameText.id = View.generateViewId()
+
+        nameText.text =
+            document.optString(
+                "name",
+                "Unnamed Document"
+            )
+
+        nameText.setTextColor(
+            Color.parseColor("#17201F")
         )
 
-        cardParams.bottomMargin = 15
+        nameText.textSize = 18f
+        nameText.setTypeface(null, android.graphics.Typeface.BOLD)
 
-        card.layoutParams = cardParams
+        cardLayout.addView(nameText)
 
-        documentsContainer.addView(card)
+        val nameParams =
+            nameText.layoutParams as ConstraintLayout.LayoutParams
+
+        nameParams.width = 0
+        nameParams.height =
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+
+        nameParams.startToStart =
+            ConstraintLayout.LayoutParams.PARENT_ID
+
+        nameParams.topToTop =
+            ConstraintLayout.LayoutParams.PARENT_ID
+
+        nameParams.endToEnd =
+            ConstraintLayout.LayoutParams.PARENT_ID
+
+        nameText.layoutParams = nameParams
+
+        val categoryText = TextView(this)
+
+        categoryText.id = View.generateViewId()
+
+        categoryText.text =
+            document.optString(
+                "category",
+                "Other"
+            )
+
+        categoryText.setTextColor(
+            Color.parseColor("#087F73")
+        )
+
+        categoryText.textSize = 14f
+
+        cardLayout.addView(categoryText)
+
+        val categoryParams =
+            categoryText.layoutParams
+                    as ConstraintLayout.LayoutParams
+
+        categoryParams.width = 0
+        categoryParams.height =
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+
+        categoryParams.startToStart =
+            ConstraintLayout.LayoutParams.PARENT_ID
+
+        categoryParams.topToBottom =
+            nameText.id
+
+        categoryParams.endToEnd =
+            ConstraintLayout.LayoutParams.PARENT_ID
+
+        categoryParams.topMargin = 6
+
+        categoryText.layoutParams = categoryParams
+
+        val expiryText = TextView(this)
+
+        expiryText.id = View.generateViewId()
+
+        val expiryMillis =
+            document.optLong(
+                "expiryDate",
+                0
+            )
+
+        expiryText.text =
+            "Expires: ${
+                displayFormat.format(
+                    Date(expiryMillis)
+                )
+            }"
+
+        expiryText.textSize = 14f
+
+        cardLayout.addView(expiryText)
+
+        val expiryParams =
+            expiryText.layoutParams
+                    as ConstraintLayout.LayoutParams
+
+        expiryParams.width = 0
+        expiryParams.height =
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+
+        expiryParams.startToStart =
+            ConstraintLayout.LayoutParams.PARENT_ID
+
+        expiryParams.topToBottom =
+            categoryText.id
+
+        expiryParams.endToEnd =
+            ConstraintLayout.LayoutParams.PARENT_ID
+
+        expiryParams.topMargin = 12
+
+        expiryText.layoutParams = expiryParams
+
+        val statusText = TextView(this)
+
+        statusText.id = View.generateViewId()
+
+        val status = getDocumentStatus(
+            expiryMillis
+        )
+
+        statusText.text = status.first
+
+        statusText.textSize = 13f
+        statusText.gravity = Gravity.CENTER
+
+        statusText.setPadding(
+            14,
+            7,
+            14,
+            7
+        )
+
+        statusText.setTextColor(
+            Color.parseColor(status.second)
+        )
+
+        statusText.setBackgroundColor(
+            Color.parseColor(status.third)
+        )
+
+        cardLayout.addView(statusText)
+
+        val statusParams =
+            statusText.layoutParams
+                    as ConstraintLayout.LayoutParams
+
+        statusParams.width =
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+
+        statusParams.height =
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+
+        statusParams.startToStart =
+            ConstraintLayout.LayoutParams.PARENT_ID
+
+        statusParams.topToBottom =
+            expiryText.id
+
+        statusParams.bottomToBottom =
+            ConstraintLayout.LayoutParams.PARENT_ID
+
+        statusParams.topMargin = 12
+
+        statusText.layoutParams = statusParams
+
+        card.setOnClickListener {
+
+            Toast.makeText(
+                this,
+                "Document details coming next",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        return card
+    }
+
+    private fun getDocumentStatus(
+        expiryMillis: Long
+    ): Triple<String, String, String> {
+
+        val currentTime =
+            System.currentTimeMillis()
+
+        val remainingDays =
+            (expiryMillis - currentTime) /
+                    (1000 * 60 * 60 * 24)
+
+        return when {
+
+            expiryMillis < currentTime -> {
+                Triple(
+                    "Expired",
+                    "#D93636",
+                    "#FDE7E7"
+                )
+            }
+
+            remainingDays <= 30 -> {
+                Triple(
+                    "Due Soon",
+                    "#D88900",
+                    "#FFF3D9"
+                )
+            }
+
+            else -> {
+                Triple(
+                    "Valid",
+                    "#1B9A59",
+                    "#E5F6ED"
+                )
+            }
+        }
     }
 }

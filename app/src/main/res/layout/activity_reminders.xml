@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="@color/light_gray"
+    android:background="@color/background"
     tools:context=".RemindersActivity">
 
     <Button
@@ -16,8 +16,9 @@
         android:layout_height="45dp"
         android:text="← Back"
         android:textSize="14sp"
-        android:textColor="@color/purple_primary"
-        android:backgroundTint="@color/white"
+        android:textStyle="bold"
+        android:textColor="@color/primary_teal"
+        android:backgroundTint="@color/card_white"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -28,28 +29,28 @@
         android:text="Reminders"
         android:textSize="26sp"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="@color/text_primary"
+        android:layout_marginTop="12dp"
         app:layout_constraintTop_toBottomOf="@id/btnBack"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="10dp" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/tvReminderSummary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Checking document expiry..."
-        android:textSize="15sp"
-        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
+        android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/tvRemindersTitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ScrollView
         android:id="@+id/scrollReminders"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="16dp"
         android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/tvReminderSummary"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,7 +60,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/remindersContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp">
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
