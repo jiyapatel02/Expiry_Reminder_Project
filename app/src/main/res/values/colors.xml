@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Main Colors -->
-    <color name="primary_teal">#087F73</color>
-    <color name="primary_dark">#05665C</color>
-    <color name="primary_light">#DDF4F0</color>
+    <!-- Primary Colors -->
+    <color name="primary_blue">#1976D2</color>
+    <color name="primary_dark">#125AA0</color>
+    <color name="primary_light">#EAF4FF</color>
+
+    <!-- Compatibility with existing project -->
+    <color name="primary_teal">#1976D2</color>
 
     <!-- Background -->
-    <color name="background">#F7FAF9</color>
+    <color name="background">#F7FAFC</color>
     <color name="card_white">#FFFFFF</color>
 
     <!-- Text -->
-    <color name="text_primary">#17201F</color>
-    <color name="text_secondary">#66716F</color>
-    <color name="text_hint">#9AA5A3</color>
+    <color name="text_primary">#17212B</color>
+    <color name="text_secondary">#66727F</color>
+    <color name="text_hint">#9AA6B2</color>
 
-    <!-- Status -->
-    <color name="status_valid">#1B9A59</color>
-    <color name="status_valid_light">#E5F6ED</color>
-
-    <color name="status_due_soon">#D88900</color>
-    <color name="status_due_soon_light">#FFF3D9</color>
-
+    <!-- Expiry Status -->
+    <color name="status_valid">#16A36A</color>
+    <color name="status_due_soon">#E99A00</color>
     <color name="status_expired">#D93636</color>
-    <color name="status_expired_light">#FDE7E7</color>
 
-    <!-- Other -->
-    <color name="divider">#E2E9E7</color>
+    <!-- Borders / Dividers -->
+    <color name="border">#DCE6EF</color>
+    <color name="divider">#E8EEF3</color>
 
 </resources>

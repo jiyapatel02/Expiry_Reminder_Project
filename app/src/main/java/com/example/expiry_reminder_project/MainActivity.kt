@@ -2,62 +2,78 @@ package com.example.expiry_reminder_project
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.expiry_reminder_project.adapter.DocumentAdapter
+import com.example.expiry_reminder_project.model.Document
+import com.example.expiry_reminder_project.utils.DateUtils
+import com.example.expiry_reminder_project.utils.StorageHelper
 import com.google.android.material.card.MaterialCardView
-import org.json.JSONArray
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var tvTotalDocuments: TextView
-    private lateinit var tvSummaryMessage: TextView
-    private lateinit var tvReminderCount: TextView
+    private lateinit var recyclerDocuments: RecyclerView
+    private lateinit var tvEmpty: TextView
+    private lateinit var etSearch: EditText
+
+    private lateinit var adapter: DocumentAdapter
+
+    private var allDocuments =
+        mutableListOf<Document>()
+
+    private var currentFilter = "All"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
 
-        tvTotalDocuments =
-            findViewById(R.id.tvTotalDocuments)
+        initializeViews()
+        setupRecyclerView()
+        setupClicks()
+        setupSearch()
 
-        tvSummaryMessage =
-            findViewById(R.id.tvSummaryMessage)
+        loadDocuments()
+    }
 
-        tvReminderCount =
-            findViewById(R.id.tvReminderCount)
+    private fun initializeViews() {
 
-        val cardAddDocument =
-            findViewById<MaterialCardView>(R.id.cardAddDocument)
+        recyclerDocuments =
+            findViewById(R.id.recyclerDocuments)
 
-        val cardDocuments =
-            findViewById<MaterialCardView>(R.id.cardDocuments)
+        tvEmpty =
+            findViewById(R.id.tvEmpty)
 
-        val cardReminder =
-            findViewById<MaterialCardView>(R.id.cardReminder)
+        etSearch =
+            findViewById(R.id.etSearch)
+    }
 
-        val cardProfile =
-            findViewById<View>(R.id.cardProfile)
+    private fun setupRecyclerView() {
 
-        val navHome =
-            findViewById<View>(R.id.navHome)
+        adapter =
+            DocumentAdapter(
+                this,
+                mutableListOf()
+            )
 
-        val navDocuments =
-            findViewById<View>(R.id.navDocuments)
+        recyclerDocuments.layoutManager =
+            LinearLayoutManager(this)
 
-        val navReminders =
-            findViewById<View>(R.id.navReminders)
+        recyclerDocuments.adapter = adapter
+    }
 
-        val navSettings =
-            findViewById<View>(R.id.navSettings)
+    private fun setupClicks() {
 
+        // Add Document
+        findViewById<MaterialCardView>(
+            R.id.btnAddDocument
+        ).setOnClickListener {
 
-        cardAddDocument.setOnClickListener {
             startActivity(
                 Intent(
                     this,
@@ -66,25 +82,11 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        cardDocuments.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    DocumentsActivity::class.java
-                )
-            )
-        }
+        // Profile
+        findViewById<MaterialCardView>(
+            R.id.btnProfile
+        ).setOnClickListener {
 
-        cardReminder.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    RemindersActivity::class.java
-                )
-            )
-        }
-
-        cardProfile.setOnClickListener {
             startActivity(
                 Intent(
                     this,
@@ -93,10 +95,32 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        navHome.setOnClickListener {
+        // Folders
+        findViewById<MaterialCardView>(
+            R.id.cardFolders
+        ).setOnClickListener {
+
+            // We will create FoldersActivity
+            // in the next step.
         }
 
-        navDocuments.setOnClickListener {
+        // All documents
+        findViewById<MaterialCardView>(
+            R.id.cardAllDocuments
+        ).setOnClickListener {
+
+            currentFilter = "All"
+
+            updateFilterButton()
+
+            applyFilters()
+        }
+
+        // Bottom Documents
+        findViewById<TextView>(
+            R.id.navDocuments
+        ).setOnClickListener {
+
             startActivity(
                 Intent(
                     this,
@@ -104,7 +128,12 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         }
-        navReminders.setOnClickListener {
+
+        // Bottom Reminders
+        findViewById<TextView>(
+            R.id.navReminders
+        ).setOnClickListener {
+
             startActivity(
                 Intent(
                     this,
@@ -112,7 +141,12 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         }
-        navSettings.setOnClickListener {
+
+        // Bottom Settings
+        findViewById<TextView>(
+            R.id.navSettings
+        ).setOnClickListener {
+
             startActivity(
                 Intent(
                     this,
@@ -120,127 +154,233 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         }
+
+        // Home
+        findViewById<TextView>(
+            R.id.navHome
+        ).setOnClickListener {
+            // Already on Home
+        }
+
+        // Filters
+        findViewById<TextView>(
+            R.id.filterAll
+        ).setOnClickListener {
+
+            currentFilter = "All"
+            updateFilterButton()
+            applyFilters()
+        }
+
+        findViewById<TextView>(
+            R.id.filterValid
+        ).setOnClickListener {
+
+            currentFilter = "VALID"
+            updateFilterButton()
+            applyFilters()
+        }
+
+        findViewById<TextView>(
+            R.id.filterSoon
+        ).setOnClickListener {
+
+            currentFilter = "EXPIRING SOON"
+            updateFilterButton()
+            applyFilters()
+        }
+
+        findViewById<TextView>(
+            R.id.filterExpired
+        ).setOnClickListener {
+
+            currentFilter = "EXPIRED"
+            updateFilterButton()
+            applyFilters()
+        }
+    }
+
+    private fun setupSearch() {
+
+        etSearch.addTextChangedListener(
+            object : TextWatcher {
+
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+
+                    applyFilters()
+                }
+
+                override fun afterTextChanged(
+                    s: Editable?
+                ) {
+                }
+            }
+        )
+    }
+
+    private fun loadDocuments() {
+
+        allDocuments =
+            StorageHelper.getDocuments(this)
+
+        applyFilters()
+    }
+
+    private fun applyFilters() {
+
+        val searchText =
+            etSearch.text.toString()
+                .trim()
+                .lowercase()
+
+        val filtered =
+            allDocuments.filter { document ->
+
+                val matchesSearch =
+                    searchText.isEmpty() ||
+                            document.name
+                                .lowercase()
+                                .contains(searchText) ||
+                            document.type
+                                .lowercase()
+                                .contains(searchText) ||
+                            document.documentNumber
+                                .lowercase()
+                                .contains(searchText)
+
+                val status =
+                    DateUtils.getStatus(
+                        document.expiryDate
+                    )
+
+                val matchesFilter =
+                    currentFilter == "All" ||
+                            status == currentFilter
+
+                matchesSearch && matchesFilter
+            }.toMutableList()
+
+        adapter.updateList(filtered)
+
+        if (filtered.isEmpty()) {
+
+            tvEmpty.visibility = android.view.View.VISIBLE
+
+            recyclerDocuments.visibility =
+                RecyclerView.GONE
+
+        } else {
+
+            tvEmpty.visibility = android.view.View.GONE
+
+            recyclerDocuments.visibility =
+                RecyclerView.VISIBLE
+        }
+    }
+
+    private fun updateFilterButton() {
+
+        val all =
+            findViewById<TextView>(
+                R.id.filterAll
+            )
+
+        val valid =
+            findViewById<TextView>(
+                R.id.filterValid
+            )
+
+        val soon =
+            findViewById<TextView>(
+                R.id.filterSoon
+            )
+
+        val expired =
+            findViewById<TextView>(
+                R.id.filterExpired
+            )
+
+        all.setTextColor(
+            getColor(
+                if (currentFilter == "All")
+                    R.color.card_white
+                else
+                    R.color.text_secondary
+            )
+        )
+
+        valid.setTextColor(
+            getColor(
+                if (currentFilter == "VALID")
+                    R.color.card_white
+                else
+                    R.color.text_secondary
+            )
+        )
+
+        soon.setTextColor(
+            getColor(
+                if (currentFilter == "EXPIRING SOON")
+                    R.color.card_white
+                else
+                    R.color.text_secondary
+            )
+        )
+
+        expired.setTextColor(
+            getColor(
+                if (currentFilter == "EXPIRED")
+                    R.color.card_white
+                else
+                    R.color.text_secondary
+            )
+        )
+
+        all.setBackgroundResource(
+            if (currentFilter == "All")
+                R.drawable.bg_filter_selected
+            else
+                R.drawable.bg_filter
+        )
+
+        valid.setBackgroundResource(
+            if (currentFilter == "VALID")
+                R.drawable.bg_filter_selected
+            else
+                R.drawable.bg_filter
+        )
+
+        soon.setBackgroundResource(
+            if (currentFilter == "EXPIRING SOON")
+                R.drawable.bg_filter_selected
+            else
+                R.drawable.bg_filter
+        )
+
+        expired.setBackgroundResource(
+            if (currentFilter == "EXPIRED")
+                R.drawable.bg_filter_selected
+            else
+                R.drawable.bg_filter
+        )
     }
 
     override fun onResume() {
         super.onResume()
 
-        updateDashboard()
-    }
-
-    private fun updateDashboard() {
-
-        val preferences =
-            getSharedPreferences(
-                "DocumentStorage",
-                MODE_PRIVATE
-            )
-
-        val savedDocuments =
-            preferences.getString(
-                "documents",
-                "[]"
-            )
-
-        val documents =
-            JSONArray(savedDocuments)
-
-        val total =
-            documents.length()
-
-        tvTotalDocuments.text =
-            total.toString()
-
-        tvSummaryMessage.text =
-            when {
-
-                total == 0 ->
-                    "Keep your important documents up to date."
-
-                total == 1 ->
-                    "You currently have 1 saved document."
-
-                else ->
-                    "You currently have $total saved documents."
-            }
-
-        var reminderCount = 0
-
-        for (i in 0 until documents.length()) {
-
-            val document =
-                documents.getJSONObject(i)
-
-            val expiryDate =
-                document.getString(
-                    "expiryDate"
-                )
-
-            val daysLeft =
-                calculateDaysLeft(expiryDate)
-
-            if (daysLeft <= 30) {
-                reminderCount++
-            }
-        }
-
-
-        tvReminderCount.text =
-            reminderCount.toString()
-    }
-
-
-    private fun calculateDaysLeft(
-        expiryDate: String
-    ): Long {
-
-        val format =
-            SimpleDateFormat(
-                "dd/MM/yyyy",
-                Locale.getDefault()
-            )
-
-        format.isLenient = false
-
-        return try {
-
-            val expiry =
-                format.parse(expiryDate)
-                    ?: return 0
-
-            val calendar =
-                Calendar.getInstance()
-
-            calendar.set(
-                Calendar.HOUR_OF_DAY,
-                0
-            )
-
-            calendar.set(
-                Calendar.MINUTE,
-                0
-            )
-
-            calendar.set(
-                Calendar.SECOND,
-                0
-            )
-
-            calendar.set(
-                Calendar.MILLISECOND,
-                0
-            )
-
-            val today =
-                calendar.time
-
-            TimeUnit.MILLISECONDS.toDays(
-                expiry.time - today.time
-            )
-
-        } catch (e: Exception) {
-
-            0
-        }
+        loadDocuments()
     }
 }
