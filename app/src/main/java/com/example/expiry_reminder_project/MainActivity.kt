@@ -1,7 +1,10 @@
 package com.example.expiry_reminder_project
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,6 +12,8 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expiry_reminder_project.adapter.DocumentAdapter
@@ -29,7 +34,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
 
         initializeViews()
@@ -38,75 +42,112 @@ class MainActivity : AppCompatActivity() {
         setupSearch()
 
         loadDocuments()
+
+        NotificationHelper.createChannel(this)
+        ReminderScheduler.schedule(this)
+
+        requestNotificationPermission()
     }
 
     private fun initializeViews() {
+
         recyclerDocuments = findViewById(R.id.recyclerDocuments)
         tvEmpty = findViewById(R.id.tvEmpty)
         etSearch = findViewById(R.id.etSearch)
+
+        updateFilterButton()
     }
 
     private fun setupRecyclerView() {
+
         adapter = DocumentAdapter(this, mutableListOf())
 
-        recyclerDocuments.layoutManager = LinearLayoutManager(this)
+        recyclerDocuments.layoutManager =
+            LinearLayoutManager(this)
+
         recyclerDocuments.adapter = adapter
+
+        recyclerDocuments.setHasFixedSize(false)
     }
 
     private fun setupClicks() {
 
-        findViewById<MaterialCardView>(R.id.btnAddDocument).setOnClickListener {
-            startActivity(Intent(this, AddDocumentActivity::class.java))
+        // Profile
+        findViewById<TextView>(R.id.tvProfile).setOnClickListener {
+            startActivity(
+                Intent(this, ProfileActivity::class.java)
+            )
         }
 
-        findViewById<MaterialCardView>(R.id.btnProfile).setOnClickListener {
-            startActivity(Intent(this, ProfileActivity::class.java))
+        // Add Document
+        findViewById<MaterialCardView>(R.id.cardAddDocument).setOnClickListener {
+            startActivity(
+                Intent(this, AddDocumentActivity::class.java)
+            )
         }
 
-        findViewById<MaterialCardView>(R.id.cardFolders).setOnClickListener {
-            startActivity(Intent(this, FoldersActivity::class.java))
-        }
-
+        // All Documents
         findViewById<MaterialCardView>(R.id.cardAllDocuments).setOnClickListener {
-            currentFilter = "All"
-            updateFilterButton()
-            applyFilters()
+            startActivity(
+                Intent(this, DocumentsActivity::class.java)
+            )
         }
 
-        findViewById<TextView>(R.id.navDocuments).setOnClickListener {
-            startActivity(Intent(this, DocumentsActivity::class.java))
+        // Folders
+        findViewById<MaterialCardView>(R.id.cardFolders).setOnClickListener {
+            startActivity(
+                Intent(this, FoldersActivity::class.java)
+            )
         }
 
-        findViewById<TextView>(R.id.navReminders).setOnClickListener {
-            startActivity(Intent(this, RemindersActivity::class.java))
-        }
-
-        findViewById<TextView>(R.id.navSettings).setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
-        }
-
+        // Bottom Navigation - Home
         findViewById<TextView>(R.id.navHome).setOnClickListener {
             // Already on Home
         }
 
+        // Bottom Navigation - Documents
+        findViewById<TextView>(R.id.navDocuments).setOnClickListener {
+            startActivity(
+                Intent(this, DocumentsActivity::class.java)
+            )
+        }
+
+        // Bottom Navigation - Renewal
+        findViewById<TextView>(R.id.navRenewal).setOnClickListener {
+            startActivity(
+                Intent(this, RenewalActivity::class.java)
+            )
+        }
+
+        // Bottom Navigation - Settings
+        findViewById<TextView>(R.id.navSettings).setOnClickListener {
+            startActivity(
+                Intent(this, SettingsActivity::class.java)
+            )
+        }
+
+        // All Filter
         findViewById<TextView>(R.id.filterAll).setOnClickListener {
             currentFilter = "All"
             updateFilterButton()
             applyFilters()
         }
 
+        // Valid Filter
         findViewById<TextView>(R.id.filterValid).setOnClickListener {
             currentFilter = "VALID"
             updateFilterButton()
             applyFilters()
         }
 
+        // Expiring Soon Filter
         findViewById<TextView>(R.id.filterSoon).setOnClickListener {
             currentFilter = "EXPIRING SOON"
             updateFilterButton()
             applyFilters()
         }
 
+        // Expired Filter
         findViewById<TextView>(R.id.filterExpired).setOnClickListener {
             currentFilter = "EXPIRED"
             updateFilterButton()
@@ -116,63 +157,73 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSearch() {
 
-        etSearch.addTextChangedListener(object : TextWatcher {
+        etSearch.addTextChangedListener(
+            object : TextWatcher {
 
-            override fun beforeTextChanged(
-                s: CharSequence?,
-                start: Int,
-                count: Int,
-                after: Int
-            ) {
-            }
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
 
-            override fun onTextChanged(
-                s: CharSequence?,
-                start: Int,
-                before: Int,
-                count: Int
-            ) {
-                applyFilters()
-            }
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+                    applyFilters()
+                }
 
-            override fun afterTextChanged(s: Editable?) {
+                override fun afterTextChanged(
+                    s: Editable?
+                ) {
+                }
             }
-        })
+        )
     }
 
     private fun loadDocuments() {
 
+        val preferences = getSharedPreferences(
+            "DocumentStorage",
+            Context.MODE_PRIVATE
+        )
+
+        val data = preferences.getString(
+            "documents",
+            "[]"
+        ) ?: "[]"
+
         allDocuments.clear()
-
-        val preferences =
-            getSharedPreferences("DocumentStorage", Context.MODE_PRIVATE)
-
-        val data =
-            preferences.getString("documents", "[]")
 
         try {
 
-            val jsonArray = JSONArray(data)
+            val documents = JSONArray(data)
 
-            for (i in 0 until jsonArray.length()) {
+            for (i in 0 until documents.length()) {
 
-                val obj = jsonArray.getJSONObject(i)
+                val obj = documents.getJSONObject(i)
 
-                val document = Document(
-                    id = obj.optString("id"),
-                    name = obj.optString("name"),
-                    type = obj.optString(
-                        "type",
-                        obj.optString("category")
-                    ),
-                    documentNumber = obj.optString("documentNumber"),
-                    issueDate = obj.optString("issueDate"),
-                    expiryDate = obj.optString("expiryDate"),
-                    folderId = obj.optString("folderId"),
-                    notes = obj.optString("notes")
+                allDocuments.add(
+                    Document(
+                        id = obj.optString("id"),
+                        name = obj.optString("name"),
+                        type = obj.optString("type"),
+                        documentNumber =
+                            obj.optString("documentNumber"),
+                        issueDate =
+                            obj.optString("issueDate"),
+                        expiryDate =
+                            obj.optString("expiryDate"),
+                        folderId =
+                            obj.optString("folderId"),
+                        notes =
+                            obj.optString("notes")
+                    )
                 )
-
-                allDocuments.add(document)
             }
 
         } catch (e: Exception) {
@@ -185,30 +236,36 @@ class MainActivity : AppCompatActivity() {
     private fun applyFilters() {
 
         val searchText =
-            etSearch.text.toString().trim().lowercase()
+            etSearch.text.toString()
+                .trim()
+                .lowercase()
 
-        val filtered =
+        val filteredDocuments =
             allDocuments.filter { document ->
 
                 val matchesSearch =
                     searchText.isEmpty() ||
-                            document.name.lowercase().contains(searchText) ||
-                            document.type.lowercase().contains(searchText) ||
-                            document.documentNumber.lowercase().contains(searchText)
-
-                val status =
-                    DateUtils.getStatus(document.expiryDate)
+                            document.name.lowercase()
+                                .contains(searchText) ||
+                            document.type.lowercase()
+                                .contains(searchText) ||
+                            document.documentNumber.lowercase()
+                                .contains(searchText)
 
                 val matchesFilter =
                     currentFilter == "All" ||
-                            status == currentFilter
+                            DateUtils.getStatus(
+                                document.expiryDate
+                            ) == currentFilter
 
                 matchesSearch && matchesFilter
-            }.toMutableList()
+            }
 
-        adapter.updateList(filtered)
+        adapter.updateList(
+            filteredDocuments.toMutableList()
+        )
 
-        if (filtered.isEmpty()) {
+        if (filteredDocuments.isEmpty()) {
 
             tvEmpty.visibility = View.VISIBLE
             recyclerDocuments.visibility = View.GONE
@@ -222,81 +279,129 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateFilterButton() {
 
-        val all = findViewById<TextView>(R.id.filterAll)
-        val valid = findViewById<TextView>(R.id.filterValid)
-        val soon = findViewById<TextView>(R.id.filterSoon)
-        val expired = findViewById<TextView>(R.id.filterExpired)
+        val filterAll =
+            findViewById<TextView>(R.id.filterAll)
 
-        all.setTextColor(
-            getColor(
-                if (currentFilter == "All")
-                    R.color.card_white
-                else
-                    R.color.text_secondary
-            )
-        )
+        val filterValid =
+            findViewById<TextView>(R.id.filterValid)
 
-        valid.setTextColor(
-            getColor(
-                if (currentFilter == "VALID")
-                    R.color.card_white
-                else
-                    R.color.text_secondary
-            )
-        )
+        val filterSoon =
+            findViewById<TextView>(R.id.filterSoon)
 
-        soon.setTextColor(
-            getColor(
-                if (currentFilter == "EXPIRING SOON")
-                    R.color.card_white
-                else
-                    R.color.text_secondary
-            )
-        )
+        val filterExpired =
+            findViewById<TextView>(R.id.filterExpired)
 
-        expired.setTextColor(
-            getColor(
-                if (currentFilter == "EXPIRED")
-                    R.color.card_white
-                else
-                    R.color.text_secondary
-            )
-        )
-
-        all.setBackgroundResource(
+        filterAll.setBackgroundResource(
             if (currentFilter == "All")
                 R.drawable.bg_filter_selected
             else
                 R.drawable.bg_filter
         )
 
-        valid.setBackgroundResource(
+        filterValid.setBackgroundResource(
             if (currentFilter == "VALID")
                 R.drawable.bg_filter_selected
             else
                 R.drawable.bg_filter
         )
 
-        soon.setBackgroundResource(
+        filterSoon.setBackgroundResource(
             if (currentFilter == "EXPIRING SOON")
                 R.drawable.bg_filter_selected
             else
                 R.drawable.bg_filter
         )
 
-        expired.setBackgroundResource(
+        filterExpired.setBackgroundResource(
             if (currentFilter == "EXPIRED")
                 R.drawable.bg_filter_selected
             else
                 R.drawable.bg_filter
         )
+
+        filterAll.setTextColor(
+            if (currentFilter == "All")
+                ContextCompat.getColor(
+                    this,
+                    R.color.card_white
+                )
+            else
+                ContextCompat.getColor(
+                    this,
+                    R.color.text_primary
+                )
+        )
+
+        filterValid.setTextColor(
+            if (currentFilter == "VALID")
+                ContextCompat.getColor(
+                    this,
+                    R.color.card_white
+                )
+            else
+                ContextCompat.getColor(
+                    this,
+                    R.color.text_primary
+                )
+        )
+
+        filterSoon.setTextColor(
+            if (currentFilter == "EXPIRING SOON")
+                ContextCompat.getColor(
+                    this,
+                    R.color.card_white
+                )
+            else
+                ContextCompat.getColor(
+                    this,
+                    R.color.text_primary
+                )
+        )
+
+        filterExpired.setTextColor(
+            if (currentFilter == "EXPIRED")
+                ContextCompat.getColor(
+                    this,
+                    R.color.card_white
+                )
+            else
+                ContextCompat.getColor(
+                    this,
+                    R.color.text_primary
+                )
+        )
+    }
+
+    private fun requestNotificationPermission() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+            if (
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ),
+                    100
+                )
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
 
-        if (::adapter.isInitialized) {
+        if (::recyclerDocuments.isInitialized) {
+
             loadDocuments()
+
+            ReminderScheduler.schedule(this)
         }
     }
 }

@@ -7,80 +7,76 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- Back Button -->
     <TextView
         android:id="@+id/btnBack"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="18dp"
-        android:gravity="center"
-        android:text="‹"
-        android:textColor="@color/text_primary"
-        android:textSize="32sp"
+        android:layout_marginTop="16dp"
         android:clickable="true"
         android:focusable="true"
+        android:gravity="center"
+        android:text="‹"
+        android:textColor="@color/primary_teal"
+        android:textSize="32sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Folder Name -->
     <TextView
         android:id="@+id/tvFolderName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="Folder Documents"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="20dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Personal Documents"
         android:textColor="@color/text_primary"
         android:textSize="21sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btnBack"
         app:layout_constraintTop_toTopOf="@id/btnBack" />
 
-    <!-- Subtitle -->
     <TextView
         android:id="@+id/tvSubtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="16dp"
-        android:text="Documents saved in this folder"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="20dp"
+        android:text="Documents stored in this folder"
         android:textColor="@color/text_secondary"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btnBack"
-        app:layout_constraintTop_toBottomOf="@id/tvFolderName" />
-
-    <!-- Empty State -->
-    <TextView
-        android:id="@+id/tvEmpty"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:gravity="center"
-        android:text="No documents in this folder"
-        android:textColor="@color/text_secondary"
-        android:textSize="15sp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/btnBack" />
 
-    <!-- Documents -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerDocuments"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
         android:clipToPadding="false"
-        android:paddingBottom="20dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
+
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="No documents in this folder"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@id/recyclerDocuments"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/recyclerDocuments" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

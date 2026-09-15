@@ -1,392 +1,510 @@
 package com.example.expiry_reminder_project
 
-import android.graphics.Color
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
+import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.expiry_reminder_project.adapter.DocumentAdapter
+import com.example.expiry_reminder_project.model.Document
+import com.example.expiry_reminder_project.utils.DateUtils
 import com.google.android.material.card.MaterialCardView
 import org.json.JSONArray
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class DocumentsActivity : AppCompatActivity() {
 
-    private lateinit var documentsContainer: ConstraintLayout
-    private lateinit var tvDocumentCount: TextView
-    private lateinit var tvEmptyMessage: TextView
-    private lateinit var btnBack: TextView
+    private lateinit var recyclerDocuments: RecyclerView
+    private lateinit var tvEmpty: TextView
+    private lateinit var etSearch: EditText
+    private lateinit var adapter: DocumentAdapter
 
-    private val displayFormat =
-        SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    private val allDocuments =
+        mutableListOf<Document>()
+
+    private var currentFilter = "All"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_documents)
 
-        documentsContainer =
-            findViewById(R.id.documentsContainer)
-
-        tvDocumentCount =
-            findViewById(R.id.tvDocumentCount)
-
-        tvEmptyMessage =
-            findViewById(R.id.tvEmptyMessage)
-
-        btnBack =
-            findViewById(R.id.btnBack)
-
-        btnBack.setOnClickListener {
-            finish()
-        }
-
+        initializeViews()
+        setupRecyclerView()
+        setupClicks()
+        setupSearch()
         loadDocuments()
     }
 
-    override fun onResume() {
-        super.onResume()
+    // ---------------------------------------------------------
+    // INITIALIZE
+    // ---------------------------------------------------------
 
-        if (::documentsContainer.isInitialized) {
-            loadDocuments()
+    private fun initializeViews() {
+
+        recyclerDocuments =
+            findViewById(R.id.recyclerDocuments)
+
+        tvEmpty =
+            findViewById(R.id.tvEmpty)
+
+        etSearch =
+            findViewById(R.id.etSearch)
+
+        updateFilterStyle()
+    }
+
+    // ---------------------------------------------------------
+    // RECYCLER VIEW
+    // ---------------------------------------------------------
+
+    private fun setupRecyclerView() {
+
+        adapter = DocumentAdapter(
+            this,
+            mutableListOf()
+        )
+
+        recyclerDocuments.layoutManager =
+            LinearLayoutManager(this)
+
+        recyclerDocuments.adapter =
+            adapter
+    }
+
+    // ---------------------------------------------------------
+    // CLICK EVENTS
+    // ---------------------------------------------------------
+
+    private fun setupClicks() {
+
+        // Back button
+        findViewById<ImageButton>(
+            R.id.btnBack
+        ).setOnClickListener {
+
+            onBackPressedDispatcher
+                .onBackPressed()
+        }
+
+
+        // Add document
+        findViewById<MaterialCardView>(
+            R.id.btnAddDocument
+        ).setOnClickListener {
+
+            startActivity(
+                Intent(
+                    this,
+                    AddDocumentActivity::class.java
+                )
+            )
+        }
+
+
+        // All
+        findViewById<TextView>(
+            R.id.filterAll
+        ).setOnClickListener {
+
+            currentFilter = "All"
+
+            updateFilterStyle()
+            applyFilters()
+        }
+
+
+        // Valid
+        findViewById<TextView>(
+            R.id.filterValid
+        ).setOnClickListener {
+
+            currentFilter = "VALID"
+
+            updateFilterStyle()
+            applyFilters()
+        }
+
+
+        // Expiring soon
+        findViewById<TextView>(
+            R.id.filterSoon
+        ).setOnClickListener {
+
+            currentFilter = "EXPIRING SOON"
+
+            updateFilterStyle()
+            applyFilters()
+        }
+
+
+        // Expired
+        findViewById<TextView>(
+            R.id.filterExpired
+        ).setOnClickListener {
+
+            currentFilter = "EXPIRED"
+
+            updateFilterStyle()
+            applyFilters()
+        }
+
+
+        // Bottom navigation - Home
+        findViewById<TextView>(
+            R.id.navHome
+        ).setOnClickListener {
+
+            val intent =
+                Intent(
+                    this,
+                    MainActivity::class.java
+                )
+
+            intent.flags =
+                Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP
+
+            startActivity(intent)
+            finish()
+        }
+
+
+        // Bottom navigation - Documents
+        findViewById<TextView>(
+            R.id.navDocuments
+        ).setOnClickListener {
+            // Already on Documents
+        }
+
+
+        // Bottom navigation - Renewal
+        findViewById<TextView>(
+            R.id.navRenewal
+        ).setOnClickListener {
+
+            startActivity(
+                Intent(
+                    this,
+                    RenewalActivity::class.java
+                )
+            )
+        }
+
+
+        // Bottom navigation - Settings
+        findViewById<TextView>(
+            R.id.navSettings
+        ).setOnClickListener {
+
+            startActivity(
+                Intent(
+                    this,
+                    SettingsActivity::class.java
+                )
+            )
         }
     }
+
+    // ---------------------------------------------------------
+    // SEARCH
+    // ---------------------------------------------------------
+
+    private fun setupSearch() {
+
+        etSearch.addTextChangedListener(
+            object : TextWatcher {
+
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+
+                    applyFilters()
+                }
+
+                override fun afterTextChanged(
+                    s: Editable?
+                ) {
+                }
+            }
+        )
+    }
+
+    // ---------------------------------------------------------
+    // LOAD DOCUMENTS
+    // ---------------------------------------------------------
 
     private fun loadDocuments() {
 
-        if (documentsContainer.childCount > 1) {
-            documentsContainer.removeViews(
-                1,
-                documentsContainer.childCount - 1
+        allDocuments.clear()
+
+        val preferences =
+            getSharedPreferences(
+                "DocumentStorage",
+                Context.MODE_PRIVATE
             )
-        }
 
-        val preferences = getSharedPreferences(
-            "DocumentStorage",
-            MODE_PRIVATE
-        )
+        val data =
+            preferences.getString(
+                "documents",
+                "[]"
+            ) ?: "[]"
 
-        val jsonString = preferences.getString(
-            "documents",
-            "[]"
-        )
+        try {
 
-        val documents = JSONArray(jsonString)
+            val jsonArray =
+                JSONArray(data)
 
-        tvDocumentCount.text =
-            if (documents.length() == 1) {
-                "1 Document"
-            } else {
-                "${documents.length()} Documents"
+            for (i in 0 until jsonArray.length()) {
+
+                val obj =
+                    jsonArray.getJSONObject(i)
+
+                val document =
+                    Document(
+
+                        id = obj.optString(
+                            "id"
+                        ),
+
+                        name = obj.optString(
+                            "name"
+                        ),
+
+                        type = obj.optString(
+                            "type",
+                            obj.optString(
+                                "category"
+                            )
+                        ),
+
+                        documentNumber =
+                            obj.optString(
+                                "documentNumber"
+                            ),
+
+                        issueDate =
+                            obj.optString(
+                                "issueDate"
+                            ),
+
+                        expiryDate =
+                            obj.optString(
+                                "expiryDate"
+                            ),
+
+                        folderId =
+                            obj.optString(
+                                "folderId"
+                            ),
+
+                        notes =
+                            obj.optString(
+                                "notes"
+                            )
+                    )
+
+                allDocuments.add(
+                    document
+                )
             }
 
-        if (documents.length() == 0) {
-            tvEmptyMessage.visibility = View.VISIBLE
-            return
+        } catch (e: Exception) {
+
+            e.printStackTrace()
         }
 
-        tvEmptyMessage.visibility = View.GONE
+        applyFilters()
+    }
 
-        var previousId = R.id.tvDocumentCount
+    // ---------------------------------------------------------
+    // SEARCH + FILTER
+    // ---------------------------------------------------------
 
-        for (i in 0 until documents.length()) {
+    private fun applyFilters() {
 
-            val document = documents.getJSONObject(i)
+        val searchText =
+            etSearch.text
+                .toString()
+                .trim()
+                .lowercase()
 
-            val card = createDocumentCard(
-                document,
-                i
-            )
+        val filteredDocuments =
+            allDocuments.filter { document ->
 
-            documentsContainer.addView(card)
+                val matchesSearch =
+                    searchText.isEmpty() ||
+                            document.name
+                                .lowercase()
+                                .contains(searchText) ||
+                            document.type
+                                .lowercase()
+                                .contains(searchText) ||
+                            document.documentNumber
+                                .lowercase()
+                                .contains(searchText)
 
-            val params =
-                card.layoutParams as ConstraintLayout.LayoutParams
+                val status =
+                    DateUtils.getStatus(
+                        document.expiryDate
+                    )
 
-            params.width = 0
-            params.height =
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
+                val matchesFilter =
+                    currentFilter == "All" ||
+                            status == currentFilter
 
-            params.topToBottom = previousId
-            params.startToStart =
-                ConstraintLayout.LayoutParams.PARENT_ID
-            params.endToEnd =
-                ConstraintLayout.LayoutParams.PARENT_ID
+                matchesSearch &&
+                        matchesFilter
 
-            params.setMargins(
-                0,
-                if (i == 0) 8 else 12,
-                0,
-                0
-            )
+            }.toMutableList()
 
-            card.layoutParams = params
+        adapter.updateList(
+            filteredDocuments
+        )
 
-            previousId = card.id
+        updateEmptyState(
+            filteredDocuments.isEmpty()
+        )
+    }
+
+    // ---------------------------------------------------------
+    // EMPTY STATE
+    // ---------------------------------------------------------
+
+    private fun updateEmptyState(
+        isEmpty: Boolean
+    ) {
+
+        if (isEmpty) {
+
+            recyclerDocuments.visibility =
+                View.GONE
+
+            tvEmpty.visibility =
+                View.VISIBLE
+
+            tvEmpty.text =
+                if (allDocuments.isEmpty()) {
+                    "No documents added yet"
+                } else {
+                    "No documents found"
+                }
+
+        } else {
+
+            recyclerDocuments.visibility =
+                View.VISIBLE
+
+            tvEmpty.visibility =
+                View.GONE
         }
     }
 
-    private fun createDocumentCard(
-        document: org.json.JSONObject,
-        index: Int
-    ): MaterialCardView {
+    // ---------------------------------------------------------
+    // FILTER STYLE
+    // ---------------------------------------------------------
 
-        val card = MaterialCardView(this)
+    private fun updateFilterStyle() {
 
-        card.id = View.generateViewId()
-
-        card.radius = 18f
-        card.cardElevation = 3f
-        card.setCardBackgroundColor(
-            Color.WHITE
-        )
-
-        card.strokeWidth = 1
-        card.strokeColor =
-            Color.parseColor("#E2E9E7")
-
-        val cardLayout =
-            ConstraintLayout(this)
-
-        cardLayout.layoutParams =
-            ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_PARENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
+        val filterAll =
+            findViewById<TextView>(
+                R.id.filterAll
             )
 
-        cardLayout.setPadding(
-            18,
-            18,
-            18,
-            18
-        )
-
-        card.addView(cardLayout)
-
-        val nameText = TextView(this)
-
-        nameText.id = View.generateViewId()
-
-        nameText.text =
-            document.optString(
-                "name",
-                "Unnamed Document"
+        val filterValid =
+            findViewById<TextView>(
+                R.id.filterValid
             )
 
-        nameText.setTextColor(
-            Color.parseColor("#17201F")
-        )
-
-        nameText.textSize = 18f
-        nameText.setTypeface(null, android.graphics.Typeface.BOLD)
-
-        cardLayout.addView(nameText)
-
-        val nameParams =
-            nameText.layoutParams as ConstraintLayout.LayoutParams
-
-        nameParams.width = 0
-        nameParams.height =
-            ConstraintLayout.LayoutParams.WRAP_CONTENT
-
-        nameParams.startToStart =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        nameParams.topToTop =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        nameParams.endToEnd =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        nameText.layoutParams = nameParams
-
-        val categoryText = TextView(this)
-
-        categoryText.id = View.generateViewId()
-
-        categoryText.text =
-            document.optString(
-                "category",
-                "Other"
+        val filterSoon =
+            findViewById<TextView>(
+                R.id.filterSoon
             )
 
-        categoryText.setTextColor(
-            Color.parseColor("#087F73")
-        )
-
-        categoryText.textSize = 14f
-
-        cardLayout.addView(categoryText)
-
-        val categoryParams =
-            categoryText.layoutParams
-                    as ConstraintLayout.LayoutParams
-
-        categoryParams.width = 0
-        categoryParams.height =
-            ConstraintLayout.LayoutParams.WRAP_CONTENT
-
-        categoryParams.startToStart =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        categoryParams.topToBottom =
-            nameText.id
-
-        categoryParams.endToEnd =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        categoryParams.topMargin = 6
-
-        categoryText.layoutParams = categoryParams
-
-        val expiryText = TextView(this)
-
-        expiryText.id = View.generateViewId()
-
-        val expiryMillis =
-            document.optLong(
-                "expiryDate",
-                0
+        val filterExpired =
+            findViewById<TextView>(
+                R.id.filterExpired
             )
 
-        expiryText.text =
-            "Expires: ${
-                displayFormat.format(
-                    Date(expiryMillis)
-                )
-            }"
-
-        expiryText.textSize = 14f
-
-        cardLayout.addView(expiryText)
-
-        val expiryParams =
-            expiryText.layoutParams
-                    as ConstraintLayout.LayoutParams
-
-        expiryParams.width = 0
-        expiryParams.height =
-            ConstraintLayout.LayoutParams.WRAP_CONTENT
-
-        expiryParams.startToStart =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        expiryParams.topToBottom =
-            categoryText.id
-
-        expiryParams.endToEnd =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        expiryParams.topMargin = 12
-
-        expiryText.layoutParams = expiryParams
-
-        val statusText = TextView(this)
-
-        statusText.id = View.generateViewId()
-
-        val status = getDocumentStatus(
-            expiryMillis
+        setFilterStyle(
+            filterAll,
+            currentFilter == "All"
         )
 
-        statusText.text = status.first
-
-        statusText.textSize = 13f
-        statusText.gravity = Gravity.CENTER
-
-        statusText.setPadding(
-            14,
-            7,
-            14,
-            7
+        setFilterStyle(
+            filterValid,
+            currentFilter == "VALID"
         )
 
-        statusText.setTextColor(
-            Color.parseColor(status.second)
+        setFilterStyle(
+            filterSoon,
+            currentFilter == "EXPIRING SOON"
         )
 
-        statusText.setBackgroundColor(
-            Color.parseColor(status.third)
+        setFilterStyle(
+            filterExpired,
+            currentFilter == "EXPIRED"
         )
-
-        cardLayout.addView(statusText)
-
-        val statusParams =
-            statusText.layoutParams
-                    as ConstraintLayout.LayoutParams
-
-        statusParams.width =
-            ConstraintLayout.LayoutParams.WRAP_CONTENT
-
-        statusParams.height =
-            ConstraintLayout.LayoutParams.WRAP_CONTENT
-
-        statusParams.startToStart =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        statusParams.topToBottom =
-            expiryText.id
-
-        statusParams.bottomToBottom =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        statusParams.topMargin = 12
-
-        statusText.layoutParams = statusParams
-
-        card.setOnClickListener {
-
-            Toast.makeText(
-                this,
-                "Document details coming next",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-
-        return card
     }
 
-    private fun getDocumentStatus(
-        expiryMillis: Long
-    ): Triple<String, String, String> {
+    private fun setFilterStyle(
+        view: TextView,
+        selected: Boolean
+    ) {
 
-        val currentTime =
-            System.currentTimeMillis()
+        if (selected) {
 
-        val remainingDays =
-            (expiryMillis - currentTime) /
-                    (1000 * 60 * 60 * 24)
-
-        return when {
-
-            expiryMillis < currentTime -> {
-                Triple(
-                    "Expired",
-                    "#D93636",
-                    "#FDE7E7"
+            view.setTextColor(
+                getColor(
+                    R.color.card_white
                 )
-            }
+            )
 
-            remainingDays <= 30 -> {
-                Triple(
-                    "Due Soon",
-                    "#D88900",
-                    "#FFF3D9"
-                )
-            }
+            view.setBackgroundResource(
+                R.drawable.bg_filter_selected
+            )
 
-            else -> {
-                Triple(
-                    "Valid",
-                    "#1B9A59",
-                    "#E5F6ED"
+        } else {
+
+            view.setTextColor(
+                getColor(
+                    R.color.text_secondary
                 )
-            }
+            )
+
+            view.setBackgroundResource(
+                R.drawable.bg_filter
+            )
+        }
+    }
+
+    // ---------------------------------------------------------
+    // REFRESH
+    // ---------------------------------------------------------
+
+    override fun onResume() {
+
+        super.onResume()
+
+        if (::adapter.isInitialized) {
+            loadDocuments()
         }
     }
 }

@@ -1,414 +1,286 @@
 package com.example.expiry_reminder_project
 
-import android.graphics.Color
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.expiry_reminder_project.adapter.DocumentAdapter
+import com.example.expiry_reminder_project.model.Document
+import com.example.expiry_reminder_project.utils.DateUtils
 import org.json.JSONArray
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 class RemindersActivity : AppCompatActivity() {
 
-    private lateinit var remindersContainer: ConstraintLayout
-    private lateinit var tvReminderSummary: TextView
+    private lateinit var recyclerReminders: RecyclerView
+    private lateinit var tvEmpty: TextView
+    private lateinit var adapter: DocumentAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_reminders)
 
-        val btnBack = findViewById<Button>(R.id.btnBack)
+        // ---------------------------------------------------------
+        // BACK BUTTON
+        // ---------------------------------------------------------
 
-        remindersContainer =
-            findViewById(R.id.remindersContainer)
+        findViewById<ImageButton>(
+            R.id.btnBack
+        ).setOnClickListener {
 
-        tvReminderSummary =
-            findViewById(R.id.tvReminderSummary)
+            onBackPressedDispatcher.onBackPressed()
+        }
 
-        btnBack.setOnClickListener {
+
+        // ---------------------------------------------------------
+        // RECYCLER VIEW
+        // ---------------------------------------------------------
+
+        recyclerReminders =
+            findViewById(R.id.recyclerReminders)
+
+        tvEmpty =
+            findViewById(R.id.tvEmpty)
+
+        adapter =
+            DocumentAdapter(
+                this,
+                mutableListOf()
+            )
+
+        recyclerReminders.layoutManager =
+            LinearLayoutManager(this)
+
+        recyclerReminders.adapter =
+            adapter
+
+
+        // ---------------------------------------------------------
+        // LOAD REMINDERS
+        // ---------------------------------------------------------
+
+        loadReminders()
+
+
+        // ---------------------------------------------------------
+        // BOTTOM NAVIGATION - HOME
+        // ---------------------------------------------------------
+
+        findViewById<TextView>(
+            R.id.navHome
+        ).setOnClickListener {
+
+            val intent =
+                Intent(
+                    this,
+                    MainActivity::class.java
+                )
+
+            intent.flags =
+                Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP
+
+            startActivity(intent)
             finish()
+        }
+
+
+        // ---------------------------------------------------------
+        // BOTTOM NAVIGATION - DOCUMENTS
+        // ---------------------------------------------------------
+
+        findViewById<TextView>(
+            R.id.navDocuments
+        ).setOnClickListener {
+
+            startActivity(
+                Intent(
+                    this,
+                    DocumentsActivity::class.java
+                )
+            )
+        }
+
+
+        // ---------------------------------------------------------
+        // BOTTOM NAVIGATION - RENEWAL
+        // ---------------------------------------------------------
+
+        findViewById<TextView>(
+            R.id.navRenewal
+        ).setOnClickListener {
+
+            startActivity(
+                Intent(
+                    this,
+                    RenewalActivity::class.java
+                )
+            )
+        }
+
+
+        // ---------------------------------------------------------
+        // BOTTOM NAVIGATION - SETTINGS
+        // ---------------------------------------------------------
+
+        findViewById<TextView>(
+            R.id.navSettings
+        ).setOnClickListener {
+
+            startActivity(
+                Intent(
+                    this,
+                    SettingsActivity::class.java
+                )
+            )
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        loadReminders()
-    }
+
+    // ---------------------------------------------------------
+    // LOAD REMINDERS
+    // ---------------------------------------------------------
 
     private fun loadReminders() {
 
-        remindersContainer.removeAllViews()
+        val reminders =
+            mutableListOf<Document>()
 
         val preferences =
             getSharedPreferences(
                 "DocumentStorage",
-                MODE_PRIVATE
+                Context.MODE_PRIVATE
             )
 
-        val savedDocuments =
+        val data =
             preferences.getString(
                 "documents",
                 "[]"
-            )
+            ) ?: "[]"
 
-        val documents = JSONArray(savedDocuments)
+        try {
 
-        if (documents.length() == 0) {
+            val jsonArray =
+                JSONArray(data)
 
-            tvReminderSummary.text =
-                "No documents to check"
+            for (i in 0 until jsonArray.length()) {
 
-            val emptyText = TextView(this)
+                val obj =
+                    jsonArray.getJSONObject(i)
 
-            emptyText.id =
-                View.generateViewId()
+                val document =
+                    Document(
 
-            emptyText.text =
-                "🔔\n\nNo reminders available"
+                        id = obj.optString(
+                            "id"
+                        ),
 
-            emptyText.textSize = 18f
+                        name = obj.optString(
+                            "name"
+                        ),
 
-            emptyText.gravity =
-                Gravity.CENTER
+                        type = obj.optString(
+                            "type",
+                            obj.optString(
+                                "category"
+                            )
+                        ),
 
-            emptyText.setTextColor(
-                Color.rgb(102, 113, 111)
-            )
+                        documentNumber =
+                            obj.optString(
+                                "documentNumber"
+                            ),
 
-            val params =
-                ConstraintLayout.LayoutParams(
-                    ConstraintLayout.LayoutParams.MATCH_PARENT,
-                    250
-                )
+                        issueDate =
+                            obj.optString(
+                                "issueDate"
+                            ),
 
-            emptyText.layoutParams = params
+                        expiryDate =
+                            obj.optString(
+                                "expiryDate"
+                            ),
 
-            remindersContainer.addView(emptyText)
+                        folderId =
+                            obj.optString(
+                                "folderId"
+                            ),
 
-            return
-        }
-
-        var expiredCount = 0
-        var urgentCount = 0
-        var upcomingCount = 0
-        var validCount = 0
-
-        for (i in 0 until documents.length()) {
-
-            val document =
-                documents.getJSONObject(i)
-
-            val name =
-                document.getString("name")
-
-            val category =
-                document.getString("category")
-
-            val expiryDate =
-                document.getString("expiryDate")
-
-            val daysLeft =
-                calculateDaysLeft(expiryDate)
-
-            when {
-
-                daysLeft < 0 -> {
-
-                    expiredCount++
-
-                    createReminderCard(
-                        name,
-                        category,
-                        expiryDate,
-                        "🔴 EXPIRED",
-                        Color.rgb(217, 54, 54)
+                        notes =
+                            obj.optString(
+                                "notes"
+                            )
                     )
-                }
 
-                daysLeft <= 7 -> {
-
-                    urgentCount++
-
-                    createReminderCard(
-                        name,
-                        category,
-                        expiryDate,
-                        "🟠 EXPIRES IN $daysLeft DAYS",
-                        Color.rgb(216, 137, 0)
+                val status =
+                    DateUtils.getStatus(
+                        document.expiryDate
                     )
-                }
 
-                daysLeft <= 30 -> {
+                // Show only documents that need attention
+                if (
+                    status == "EXPIRED" ||
+                    status == "EXPIRING SOON"
+                ) {
 
-                    upcomingCount++
-
-                    createReminderCard(
-                        name,
-                        category,
-                        expiryDate,
-                        "🟡 EXPIRES IN $daysLeft DAYS",
-                        Color.rgb(216, 137, 0)
-                    )
-                }
-
-                else -> {
-
-                    validCount++
-
-                    createReminderCard(
-                        name,
-                        category,
-                        expiryDate,
-                        "🟢 VALID - $daysLeft DAYS LEFT",
-                        Color.rgb(27, 154, 89)
+                    reminders.add(
+                        document
                     )
                 }
             }
-        }
-
-        tvReminderSummary.text =
-            "Expired: $expiredCount  |  " +
-                    "Urgent: $urgentCount  |  " +
-                    "Upcoming: $upcomingCount  |  " +
-                    "Valid: $validCount"
-    }
-
-    private fun calculateDaysLeft(
-        expiryDate: String
-    ): Long {
-
-        val format =
-            SimpleDateFormat(
-                "dd/MM/yyyy",
-                Locale.getDefault()
-            )
-
-        format.isLenient = false
-
-        return try {
-
-            val expiry =
-                format.parse(expiryDate)
-
-            val calendar =
-                Calendar.getInstance()
-
-            calendar.set(
-                Calendar.HOUR_OF_DAY,
-                0
-            )
-
-            calendar.set(
-                Calendar.MINUTE,
-                0
-            )
-
-            calendar.set(
-                Calendar.SECOND,
-                0
-            )
-
-            calendar.set(
-                Calendar.MILLISECOND,
-                0
-            )
-
-            val today =
-                calendar.time
-
-            val difference =
-                expiry.time - today.time
-
-            TimeUnit.MILLISECONDS.toDays(
-                difference
-            )
 
         } catch (e: Exception) {
 
-            0
+            e.printStackTrace()
+        }
+
+
+        // ---------------------------------------------------------
+        // EMPTY STATE
+        // ---------------------------------------------------------
+
+        if (reminders.isEmpty()) {
+
+            recyclerReminders.visibility =
+                View.GONE
+
+            tvEmpty.visibility =
+                View.VISIBLE
+
+            tvEmpty.text =
+                "No reminders at the moment"
+
+        } else {
+
+            recyclerReminders.visibility =
+                View.VISIBLE
+
+            tvEmpty.visibility =
+                View.GONE
+
+            adapter.updateList(
+                reminders
+            )
         }
     }
 
-    private fun createReminderCard(
-        name: String,
-        category: String,
-        expiryDate: String,
-        status: String,
-        statusColor: Int
-    ) {
 
-        val card =
-            CardView(this)
+    // ---------------------------------------------------------
+    // REFRESH
+    // ---------------------------------------------------------
 
-        card.radius = 20f
-        card.cardElevation = 5f
+    override fun onResume() {
 
-        card.setContentPadding(
-            20,
-            20,
-            20,
-            20
-        )
+        super.onResume()
 
-        val cardLayout =
-            ConstraintLayout(this)
+        if (::adapter.isInitialized) {
 
-        cardLayout.layoutParams =
-            ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_PARENT,
-                150
-            )
-
-        val title =
-            TextView(this)
-
-        title.id =
-            View.generateViewId()
-
-        title.text = name
-        title.textSize = 19f
-
-        title.setTextColor(
-            Color.rgb(23, 32, 31)
-        )
-
-        title.setTypeface(
-            null,
-            android.graphics.Typeface.BOLD
-        )
-
-        val categoryText =
-            TextView(this)
-
-        categoryText.id =
-            View.generateViewId()
-
-        categoryText.text =
-            "Category: $category"
-
-        categoryText.textSize = 14f
-
-        categoryText.setTextColor(
-            Color.rgb(102, 113, 111)
-        )
-
-        val expiryText =
-            TextView(this)
-
-        expiryText.id =
-            View.generateViewId()
-
-        expiryText.text =
-            "Expiry Date: $expiryDate"
-
-        expiryText.textSize = 14f
-
-        expiryText.setTextColor(
-            Color.rgb(102, 113, 111)
-        )
-
-        val statusText =
-            TextView(this)
-
-        statusText.id =
-            View.generateViewId()
-
-        statusText.text = status
-        statusText.textSize = 15f
-
-        statusText.setTextColor(
-            statusColor
-        )
-
-        statusText.setTypeface(
-            null,
-            android.graphics.Typeface.BOLD
-        )
-
-        cardLayout.addView(title)
-        cardLayout.addView(categoryText)
-        cardLayout.addView(expiryText)
-        cardLayout.addView(statusText)
-
-        val titleParams =
-            title.layoutParams
-                    as ConstraintLayout.LayoutParams
-
-        titleParams.startToStart =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        titleParams.topToTop =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        title.layoutParams =
-            titleParams
-
-        val categoryParams =
-            categoryText.layoutParams
-                    as ConstraintLayout.LayoutParams
-
-        categoryParams.startToStart =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        categoryParams.topToBottom =
-            title.id
-
-        categoryParams.topMargin = 5
-
-        categoryText.layoutParams =
-            categoryParams
-
-        val expiryParams =
-            expiryText.layoutParams
-                    as ConstraintLayout.LayoutParams
-
-        expiryParams.startToStart =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        expiryParams.topToBottom =
-            categoryText.id
-
-        expiryParams.topMargin = 5
-
-        expiryText.layoutParams =
-            expiryParams
-
-        val statusParams =
-            statusText.layoutParams
-                    as ConstraintLayout.LayoutParams
-
-        statusParams.startToStart =
-            ConstraintLayout.LayoutParams.PARENT_ID
-
-        statusParams.topToBottom =
-            expiryText.id
-
-        statusParams.topMargin = 8
-
-        statusText.layoutParams =
-            statusParams
-
-        card.addView(cardLayout)
-
-        val cardParams =
-            ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_PARENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
-            )
-
-        cardParams.bottomMargin = 15
-
-        card.layoutParams =
-            cardParams
-
-        remindersContainer.addView(card)
+            loadReminders()
+        }
     }
 }

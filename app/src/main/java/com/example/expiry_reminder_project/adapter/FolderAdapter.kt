@@ -55,7 +55,8 @@ class FolderAdapter(
         position: Int
     ) {
 
-        val folder = folders[position]
+        val folder =
+            folders[position]
 
         holder.tvFolderName.text =
             folder.name
@@ -67,34 +68,30 @@ class FolderAdapter(
                 folder.description
             }
 
-        // Open folder
         holder.folderCard.setOnClickListener {
 
             val currentPosition =
                 holder.bindingAdapterPosition
 
             if (
-                currentPosition
-                != RecyclerView.NO_POSITION
+                currentPosition !=
+                RecyclerView.NO_POSITION
             ) {
-
                 onFolderClick(
                     folders[currentPosition]
                 )
             }
         }
 
-        // Edit folder
         holder.tvEdit.setOnClickListener {
 
             val currentPosition =
                 holder.bindingAdapterPosition
 
             if (
-                currentPosition
-                != RecyclerView.NO_POSITION
+                currentPosition !=
+                RecyclerView.NO_POSITION
             ) {
-
                 onEditClick(
                     folders[currentPosition]
                 )

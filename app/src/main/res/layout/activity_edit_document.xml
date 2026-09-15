@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <!-- ===================================================== -->
+    <!-- HEADER -->
+    <!-- ===================================================== -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topHeader"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:background="@color/card_white"
+        android:elevation="3dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Back Arrow -->
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="Back"
+            android:padding="12dp"
+            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Title -->
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Edit Document"
+            android:textColor="@color/text_primary"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnBack"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <!-- ===================================================== -->
+    <!-- FORM -->
+    <!-- ===================================================== -->
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topHeader">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="30dp">
+
+            <!-- ================================================= -->
+            <!-- DOCUMENT NAME -->
+            <!-- ================================================= -->
+
+            <EditText
+                android:id="@+id/etDocumentName"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:background="@drawable/bg_input"
+                android:hint="Document name"
+                android:inputType="textCapSentences"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <!-- ================================================= -->
+            <!-- DOCUMENT NUMBER -->
+            <!-- ================================================= -->
+
+            <EditText
+                android:id="@+id/etDocumentNumber"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_input"
+                android:hint="Document number"
+                android:inputType="text"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etDocumentName" />
+
+
+            <!-- ================================================= -->
+            <!-- CATEGORY -->
+            <!-- ================================================= -->
+
+            <Spinner
+                android:id="@+id/spinnerCategory"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_input"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etDocumentNumber" />
+
+
+            <!-- ================================================= -->
+            <!-- FOLDER -->
+            <!-- ================================================= -->
+
+            <Spinner
+                android:id="@+id/spinnerFolder"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_input"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/spinnerCategory" />
+
+
+            <!-- ================================================= -->
+            <!-- ISSUE DATE -->
+            <!-- ================================================= -->
+
+            <TextView
+                android:id="@+id/tvIssueDate"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_input"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="Select issue date"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/spinnerFolder" />
+
+
+            <!-- ================================================= -->
+            <!-- EXPIRY DATE -->
+            <!-- ================================================= -->
+
+            <TextView
+                android:id="@+id/tvExpiryDate"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_input"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="Select expiry date"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvIssueDate" />
+
+
+            <!-- ================================================= -->
+            <!-- NOTES -->
+            <!-- ================================================= -->
+
+            <EditText
+                android:id="@+id/etNotes"
+                android:layout_width="0dp"
+                android:layout_height="110dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_input"
+                android:gravity="top|start"
+                android:hint="Notes (optional)"
+                android:inputType="textMultiLine|textCapSentences"
+                android:padding="16dp"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvExpiryDate" />
+
+
+            <!-- ================================================= -->
+            <!-- UPDATE BUTTON -->
+            <!-- ================================================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnUpdateDocument"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_marginTop="20dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/primary_teal"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etNotes">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="Update Document"
+                    android:textColor="@color/card_white"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

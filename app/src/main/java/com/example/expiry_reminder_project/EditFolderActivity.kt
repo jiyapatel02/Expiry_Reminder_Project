@@ -20,7 +20,9 @@ class EditFolderActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_edit_folder)
+        setContentView(
+            R.layout.activity_edit_folder
+        )
 
         etFolderName =
             findViewById(R.id.etFolderName)
@@ -29,8 +31,9 @@ class EditFolderActivity : AppCompatActivity() {
             findViewById(R.id.etDescription)
 
         folderId =
-            intent.getStringExtra("folder_id")
-                .orEmpty()
+            intent.getStringExtra(
+                "folder_id"
+            ).orEmpty()
 
         loadFolder()
 
@@ -38,7 +41,8 @@ class EditFolderActivity : AppCompatActivity() {
             R.id.btnBack
         ).setOnClickListener {
 
-            onBackPressedDispatcher.onBackPressed()
+            onBackPressedDispatcher
+                .onBackPressed()
         }
 
         findViewById<MaterialCardView>(
@@ -72,13 +76,13 @@ class EditFolderActivity : AppCompatActivity() {
 
         try {
 
-            val foldersArray =
+            val folders =
                 JSONArray(data)
 
-            for (i in 0 until foldersArray.length()) {
+            for (i in 0 until folders.length()) {
 
                 val folder =
-                    foldersArray.getJSONObject(i)
+                    folders.getJSONObject(i)
 
                 if (
                     folder.optString("id")
@@ -95,12 +99,11 @@ class EditFolderActivity : AppCompatActivity() {
                         )
                     )
 
-                    break
+                    return
                 }
             }
 
         } catch (e: Exception) {
-
             e.printStackTrace()
         }
     }
@@ -141,15 +144,15 @@ class EditFolderActivity : AppCompatActivity() {
 
         try {
 
-            val foldersArray =
+            val folders =
                 JSONArray(data)
 
             var updated = false
 
-            for (i in 0 until foldersArray.length()) {
+            for (i in 0 until folders.length()) {
 
                 val folder =
-                    foldersArray.getJSONObject(i)
+                    folders.getJSONObject(i)
 
                 if (
                     folder.optString("id")
@@ -177,7 +180,7 @@ class EditFolderActivity : AppCompatActivity() {
                 preferences.edit()
                     .putString(
                         "folders",
-                        foldersArray.toString()
+                        folders.toString()
                     )
                     .apply()
 
@@ -213,20 +216,25 @@ class EditFolderActivity : AppCompatActivity() {
     private fun showDeleteDialog() {
 
         AlertDialog.Builder(this)
+
             .setTitle("Delete Folder")
+
             .setMessage(
                 "Are you sure you want to delete this folder?"
             )
+
             .setNegativeButton(
                 "Cancel",
                 null
             )
+
             .setPositiveButton(
                 "Delete"
             ) { _, _ ->
 
                 deleteFolder()
             }
+
             .show()
     }
 
@@ -246,16 +254,16 @@ class EditFolderActivity : AppCompatActivity() {
 
         try {
 
-            val foldersArray =
+            val folders =
                 JSONArray(data)
 
             val updatedFolders =
                 JSONArray()
 
-            for (i in 0 until foldersArray.length()) {
+            for (i in 0 until folders.length()) {
 
                 val folder =
-                    foldersArray.getJSONObject(i)
+                    folders.getJSONObject(i)
 
                 if (
                     folder.optString("id")
@@ -275,8 +283,6 @@ class EditFolderActivity : AppCompatActivity() {
                 )
                 .apply()
 
-            // Remove the folder assignment
-            // from documents that belonged to it.
             removeFolderFromDocuments()
 
             Toast.makeText(
@@ -318,14 +324,17 @@ class EditFolderActivity : AppCompatActivity() {
             val documents =
                 JSONArray(data)
 
-            for (i in 0 until documents.length()) {
+            for (
+            i in 0 until documents.length()
+            ) {
 
                 val document =
                     documents.getJSONObject(i)
 
                 if (
-                    document.optString("folderId")
-                    == folderId
+                    document.optString(
+                        "folderId"
+                    ) == folderId
                 ) {
 
                     document.put(
@@ -343,7 +352,6 @@ class EditFolderActivity : AppCompatActivity() {
                 .apply()
 
         } catch (e: Exception) {
-
             e.printStackTrace()
         }
     }

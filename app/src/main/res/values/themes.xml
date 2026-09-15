@@ -6,6 +6,14 @@
 
         <item name="colorPrimary">@color/primary_teal</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorSecondary">@color/primary_teal</item>
+
+        <item name="android:windowBackground">@color/background</item>
+
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <item name="android:navigationBarColor">@color/card_white</item>
 
     </style>
 

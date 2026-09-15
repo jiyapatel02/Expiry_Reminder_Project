@@ -1,7 +1,6 @@
 package com.example.expiry_reminder_project
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -10,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expiry_reminder_project.adapter.DocumentAdapter
 import com.example.expiry_reminder_project.model.Document
-import com.example.expiry_reminder_project.utils.DateUtils
 import org.json.JSONArray
 
 class FolderDocumentsActivity : AppCompatActivity() {
@@ -26,13 +24,19 @@ class FolderDocumentsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_folder_documents)
+        setContentView(
+            R.layout.activity_folder_documents
+        )
 
         folderId =
-            intent.getStringExtra("folder_id").orEmpty()
+            intent.getStringExtra(
+                "folder_id"
+            ).orEmpty()
 
         folderName =
-            intent.getStringExtra("folder_name").orEmpty()
+            intent.getStringExtra(
+                "folder_name"
+            ).orEmpty()
 
         initializeViews()
         setupRecyclerView()
@@ -43,13 +47,17 @@ class FolderDocumentsActivity : AppCompatActivity() {
     private fun initializeViews() {
 
         recyclerDocuments =
-            findViewById(R.id.recyclerDocuments)
+            findViewById(
+                R.id.recyclerDocuments
+            )
 
         tvEmpty =
             findViewById(R.id.tvEmpty)
 
         tvFolderName =
-            findViewById(R.id.tvFolderName)
+            findViewById(
+                R.id.tvFolderName
+            )
 
         tvFolderName.text =
             if (folderName.isBlank()) {
@@ -80,7 +88,8 @@ class FolderDocumentsActivity : AppCompatActivity() {
             R.id.btnBack
         ).setOnClickListener {
 
-            onBackPressedDispatcher.onBackPressed()
+            onBackPressedDispatcher
+                .onBackPressed()
         }
     }
 
@@ -90,13 +99,15 @@ class FolderDocumentsActivity : AppCompatActivity() {
             getDocuments()
 
         val folderDocuments =
-            allDocuments.filter { document ->
+            allDocuments
+                .filter {
+                    it.folderId == folderId
+                }
+                .toMutableList()
 
-                document.folderId == folderId
-
-            }.toMutableList()
-
-        adapter.updateList(folderDocuments)
+        adapter.updateList(
+            folderDocuments
+        )
 
         if (folderDocuments.isEmpty()) {
 
@@ -116,7 +127,8 @@ class FolderDocumentsActivity : AppCompatActivity() {
         }
     }
 
-    private fun getDocuments(): MutableList<Document> {
+    private fun getDocuments():
+            MutableList<Document> {
 
         val documents =
             mutableListOf<Document>()
@@ -138,7 +150,9 @@ class FolderDocumentsActivity : AppCompatActivity() {
             val jsonArray =
                 JSONArray(data)
 
-            for (i in 0 until jsonArray.length()) {
+            for (
+            i in 0 until jsonArray.length()
+            ) {
 
                 val obj =
                     jsonArray.getJSONObject(i)
@@ -149,7 +163,9 @@ class FolderDocumentsActivity : AppCompatActivity() {
                         name = obj.optString("name"),
                         type = obj.optString(
                             "type",
-                            obj.optString("category")
+                            obj.optString(
+                                "category"
+                            )
                         ),
                         documentNumber =
                             obj.optString(
@@ -176,7 +192,6 @@ class FolderDocumentsActivity : AppCompatActivity() {
             }
 
         } catch (e: Exception) {
-
             e.printStackTrace()
         }
 

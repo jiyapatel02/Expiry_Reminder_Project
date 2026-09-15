@@ -6,7 +6,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.expiry_reminder_project.model.Folder
+import com.google.android.material.card.MaterialCardView
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.UUID
@@ -19,79 +19,120 @@ class AddFolderActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_add_folder)
+        setContentView(
+            R.layout.activity_add_folder
+        )
 
-        etFolderName = findViewById(R.id.etFolderName)
-        etDescription = findViewById(R.id.etDescription)
+        etFolderName =
+            findViewById(R.id.etFolderName)
 
-        // Back button
-        findViewById<TextView>(R.id.btnBack).setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+        etDescription =
+            findViewById(R.id.etDescription)
+
+        findViewById<TextView>(
+            R.id.btnBack
+        ).setOnClickListener {
+
+            onBackPressedDispatcher
+                .onBackPressed()
         }
 
-        // Create Folder
-        findViewById<TextView>(R.id.btnSaveFolder).setOnClickListener {
+        findViewById<MaterialCardView>(
+            R.id.btnSaveFolder
+        ).setOnClickListener {
+
             saveFolder()
         }
     }
 
     private fun saveFolder() {
 
-        val name = etFolderName.text.toString().trim()
-        val description = etDescription.text.toString().trim()
+        val name =
+            etFolderName.text
+                .toString()
+                .trim()
+
+        val description =
+            etDescription.text
+                .toString()
+                .trim()
 
         if (name.isEmpty()) {
 
-            etFolderName.error = "Enter folder name"
+            etFolderName.error =
+                "Enter folder name"
+
             etFolderName.requestFocus()
 
             return
         }
 
-        val folder = Folder(
-            id = UUID.randomUUID().toString(),
-            name = name,
-            description = description
-        )
+        val folderId =
+            UUID.randomUUID().toString()
 
-        saveFolderToPreferences(folder)
-
-        Toast.makeText(
-            this,
-            "Folder created successfully",
-            Toast.LENGTH_SHORT
-        ).show()
-
-        finish()
-    }
-
-    private fun saveFolderToPreferences(folder: Folder) {
-
-        val preferences = getSharedPreferences(
-            "ExpiryReminder",
-            Context.MODE_PRIVATE
-        )
-
-        val oldData = preferences.getString(
-            "folders",
-            "[]"
-        )
-
-        val foldersArray = JSONArray(oldData)
-
-        val folderObject = JSONObject()
-
-        folderObject.put("id", folder.id)
-        folderObject.put("name", folder.name)
-        folderObject.put("description", folder.description)
-
-        foldersArray.put(folderObject)
-
-        preferences.edit()
-            .putString(
-                "folders",
-                foldersArray.toString()
+        val preferences =
+            getSharedPreferences(
+                "ExpiryReminder",
+                Context.MODE_PRIVATE
             )
-            .apply()
+
+        val oldData =
+            preferences.getString(
+                "folders",
+                "[]"
+            )
+
+        try {
+
+            val foldersArray =
+                JSONArray(oldData)
+
+            val folderObject =
+                JSONObject()
+
+            folderObject.put(
+                "id",
+                folderId
+            )
+
+            folderObject.put(
+                "name",
+                name
+            )
+
+            folderObject.put(
+                "description",
+                description
+            )
+
+            foldersArray.put(
+                folderObject
+            )
+
+            preferences.edit()
+                .putString(
+                    "folders",
+                    foldersArray.toString()
+                )
+                .apply()
+
+            Toast.makeText(
+                this,
+                "Folder created successfully",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            finish()
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            Toast.makeText(
+                this,
+                "Unable to create folder",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 }

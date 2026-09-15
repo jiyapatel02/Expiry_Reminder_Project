@@ -1,86 +1,298 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7FAF9">
+    android:background="@color/background">
 
-    <TextView
-        android:id="@+id/btnBack"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:gravity="center"
-        android:text="←"
-        android:textColor="#17201F"
-        android:textSize="26sp"
-        android:clickable="true"
-        android:focusable="true"
+    <!-- Header -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topHeader"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:background="@color/card_white"
+        android:elevation="3dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="18dp"/>
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="Back"
+            android:padding="12dp"
+            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="All Documents"
+            android:textColor="@color/text_primary"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnBack"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <!-- Subtitle -->
 
     <TextView
-        android:id="@+id/tvPageTitle"
+        android:id="@+id/tvSubtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="My Documents"
-        android:textColor="#17201F"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@id/btnBack"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/btnBack"
-        app:layout_constraintBottom_toBottomOf="@id/btnBack"
-        android:layout_marginEnd="16dp"/>
-
-    <TextView
-        android:id="@+id/tvDocumentCount"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="0 Documents"
-        android:textColor="#66716F"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="14dp"/>
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="20dp"
+        android:text="Manage all your stored documents"
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topHeader" />
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/scrollDocuments"
+
+    <!-- Search -->
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardSearch"
+        android:layout_width="0dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="20dp"
+        app:cardBackgroundColor="@color/card_white"
+        app:cardCornerRadius="14dp"
+        app:cardElevation="1dp"
+        app:strokeColor="@color/border"
+        app:strokeWidth="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvSubtitle">
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:hint="Search documents..."
+            android:inputType="text"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:singleLine="true"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_hint"
+            android:textSize="15sp" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <!-- Filters -->
+
+    <TextView
+        android:id="@+id/filterAll"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="14dp"
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="All"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardSearch" />
+
+    <TextView
+        android:id="@+id/filterValid"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:layout_marginStart="8dp"
+        android:gravity="center"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:text="Valid"
+        android:textSize="13sp"
+        app:layout_constraintStart_toEndOf="@id/filterAll"
+        app:layout_constraintTop_toTopOf="@id/filterAll" />
+
+    <TextView
+        android:id="@+id/filterSoon"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:layout_marginStart="8dp"
+        android:gravity="center"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:text="Expiring Soon"
+        android:textSize="13sp"
+        app:layout_constraintStart_toEndOf="@id/filterValid"
+        app:layout_constraintTop_toTopOf="@id/filterAll" />
+
+    <TextView
+        android:id="@+id/filterExpired"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:layout_marginStart="8dp"
+        android:gravity="center"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:text="Expired"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/filterSoon"
+        app:layout_constraintTop_toTopOf="@id/filterAll" />
+
+
+    <!-- Add Document -->
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnAddDocument"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="20dp"
+        app:cardBackgroundColor="@color/primary_teal"
+        app:cardCornerRadius="14dp"
+        app:cardElevation="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filterAll">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="+  Add New Document"
+            android:textColor="@color/card_white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <!-- Empty -->
+
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:text="No documents added yet"
+        android:textColor="@color/text_secondary"
+        android:textSize="15sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnAddDocument" />
+
+
+    <!-- Documents -->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerDocuments"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/tvDocumentCount"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp"
+        android:clipToPadding="false"
+        android:paddingBottom="90dp"
+        android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnAddDocument" />
+
+
+    <!-- Bottom Navigation -->
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="10dp"
+        app:cardBackgroundColor="@color/card_white"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp"
+        app:strokeColor="@color/border"
+        app:strokeWidth="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/documentsContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/tvEmptyMessage"
+                android:id="@+id/navHome"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="No documents added yet.\nAdd your first document to get started."
-                android:textColor="#66716F"
-                android:textSize="16sp"
+                android:layout_height="match_parent"
                 android:gravity="center"
-                android:visibility="gone"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                android:text="⌂\nHome"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@id/navDocuments"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/navDocuments"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="▣\nDocuments"
+                android:textColor="@color/primary_teal"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/navRenewal"
+                app:layout_constraintStart_toEndOf="@id/navHome" />
+
+            <TextView
+                android:id="@+id/navRenewal"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="◷\nRenewal"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@id/navSettings"
+                app:layout_constraintStart_toEndOf="@id/navDocuments" />
+
+            <TextView
+                android:id="@+id/navSettings"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="⚙\nSettings"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="70dp"/>
+                app:layout_constraintStart_toEndOf="@id/navRenewal" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

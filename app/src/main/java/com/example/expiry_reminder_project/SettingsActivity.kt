@@ -1,119 +1,136 @@
 package com.example.expiry_reminder_project
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.Spinner
-import android.widget.Switch
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.android.material.card.MaterialCardView
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var switchNotifications: Switch
+    private lateinit var switchNotifications: MaterialSwitch
     private lateinit var spReminderPeriod: Spinner
 
     private val preferencesName = "ExpiryReminder"
-
-    private var isLoadingSettings = true
+    private val notificationsKey = "notifications"
+    private val reminderPeriodKey = "reminder_period"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_settings)
 
-        val btnBack =
-            findViewById<Button>(R.id.btnBack)
+        switchNotifications = findViewById(R.id.switchNotifications)
+        spReminderPeriod = findViewById(R.id.spReminderPeriod)
 
-        switchNotifications =
-            findViewById<Switch>(R.id.switchNotifications)
+        setupBackButton()
+        loadSettings()
+        setupNotificationListener()
+        setupReminderListener()
+        setupTheme()
+        setupHelp()
+        setupAbout()
+        setupBottomNavigation()
+    }
 
-        spReminderPeriod =
-            findViewById<Spinner>(R.id.spReminderPeriod)
+    // ---------------- BACK ----------------
 
-        btnBack.setOnClickListener {
-            finish()
+    private fun setupBackButton() {
+        findViewById<android.widget.ImageButton>(R.id.btnBack).setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
+    // ---------------- LOAD SETTINGS ----------------
+
+    private fun loadSettings() {
+
+        val preferences = getSharedPreferences(
+            preferencesName,
+            Context.MODE_PRIVATE
+        )
+
+        val notificationsEnabled =
+            preferences.getBoolean(notificationsKey, true)
+
+        val reminderPeriod =
+            preferences.getInt(reminderPeriodKey, 7)
+
+        switchNotifications.isChecked = notificationsEnabled
+
+        val spinnerPosition = when (reminderPeriod) {
+            14 -> 1
+            30 -> 2
+            else -> 0
         }
 
+        spReminderPeriod.setSelection(spinnerPosition)
+    }
 
-        // Setup spinner
-        setupReminderPeriod()
+    // ---------------- NOTIFICATIONS ----------------
 
+    private fun setupNotificationListener() {
 
-        // Load previously saved settings
-        loadSettings()
-
-
-        // Notification switch
         switchNotifications.setOnCheckedChangeListener { _, isChecked ->
 
-            if (!isLoadingSettings) {
+            getSharedPreferences(
+                preferencesName,
+                Context.MODE_PRIVATE
+            )
+                .edit()
+                .putBoolean(notificationsKey, isChecked)
+                .apply()
 
-                getSharedPreferences(
-                    preferencesName,
-                    MODE_PRIVATE
-                )
-                    .edit()
-                    .putBoolean(
-                        "notifications",
-                        isChecked
-                    )
-                    .apply()
-
-                val message =
-                    if (isChecked) {
-                        "Notifications enabled"
-                    } else {
-                        "Notifications disabled"
-                    }
+            if (isChecked) {
+                NotificationHelper.createChannel(this)
 
                 Toast.makeText(
                     this,
-                    message,
+                    "Expiry reminders enabled",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+            } else {
+
+                Toast.makeText(
+                    this,
+                    "Expiry reminders disabled",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         }
+    }
 
+    // ---------------- REMINDER PERIOD ----------------
 
-        // Reminder period
-        spReminderPeriod.setOnItemSelectedListener(
-            object :
-                AdapterView.OnItemSelectedListener {
+    private fun setupReminderListener() {
+
+        spReminderPeriod.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
 
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
-                    view: View?,
+                    view: android.view.View?,
                     position: Int,
                     id: Long
                 ) {
 
-                    if (!isLoadingSettings) {
-
-                        getSharedPreferences(
-                            preferencesName,
-                            MODE_PRIVATE
-                        )
-                            .edit()
-                            .putInt(
-                                "reminderPeriod",
-                                position
-                            )
-                            .apply()
-
-                        val selectedPeriod =
-                            parent?.getItemAtPosition(
-                                position
-                            ).toString()
-
-                        Toast.makeText(
-                            this@SettingsActivity,
-                            "Reminder: $selectedPeriod",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    val days = when (position) {
+                        1 -> 14
+                        2 -> 30
+                        else -> 7
                     }
+
+                    getSharedPreferences(
+                        preferencesName,
+                        Context.MODE_PRIVATE
+                    )
+                        .edit()
+                        .putInt(reminderPeriodKey, days)
+                        .apply()
                 }
 
                 override fun onNothingSelected(
@@ -121,79 +138,92 @@ class SettingsActivity : AppCompatActivity() {
                 ) {
                 }
             }
-        )
-
-        // Loading finished
-        isLoadingSettings = false
     }
 
+    // ---------------- THEME ----------------
 
-    private fun setupReminderPeriod() {
+    private fun setupTheme() {
 
-        val periods = arrayOf(
+        findViewById<MaterialCardView>(R.id.cardTheme)
+            .setOnClickListener {
 
-            "7 days before expiry",
-
-            "15 days before expiry",
-
-            "30 days before expiry"
-        )
-
-
-        val adapter =
-            ArrayAdapter(
-                this,
-                android.R.layout.simple_spinner_item,
-                periods
-            )
-
-
-        adapter.setDropDownViewResource(
-            android.R.layout.simple_spinner_dropdown_item
-        )
-
-
-        spReminderPeriod.adapter =
-            adapter
+                Toast.makeText(
+                    this,
+                    "Light theme is currently selected",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
     }
 
+    // ---------------- HELP ----------------
 
-    private fun loadSettings() {
+    private fun setupHelp() {
 
-        val preferences =
-            getSharedPreferences(
-                preferencesName,
-                MODE_PRIVATE
-            )
+        findViewById<MaterialCardView>(R.id.cardHelp)
+            .setOnClickListener {
 
+                startActivity(
+                    Intent(
+                        this,
+                        HelpSupportActivity::class.java
+                    )
+                )
+            }
+    }
 
-        // Default notification = ON
-        val notifications =
-            preferences.getBoolean(
-                "notifications",
-                true
-            )
+    // ---------------- ABOUT ----------------
 
+    private fun setupAbout() {
 
-        // Default reminder = 7 days
-        val reminderPeriod =
-            preferences.getInt(
-                "reminderPeriod",
-                0
-            )
+        findViewById<MaterialCardView>(R.id.cardAbout)
+            .setOnClickListener {
 
+                startActivity(
+                    Intent(
+                        this,
+                        AboutActivity::class.java
+                    )
+                )
+            }
+    }
 
-        // Apply saved values
-        switchNotifications.isChecked =
-            notifications
+    // ---------------- BOTTOM NAVIGATION ----------------
 
+    private fun setupBottomNavigation() {
 
-        if (reminderPeriod in 0..2) {
+        findViewById<android.widget.TextView>(R.id.navHome)
+            .setOnClickListener {
 
-            spReminderPeriod.setSelection(
-                reminderPeriod,
-                false
-            )
-        }
+                startActivity(
+                    Intent(this, MainActivity::class.java)
+                )
+
+                finish()
+            }
+
+        findViewById<android.widget.TextView>(R.id.navDocuments)
+            .setOnClickListener {
+
+                startActivity(
+                    Intent(this, DocumentsActivity::class.java)
+                )
+
+                finish()
+            }
+
+        findViewById<android.widget.TextView>(R.id.navRenewal)
+            .setOnClickListener {
+
+                startActivity(
+                    Intent(this, RenewalActivity::class.java)
+                )
+
+                finish()
+            }
+
+        findViewById<android.widget.TextView>(R.id.navSettings)
+            .setOnClickListener {
+                // Already on Settings
+            }
     }
 }

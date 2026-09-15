@@ -5,298 +5,324 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7FAFC">
+    android:background="@color/background">
 
-    <!-- Back -->
-    <TextView
-        android:id="@+id/btnBack"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="18dp"
-        android:gravity="center"
-        android:text="←"
-        android:textColor="#17212B"
-        android:textSize="26sp"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <!-- ===================================================== -->
+    <!-- HEADER -->
+    <!-- ===================================================== -->
 
-    <!-- Title -->
-    <TextView
-        android:id="@+id/tvPageTitle"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topHeader"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Document Details"
-        android:textColor="#17212B"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintStart_toEndOf="@id/btnBack"
+        android:layout_height="64dp"
+        android:background="@color/card_white"
+        android:elevation="3dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/btnBack"
-        app:layout_constraintBottom_toBottomOf="@id/btnBack" />
-
-    <!-- Document Card -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/documentCard"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
-        android:layout_marginEnd="18dp"
-        android:layout_marginTop="24dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="#FFFFFF"
-        app:strokeWidth="1dp"
-        app:strokeColor="#DCE6EF"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Back Arrow -->
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="Back"
+            android:padding="12dp"
+            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Title -->
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Document Details"
+            android:textColor="@color/text_primary"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnBack"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <!-- ===================================================== -->
+    <!-- SCROLL CONTENT -->
+    <!-- ===================================================== -->
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topHeader">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp">
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="30dp">
 
-            <!-- Icon -->
-            <TextView
-                android:id="@+id/tvDocumentIcon"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:gravity="center"
-                android:text="▣"
-                android:textColor="#1976D2"
-                android:textSize="27sp"
-                android:background="#EAF4FF"
+            <!-- ================================================= -->
+            <!-- MAIN DOCUMENT CARD -->
+            <!-- ================================================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardMain"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/card_white"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <!-- Name -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/tvDocumentName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Document Name"
+                        android:textColor="@color/text_primary"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvCategory"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Category"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvDocumentName" />
+
+                    <TextView
+                        android:id="@+id/tvStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="VALID"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvCategory" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- ================================================= -->
+            <!-- DOCUMENT NUMBER -->
+            <!-- ================================================= -->
+
             <TextView
-                android:id="@+id/tvDocumentName"
+                android:id="@+id/tvNumberLabel"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:text="Passport"
-                android:textColor="#17212B"
-                android:textSize="21sp"
-                android:textStyle="bold"
-                android:maxLines="2"
-                android:ellipsize="end"
-                app:layout_constraintStart_toEndOf="@id/tvDocumentIcon"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tvDocumentIcon" />
-
-            <!-- Category -->
-            <TextView
-                android:id="@+id/tvCategory"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Government ID"
-                android:textColor="#1976D2"
-                android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@id/tvDocumentName"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvDocumentName" />
-
-            <!-- Status -->
-            <TextView
-                android:id="@+id/tvStatus"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:paddingTop="7dp"
-                android:paddingBottom="7dp"
-                android:text="VALID"
-                android:textColor="#16A36A"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:background="#E8F8F1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvDocumentIcon" />
-
-            <!-- Divider -->
-            <View
-                android:id="@+id/divider"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginTop="20dp"
-                android:background="#E8EEF3"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvStatus" />
-
-            <!-- Document Number Label -->
-            <TextView
-                android:id="@+id/tvDocumentNumberLabel"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
                 android:text="Document Number"
-                android:textColor="#66727F"
+                android:textColor="@color/text_secondary"
                 android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/divider" />
+                app:layout_constraintTop_toBottomOf="@id/cardMain" />
 
-            <!-- Document Number -->
             <TextView
                 android:id="@+id/tvDocumentNumber"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="GJ01XXXXXXXX"
-                android:textColor="#17212B"
+                android:layout_marginTop="5dp"
+                android:text="Not added"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvDocumentNumberLabel" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvNumberLabel" />
 
-            <!-- Issue Label -->
+
+            <!-- ================================================= -->
+            <!-- ISSUE DATE -->
+            <!-- ================================================= -->
+
             <TextView
                 android:id="@+id/tvIssueLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
                 android:text="Issue Date"
-                android:textColor="#66727F"
+                android:textColor="@color/text_secondary"
                 android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvDocumentNumber" />
 
-            <!-- Issue Date -->
             <TextView
                 android:id="@+id/tvIssueDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="10 Jan 2025"
-                android:textColor="#17212B"
+                android:layout_marginTop="5dp"
+                android:text="Not available"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvIssueLabel" />
 
-            <!-- Expiry Label -->
+
+            <!-- ================================================= -->
+            <!-- EXPIRY DATE -->
+            <!-- ================================================= -->
+
             <TextView
                 android:id="@+id/tvExpiryLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
                 android:text="Expiry Date"
-                android:textColor="#66727F"
+                android:textColor="@color/text_secondary"
                 android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvIssueDate" />
 
-            <!-- Expiry Date -->
             <TextView
                 android:id="@+id/tvExpiryDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="10 Jan 2035"
-                android:textColor="#17212B"
+                android:layout_marginTop="5dp"
+                android:text="Not available"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvExpiryLabel" />
 
-            <!-- Notes Label -->
+
+            <!-- ================================================= -->
+            <!-- NOTES -->
+            <!-- ================================================= -->
+
             <TextView
                 android:id="@+id/tvNotesLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
                 android:text="Notes"
-                android:textColor="#66727F"
+                android:textColor="@color/text_secondary"
                 android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvExpiryDate" />
 
-            <!-- Notes -->
             <TextView
                 android:id="@+id/tvNotes"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="Important document"
-                android:textColor="#17212B"
+                android:text="No notes added"
+                android:textColor="@color/text_primary"
                 android:textSize="15sp"
-                android:paddingBottom="4dp"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvNotesLabel" />
+
+
+            <!-- ================================================= -->
+            <!-- EDIT BUTTON -->
+            <!-- ================================================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardEdit"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginTop="25dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/primary_teal"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvNotes">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="Edit Document"
+                    android:textColor="@color/card_white"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- ================================================= -->
+            <!-- DELETE BUTTON -->
+            <!-- ================================================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDelete"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginTop="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/card_white"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/status_expired"
+                app:strokeWidth="1dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardEdit">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="Delete Document"
+                    android:textColor="@color/status_expired"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </com.google.android.material.card.MaterialCardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </com.google.android.material.card.MaterialCardView>
-
-
-    <!-- Edit -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardEdit"
-        android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginEnd="7dp"
-        android:layout_marginBottom="22dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:cardCornerRadius="14dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="#1976D2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/cardDelete"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="Edit Document"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-    </com.google.android.material.card.MaterialCardView>
-
-
-    <!-- Delete -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardDelete"
-        android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="7dp"
-        android:layout_marginEnd="18dp"
-        android:layout_marginBottom="22dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:cardCornerRadius="14dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="#FFFFFF"
-        app:strokeWidth="1dp"
-        app:strokeColor="#D93636"
-        app:layout_constraintStart_toEndOf="@id/cardEdit"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="Delete"
-            android:textColor="#D93636"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-    </com.google.android.material.card.MaterialCardView>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

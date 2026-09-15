@@ -7,125 +7,137 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- Back Button -->
     <TextView
         android:id="@+id/btnBack"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="18dp"
-        android:gravity="center"
-        android:text="‹"
-        android:textColor="@color/text_primary"
-        android:textSize="32sp"
+        android:layout_marginTop="16dp"
         android:clickable="true"
         android:focusable="true"
+        android:gravity="center"
+        android:text="‹"
+        android:textColor="@color/primary_teal"
+        android:textSize="32sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Page Title -->
     <TextView
         android:id="@+id/tvPageTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="20dp"
         android:text="Edit Folder"
         android:textColor="@color/text_primary"
-        android:textSize="22sp"
+        android:textSize="21sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/btnBack"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btnBack"
         app:layout_constraintTop_toTopOf="@id/btnBack" />
 
-    <!-- Folder Name -->
-    <TextView
-        android:id="@+id/tvFolderNameLabel"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardEditFolder"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
-        android:text="Folder Name"
-        android:textColor="@color/text_primary"
-        android:textSize="13sp"
-        android:textStyle="bold"
+        app:cardBackgroundColor="@color/card_white"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="1dp"
+        app:strokeColor="@color/border"
+        app:strokeWidth="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnBack" />
+        app:layout_constraintTop_toBottomOf="@id/btnBack">
 
-    <EditText
-        android:id="@+id/etFolderName"
-        android:layout_width="0dp"
-        android:layout_height="54dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/bg_input"
-        android:hint="Enter folder name"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
-        android:textColor="@color/text_primary"
-        android:textColorHint="@color/text_hint"
-        android:textSize="14sp"
-        android:inputType="textCapSentences"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvFolderNameLabel" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp">
 
-    <!-- Description -->
-    <TextView
-        android:id="@+id/tvDescriptionLabel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="18dp"
-        android:layout_marginEnd="20dp"
-        android:text="Description"
-        android:textColor="@color/text_primary"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etFolderName" />
+            <TextView
+                android:id="@+id/tvNameLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Folder Name"
+                android:textColor="@color/text_primary"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/etDescription"
-        android:layout_width="0dp"
-        android:layout_height="100dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/bg_input"
-        android:gravity="top|start"
-        android:hint="Enter folder description"
-        android:padding="14dp"
-        android:textColor="@color/text_primary"
-        android:textColorHint="@color/text_hint"
-        android:textSize="14sp"
-        android:inputType="textMultiLine|textCapSentences"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvDescriptionLabel" />
+            <EditText
+                android:id="@+id/etFolderName"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_edit_text"
+                android:hint="Enter folder name"
+                android:inputType="textCapSentences"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvNameLabel" />
 
-    <!-- Update Button -->
+            <TextView
+                android:id="@+id/tvDescriptionLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="Description"
+                android:textColor="@color/text_primary"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etFolderName" />
+
+            <EditText
+                android:id="@+id/etDescription"
+                android:layout_width="0dp"
+                android:layout_height="110dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_edit_text"
+                android:gravity="top|start"
+                android:hint="Enter folder description"
+                android:inputType="textMultiLine|textCapSentences"
+                android:padding="14dp"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvDescriptionLabel" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/btnUpdateFolder"
         android:layout_width="0dp"
-        android:layout_height="54dp"
+        android:layout_height="50dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="7dp"
+        android:layout_marginBottom="20dp"
         android:clickable="true"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground"
-        app:cardBackgroundColor="@color/primary_blue"
+        app:cardBackgroundColor="@color/primary_teal"
         app:cardCornerRadius="14dp"
         app:cardElevation="2dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etDescription">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnDeleteFolder"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:layout_width="match_parent"
@@ -133,19 +145,18 @@
             android:gravity="center"
             android:text="Update Folder"
             android:textColor="@color/card_white"
-            android:textSize="15sp"
+            android:textSize="13sp"
             android:textStyle="bold" />
 
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Delete Button -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/btnDeleteFolder"
         android:layout_width="0dp"
-        android:layout_height="54dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="12dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="7dp"
         android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:clickable="true"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground"
@@ -154,17 +165,17 @@
         app:cardElevation="1dp"
         app:strokeColor="@color/status_expired"
         app:strokeWidth="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnUpdateFolder">
+        app:layout_constraintStart_toEndOf="@id/btnUpdateFolder">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="Delete Folder"
+            android:text="Delete"
             android:textColor="@color/status_expired"
-            android:textSize="15sp"
+            android:textSize="13sp"
             android:textStyle="bold" />
 
     </com.google.android.material.card.MaterialCardView>

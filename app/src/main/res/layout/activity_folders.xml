@@ -7,116 +7,100 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- Header -->
     <TextView
         android:id="@+id/btnBack"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="18dp"
-        android:background="@drawable/bg_filter"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="16dp"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
         android:text="‹"
-        android:textColor="@color/text_primary"
-        android:textSize="30sp"
+        android:textColor="@color/primary_teal"
+        android:textSize="32sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
+        android:id="@+id/tvPageTitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="20dp"
         android:text="Folders"
         android:textColor="@color/text_primary"
-        android:textSize="21sp"
+        android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btnBack"
         app:layout_constraintTop_toTopOf="@id/btnBack" />
 
-    <!-- Add Folder -->
+    <TextView
+        android:id="@+id/tvFolderCount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="20dp"
+        android:text="0 Folders"
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnBack" />
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/btnAddFolder"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="18dp"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="20dp"
         android:clickable="true"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground"
-        app:cardBackgroundColor="@color/primary_blue"
+        app:cardBackgroundColor="@color/primary_teal"
         app:cardCornerRadius="14dp"
-        app:cardElevation="0dp"
-        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:cardElevation="2dp"
+        app:strokeWidth="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/btnBack">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvFolderCount">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="+"
+            android:text="+  Create Folder"
             android:textColor="@color/card_white"
-            android:textSize="25sp" />
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Subtitle -->
-    <TextView
-        android:id="@+id/tvSubtitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="22dp"
-        android:layout_marginEnd="20dp"
-        android:text="Organise your documents into folders for easy access."
-        android:textColor="@color/text_secondary"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnBack" />
-
-    <!-- Folder count -->
-    <TextView
-        android:id="@+id/tvFolderCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="0 Folders"
-        android:textColor="@color/text_primary"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
-
-    <!-- Folder list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerFolders"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingTop="10dp"
-        android:paddingBottom="20dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvFolderCount" />
+        app:layout_constraintTop_toBottomOf="@id/btnAddFolder" />
 
-    <!-- Empty state -->
     <TextView
         android:id="@+id/tvEmptyFolders"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
         android:gravity="center"
-        android:text="No folders created yet.\nTap + to create your first folder."
+        android:text="No folders created yet"
         android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        android:visibility="gone"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@id/recyclerFolders"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

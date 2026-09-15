@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Expiry_Reminder_Project</string>
+    <string-array name="reminder_periods">
+        <item>7 days before</item>
+        <item>14 days before</item>
+        <item>30 days before</item>
+    </string-array>
 </resources>

@@ -39,13 +39,12 @@ class FoldersActivity : AppCompatActivity() {
         adapter = FolderAdapter(
             mutableListOf(),
 
-            // Open folder
             { folder ->
-
-                val intent = Intent(
-                    this,
-                    FolderDocumentsActivity::class.java
-                )
+                val intent =
+                    Intent(
+                        this,
+                        FolderDocumentsActivity::class.java
+                    )
 
                 intent.putExtra(
                     "folder_id",
@@ -60,13 +59,12 @@ class FoldersActivity : AppCompatActivity() {
                 startActivity(intent)
             },
 
-            // Edit folder
             { folder ->
-
-                val intent = Intent(
-                    this,
-                    EditFolderActivity::class.java
-                )
+                val intent =
+                    Intent(
+                        this,
+                        EditFolderActivity::class.java
+                    )
 
                 intent.putExtra(
                     "folder_id",
@@ -88,7 +86,6 @@ class FoldersActivity : AppCompatActivity() {
         findViewById<TextView>(
             R.id.btnBack
         ).setOnClickListener {
-
             onBackPressedDispatcher.onBackPressed()
         }
 
@@ -158,7 +155,9 @@ class FoldersActivity : AppCompatActivity() {
             val foldersArray =
                 JSONArray(data)
 
-            for (i in 0 until foldersArray.length()) {
+            for (
+            i in 0 until foldersArray.length()
+            ) {
 
                 val folder =
                     foldersArray.getJSONObject(i)
@@ -176,7 +175,6 @@ class FoldersActivity : AppCompatActivity() {
             }
 
         } catch (e: Exception) {
-
             e.printStackTrace()
         }
 

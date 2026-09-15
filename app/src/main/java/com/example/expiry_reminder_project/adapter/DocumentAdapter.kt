@@ -1,17 +1,18 @@
 package com.example.expiry_reminder_project.adapter
 
-import android.graphics.Color
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expiry_reminder_project.DocumentDetailsActivity
 import com.example.expiry_reminder_project.R
 import com.example.expiry_reminder_project.model.Document
 import com.example.expiry_reminder_project.utils.DateUtils
-import android.content.Context
-import android.content.Intent
+import com.example.expiry_reminder_project.RenewalActivity
 
 class DocumentAdapter(
     private val context: Context,
@@ -54,8 +55,13 @@ class DocumentAdapter(
         viewType: Int
     ): DocumentViewHolder {
 
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_document, parent, false)
+        val view = LayoutInflater
+            .from(parent.context)
+            .inflate(
+                R.layout.item_document,
+                parent,
+                false
+            )
 
         return DocumentViewHolder(view)
     }
@@ -80,10 +86,14 @@ class DocumentAdapter(
             "Expires: ${document.expiryDate}"
 
         val status =
-            DateUtils.getStatus(document.expiryDate)
+            DateUtils.getStatus(
+                document.expiryDate
+            )
 
         val days =
-            DateUtils.getDaysRemaining(document.expiryDate)
+            DateUtils.getDaysRemaining(
+                document.expiryDate
+            )
 
         holder.status.text = status
 
@@ -92,37 +102,52 @@ class DocumentAdapter(
             "VALID" -> {
 
                 holder.status.setTextColor(
-                    Color.parseColor("#16A36A")
+                    ContextCompat.getColor(
+                        context,
+                        R.color.status_valid
+                    )
                 )
 
-                holder.status.setBackgroundColor(
-                    Color.parseColor("#E8F8F1")
+                holder.status.setBackgroundResource(
+                    R.drawable.bg_status_valid
                 )
 
                 holder.strip.setBackgroundColor(
-                    Color.parseColor("#16A36A")
+                    ContextCompat.getColor(
+                        context,
+                        R.color.status_valid
+                    )
                 )
 
                 holder.days.text =
                     "Valid for $days days"
 
                 holder.days.setTextColor(
-                    Color.parseColor("#16A36A")
+                    ContextCompat.getColor(
+                        context,
+                        R.color.status_valid
+                    )
                 )
             }
 
             "EXPIRING SOON" -> {
 
                 holder.status.setTextColor(
-                    Color.parseColor("#E99A00")
+                    ContextCompat.getColor(
+                        context,
+                        R.color.status_due_soon
+                    )
                 )
 
-                holder.status.setBackgroundColor(
-                    Color.parseColor("#FFF5DF")
+                holder.status.setBackgroundResource(
+                    R.drawable.bg_status_soon
                 )
 
                 holder.strip.setBackgroundColor(
-                    Color.parseColor("#E99A00")
+                    ContextCompat.getColor(
+                        context,
+                        R.color.status_due_soon
+                    )
                 )
 
                 holder.days.text =
@@ -133,22 +158,31 @@ class DocumentAdapter(
                     }
 
                 holder.days.setTextColor(
-                    Color.parseColor("#E99A00")
+                    ContextCompat.getColor(
+                        context,
+                        R.color.status_due_soon
+                    )
                 )
             }
 
             "EXPIRED" -> {
 
                 holder.status.setTextColor(
-                    Color.parseColor("#D93636")
+                    ContextCompat.getColor(
+                        context,
+                        R.color.status_expired
+                    )
                 )
 
-                holder.status.setBackgroundColor(
-                    Color.parseColor("#FDECEC")
+                holder.status.setBackgroundResource(
+                    R.drawable.bg_status_expired
                 )
 
                 holder.strip.setBackgroundColor(
-                    Color.parseColor("#D93636")
+                    ContextCompat.getColor(
+                        context,
+                        R.color.status_expired
+                    )
                 )
 
                 holder.days.text =
@@ -159,14 +193,20 @@ class DocumentAdapter(
                     }
 
                 holder.days.setTextColor(
-                    Color.parseColor("#D93636")
+                    ContextCompat.getColor(
+                        context,
+                        R.color.status_expired
+                    )
                 )
             }
 
             else -> {
 
                 holder.status.setTextColor(
-                    Color.DKGRAY
+                    ContextCompat.getColor(
+                        context,
+                        R.color.text_secondary
+                    )
                 )
 
                 holder.days.text =
@@ -203,17 +243,12 @@ class DocumentAdapter(
             val intent =
                 Intent(
                     context,
-                    DocumentDetailsActivity::class.java
+                    RenewalActivity::class.java
                 )
 
             intent.putExtra(
                 "document_id",
                 document.id
-            )
-
-            intent.putExtra(
-                "show_renewal",
-                true
             )
 
             context.startActivity(intent)
@@ -229,7 +264,6 @@ class DocumentAdapter(
     ) {
 
         documents = newDocuments
-
         notifyDataSetChanged()
     }
 }
