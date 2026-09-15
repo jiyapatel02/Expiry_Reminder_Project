@@ -5,8 +5,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7FAF9">
+    android:background="#F7FAFC">
 
+    <!-- Back Button -->
     <TextView
         android:id="@+id/btnBack"
         android:layout_width="48dp"
@@ -15,24 +16,26 @@
         android:layout_marginTop="18dp"
         android:gravity="center"
         android:text="‹"
-        android:textColor="#17201F"
+        android:textColor="#17212B"
         android:textSize="34sp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- Page Title -->
     <TextView
         android:id="@+id/tvPageTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="Add Document"
-        android:textColor="#17201F"
+        android:textColor="#17212B"
         android:textSize="21sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="@id/btnBack"
         app:layout_constraintBottom_toBottomOf="@id/btnBack"
         app:layout_constraintStart_toEndOf="@id/btnBack" />
 
+    <!-- Heading -->
     <TextView
         android:id="@+id/tvHeading"
         android:layout_width="0dp"
@@ -41,13 +44,14 @@
         android:layout_marginTop="18dp"
         android:layout_marginEnd="24dp"
         android:text="Add a new document"
-        android:textColor="#17201F"
+        android:textColor="#17212B"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/btnBack"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Description -->
     <TextView
         android:id="@+id/tvDescription"
         android:layout_width="0dp"
@@ -56,12 +60,13 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="24dp"
         android:text="Keep track of your document and its expiry date."
-        android:textColor="#66716F"
+        android:textColor="#66727F"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tvHeading"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Document Name -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardDocumentName"
         android:layout_width="0dp"
@@ -72,7 +77,7 @@
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="15dp"
         app:cardElevation="1dp"
-        app:strokeColor="#D9E5E2"
+        app:strokeColor="#DCE6EF"
         app:strokeWidth="1dp"
         app:layout_constraintTop_toBottomOf="@id/tvDescription"
         app:layout_constraintStart_toStartOf="parent"
@@ -87,13 +92,47 @@
             android:inputType="textCapSentences"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:textColor="#17201F"
-            android:textColorHint="#9AA5A3"
+            android:textColor="#17212B"
+            android:textColorHint="#9AA6B2"
             android:textSize="15sp" />
 
     </com.google.android.material.card.MaterialCardView>
 
 
+    <!-- Document Number -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardDocumentNumber"
+        android:layout_width="0dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="22dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="1dp"
+        app:strokeColor="#DCE6EF"
+        app:strokeWidth="1dp"
+        app:layout_constraintTop_toBottomOf="@id/cardDocumentName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <EditText
+            android:id="@+id/etDocumentNumber"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:hint="Document Number (optional)"
+            android:inputType="text"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="#17212B"
+            android:textColorHint="#9AA6B2"
+            android:textSize="15sp" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <!-- Category -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardCategory"
         android:layout_width="0dp"
@@ -104,9 +143,9 @@
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="15dp"
         app:cardElevation="1dp"
-        app:strokeColor="#D9E5E2"
+        app:strokeColor="#DCE6EF"
         app:strokeWidth="1dp"
-        app:layout_constraintTop_toBottomOf="@id/cardDocumentName"
+        app:layout_constraintTop_toBottomOf="@id/cardDocumentNumber"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -120,6 +159,36 @@
 
     </com.google.android.material.card.MaterialCardView>
 
+
+    <!-- Folder -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardFolder"
+        android:layout_width="0dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="22dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="1dp"
+        app:strokeColor="#DCE6EF"
+        app:strokeWidth="1dp"
+        app:layout_constraintTop_toBottomOf="@id/cardCategory"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Spinner
+            android:id="@+id/spinnerFolder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:background="@android:color/transparent" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <!-- Issue Date -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardIssueDate"
         android:layout_width="0dp"
@@ -130,9 +199,9 @@
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="15dp"
         app:cardElevation="1dp"
-        app:strokeColor="#D9E5E2"
+        app:strokeColor="#DCE6EF"
         app:strokeWidth="1dp"
-        app:layout_constraintTop_toBottomOf="@id/cardCategory"
+        app:layout_constraintTop_toBottomOf="@id/cardFolder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/cardExpiryDate">
 
@@ -144,11 +213,13 @@
             android:paddingStart="16dp"
             android:paddingEnd="10dp"
             android:text="Issue Date"
-            android:textColor="#9AA5A3"
+            android:textColor="#9AA6B2"
             android:textSize="14sp" />
 
     </com.google.android.material.card.MaterialCardView>
 
+
+    <!-- Expiry Date -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardExpiryDate"
         android:layout_width="0dp"
@@ -159,9 +230,9 @@
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="15dp"
         app:cardElevation="1dp"
-        app:strokeColor="#D9E5E2"
+        app:strokeColor="#DCE6EF"
         app:strokeWidth="1dp"
-        app:layout_constraintTop_toBottomOf="@id/cardCategory"
+        app:layout_constraintTop_toBottomOf="@id/cardFolder"
         app:layout_constraintStart_toEndOf="@id/cardIssueDate"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -173,13 +244,13 @@
             android:paddingStart="16dp"
             android:paddingEnd="10dp"
             android:text="Expiry Date"
-            android:textColor="#9AA5A3"
+            android:textColor="#9AA6B2"
             android:textSize="14sp" />
 
     </com.google.android.material.card.MaterialCardView>
 
 
-    <!-- Notes Card -->
+    <!-- Notes -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardNotes"
         android:layout_width="0dp"
@@ -190,7 +261,7 @@
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="15dp"
         app:cardElevation="1dp"
-        app:strokeColor="#D9E5E2"
+        app:strokeColor="#DCE6EF"
         app:strokeWidth="1dp"
         app:layout_constraintTop_toBottomOf="@id/cardIssueDate"
         app:layout_constraintStart_toStartOf="parent"
@@ -205,12 +276,14 @@
             android:hint="Notes (optional)"
             android:inputType="textCapSentences|textMultiLine"
             android:padding="16dp"
-            android:textColor="#17201F"
-            android:textColorHint="#9AA5A3"
+            android:textColor="#17212B"
+            android:textColorHint="#9AA6B2"
             android:textSize="14sp" />
 
     </com.google.android.material.card.MaterialCardView>
 
+
+    <!-- Save -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardSave"
         android:layout_width="0dp"
@@ -219,7 +292,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="22dp"
         android:layout_marginBottom="20dp"
-        app:cardBackgroundColor="#087F73"
+        app:cardBackgroundColor="#1976D2"
         app:cardCornerRadius="15dp"
         app:cardElevation="2dp"
         app:layout_constraintTop_toBottomOf="@id/cardNotes"

@@ -50,6 +50,20 @@
             android:name=".ProfileActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".FoldersActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AddFolderActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".EditFolderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FolderDocumentsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

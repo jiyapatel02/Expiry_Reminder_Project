@@ -1,7 +1,7 @@
 package com.example.expiry_reminder_project
 
 import android.app.DatePickerDialog
-import android.content.Intent
+import android.content.Context
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.EditText
@@ -9,6 +9,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.expiry_reminder_project.model.Document
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -19,12 +20,12 @@ import java.util.UUID
 class AddDocumentActivity : AppCompatActivity() {
 
     private lateinit var etDocumentName: EditText
+    private lateinit var etDocumentNumber: EditText
     private lateinit var spinnerCategory: Spinner
+    private lateinit var spinnerFolder: Spinner
     private lateinit var tvIssueDate: TextView
     private lateinit var tvExpiryDate: TextView
     private lateinit var etNotes: EditText
-    private lateinit var btnSave: TextView
-    private lateinit var btnBack: TextView
 
     private var issueDateMillis: Long? = null
     private var expiryDateMillis: Long? = null
@@ -32,22 +33,36 @@ class AddDocumentActivity : AppCompatActivity() {
     private val displayFormat =
         SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
 
+    private val folderIds = mutableListOf<String>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_add_document)
 
+        initializeViews()
+        setupCategorySpinner()
+        setupFolderSpinner()
+        setupClicks()
+    }
+
+    private fun initializeViews() {
+
         etDocumentName = findViewById(R.id.etDocumentName)
+        etDocumentNumber = findViewById(R.id.etDocumentNumber)
         spinnerCategory = findViewById(R.id.spinnerCategory)
+        spinnerFolder = findViewById(R.id.spinnerFolder)
+
         tvIssueDate = findViewById(R.id.tvIssueDate)
         tvExpiryDate = findViewById(R.id.tvExpiryDate)
+
         etNotes = findViewById(R.id.etNotes)
-        btnSave = findViewById(R.id.btnSave)
-        btnBack = findViewById(R.id.btnBack)
+    }
 
-        setupCategorySpinner()
+    private fun setupClicks() {
 
-        btnBack.setOnClickListener {
-            finish()
+        findViewById<TextView>(R.id.btnBack).setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
         }
 
         tvIssueDate.setOnClickListener {
@@ -58,7 +73,7 @@ class AddDocumentActivity : AppCompatActivity() {
             showDatePicker(false)
         }
 
-        btnSave.setOnClickListener {
+        findViewById<TextView>(R.id.btnSave).setOnClickListener {
             saveDocument()
         }
     }
@@ -89,15 +104,73 @@ class AddDocumentActivity : AppCompatActivity() {
         spinnerCategory.adapter = adapter
     }
 
+    private fun setupFolderSpinner() {
+
+        val folderNames = mutableListOf<String>()
+
+        folderNames.add("No Folder")
+
+        folderIds.clear()
+        folderIds.add("")
+
+        val preferences =
+            getSharedPreferences(
+                "ExpiryReminder",
+                Context.MODE_PRIVATE
+            )
+
+        val data =
+            preferences.getString("folders", "[]")
+
+        try {
+
+            val foldersArray = JSONArray(data)
+
+            for (i in 0 until foldersArray.length()) {
+
+                val folder =
+                    foldersArray.getJSONObject(i)
+
+                val id =
+                    folder.optString("id")
+
+                val name =
+                    folder.optString("name")
+
+                if (id.isNotBlank() && name.isNotBlank()) {
+
+                    folderIds.add(id)
+                    folderNames.add(name)
+                }
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            folderNames
+        )
+
+        adapter.setDropDownViewResource(
+            android.R.layout.simple_spinner_dropdown_item
+        )
+
+        spinnerFolder.adapter = adapter
+    }
+
     private fun showDatePicker(isIssueDate: Boolean) {
 
         val calendar = Calendar.getInstance()
 
-        val selectedDate = if (isIssueDate) {
-            issueDateMillis
-        } else {
-            expiryDateMillis
-        }
+        val selectedDate =
+            if (isIssueDate) {
+                issueDateMillis
+            } else {
+                expiryDateMillis
+            }
 
         if (selectedDate != null) {
             calendar.timeInMillis = selectedDate
@@ -107,7 +180,8 @@ class AddDocumentActivity : AppCompatActivity() {
             this,
             { _, year, month, dayOfMonth ->
 
-                val selectedCalendar = Calendar.getInstance()
+                val selectedCalendar =
+                    Calendar.getInstance()
 
                 selectedCalendar.set(
                     year,
@@ -123,11 +197,13 @@ class AddDocumentActivity : AppCompatActivity() {
                     0
                 )
 
-                val millis = selectedCalendar.timeInMillis
+                val millis =
+                    selectedCalendar.timeInMillis
 
                 if (isIssueDate) {
 
-                    if (expiryDateMillis != null &&
+                    if (
+                        expiryDateMillis != null &&
                         millis >= expiryDateMillis!!
                     ) {
 
@@ -143,11 +219,18 @@ class AddDocumentActivity : AppCompatActivity() {
                     issueDateMillis = millis
 
                     tvIssueDate.text =
-                        displayFormat.format(selectedCalendar.time)
+                        displayFormat.format(
+                            selectedCalendar.time
+                        )
+
+                    tvIssueDate.setTextColor(
+                        getColor(R.color.text_primary)
+                    )
 
                 } else {
 
-                    if (issueDateMillis != null &&
+                    if (
+                        issueDateMillis != null &&
                         millis <= issueDateMillis!!
                     ) {
 
@@ -163,7 +246,13 @@ class AddDocumentActivity : AppCompatActivity() {
                     expiryDateMillis = millis
 
                     tvExpiryDate.text =
-                        displayFormat.format(selectedCalendar.time)
+                        displayFormat.format(
+                            selectedCalendar.time
+                        )
+
+                    tvExpiryDate.setTextColor(
+                        getColor(R.color.text_primary)
+                    )
                 }
             },
             calendar.get(Calendar.YEAR),
@@ -176,16 +265,43 @@ class AddDocumentActivity : AppCompatActivity() {
 
     private fun saveDocument() {
 
-        val name = etDocumentName.text.toString().trim()
-        val category = spinnerCategory.selectedItem.toString()
-        val notes = etNotes.text.toString().trim()
+        val name =
+            etDocumentName.text.toString().trim()
 
+        val documentNumber =
+            etDocumentNumber.text.toString().trim()
+
+        val category =
+            spinnerCategory.selectedItem.toString()
+
+        val notes =
+            etNotes.text.toString().trim()
+
+        val folderPosition =
+            spinnerFolder.selectedItemPosition
+
+        val folderId =
+            if (
+                folderPosition >= 0 &&
+                folderPosition < folderIds.size
+            ) {
+                folderIds[folderPosition]
+            } else {
+                ""
+            }
+
+        // Validate document name
         if (name.isEmpty()) {
-            etDocumentName.error = "Enter document name"
+
+            etDocumentName.error =
+                "Enter document name"
+
             etDocumentName.requestFocus()
+
             return
         }
 
+        // Validate category
         if (spinnerCategory.selectedItemPosition == 0) {
 
             Toast.makeText(
@@ -197,6 +313,7 @@ class AddDocumentActivity : AppCompatActivity() {
             return
         }
 
+        // Validate issue date
         if (issueDateMillis == null) {
 
             Toast.makeText(
@@ -208,6 +325,7 @@ class AddDocumentActivity : AppCompatActivity() {
             return
         }
 
+        // Validate expiry date
         if (expiryDateMillis == null) {
 
             Toast.makeText(
@@ -219,58 +337,18 @@ class AddDocumentActivity : AppCompatActivity() {
             return
         }
 
-        val document = JSONObject()
-
-        document.put(
-            "id",
-            UUID.randomUUID().toString()
+        val document = Document(
+            id = UUID.randomUUID().toString(),
+            name = name,
+            type = category,
+            documentNumber = documentNumber,
+            issueDate = issueDateMillis!!.toString(),
+            expiryDate = expiryDateMillis!!.toString(),
+            folderId = folderId,
+            notes = notes
         )
 
-        document.put(
-            "name",
-            name
-        )
-
-        document.put(
-            "category",
-            category
-        )
-
-        document.put(
-            "issueDate",
-            issueDateMillis
-        )
-
-        document.put(
-            "expiryDate",
-            expiryDateMillis
-        )
-
-        document.put(
-            "notes",
-            notes
-        )
-
-        val preferences = getSharedPreferences(
-            "DocumentStorage",
-            MODE_PRIVATE
-        )
-
-        val existingDocuments = JSONArray(
-            preferences.getString(
-                "documents",
-                "[]"
-            )
-        )
-
-        existingDocuments.put(document)
-
-        preferences.edit()
-            .putString(
-                "documents",
-                existingDocuments.toString()
-            )
-            .apply()
+        saveDocumentToPreferences(document)
 
         Toast.makeText(
             this,
@@ -278,13 +356,98 @@ class AddDocumentActivity : AppCompatActivity() {
             Toast.LENGTH_SHORT
         ).show()
 
-        val intent = Intent(
-            this,
-            DocumentsActivity::class.java
+        finish()
+    }
+
+    private fun saveDocumentToPreferences(
+        document: Document
+    ) {
+
+        val preferences =
+            getSharedPreferences(
+                "DocumentStorage",
+                Context.MODE_PRIVATE
+            )
+
+        val oldData =
+            preferences.getString(
+                "documents",
+                "[]"
+            )
+
+        val documentsArray =
+            try {
+                JSONArray(oldData)
+            } catch (e: Exception) {
+                JSONArray()
+            }
+
+        val documentObject =
+            JSONObject()
+
+        documentObject.put(
+            "id",
+            document.id
         )
 
-        startActivity(intent)
+        documentObject.put(
+            "name",
+            document.name
+        )
 
-        finish()
+        // Save both names for compatibility
+        documentObject.put(
+            "type",
+            document.type
+        )
+
+        documentObject.put(
+            "category",
+            document.type
+        )
+
+        documentObject.put(
+            "documentNumber",
+            document.documentNumber
+        )
+
+        documentObject.put(
+            "issueDate",
+            document.issueDate
+        )
+
+        documentObject.put(
+            "expiryDate",
+            document.expiryDate
+        )
+
+        documentObject.put(
+            "folderId",
+            document.folderId
+        )
+
+        documentObject.put(
+            "notes",
+            document.notes
+        )
+
+        documentsArray.put(documentObject)
+
+        preferences.edit()
+            .putString(
+                "documents",
+                documentsArray.toString()
+            )
+            .apply()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Reload folders if a folder was created
+        // before returning to this screen.
+        if (::spinnerFolder.isInitialized) {
+            setupFolderSpinner()
+        }
     }
 }
