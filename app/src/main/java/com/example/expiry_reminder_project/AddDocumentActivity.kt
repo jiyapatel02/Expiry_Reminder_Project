@@ -2,16 +2,23 @@ package com.example.expiry_reminder_project
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.card.MaterialCardView
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -26,28 +33,79 @@ class AddDocumentActivity : AppCompatActivity() {
     private lateinit var tvIssueDate: TextView
     private lateinit var tvExpiryDate: TextView
     private lateinit var etNotes: EditText
+    private lateinit var btnSave: MaterialCardView
+    private lateinit var tvSelectedFile: TextView
 
-    private var issueDateMillis: Long = 0L
-    private var expiryDateMillis: Long = 0L
-
-    private val displayFormat =
-        SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-
-    private val preferencesName = "DocumentStorage"
-    private val documentsKey = "documents"
+    // Selected file information
+    private var selectedFileUri: Uri? = null
+    private var selectedFileName: String = ""
+    private var selectedFileType: String = ""
 
     private val categories = arrayOf(
-        "Government ID",
-        "Identity Document",
+        "Select Category",
+        "Identity",
         "Education",
-        "Vehicle",
+        "Finance",
         "Insurance",
-        "Financial",
+        "Vehicle",
+        "Medical",
+        "Employment",
+        "Property",
         "Other"
     )
 
-    private val folderIds = mutableListOf<String>()
-    private val folderNames = mutableListOf<String>()
+    private val dateFormat =
+        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+
+    // =========================================================
+    // FILE PICKER
+    // =========================================================
+
+    private val filePickerLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.OpenDocument()
+        ) { uri: Uri? ->
+
+            if (uri == null) {
+                return@registerForActivityResult
+            }
+
+            selectedFileUri = uri
+
+            selectedFileName = getFileName(uri)
+
+            selectedFileType =
+                contentResolver.getType(uri)
+                    ?: "application/octet-stream"
+
+            // Keep permission if the selected provider supports it
+            try {
+
+                contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+
+            } catch (e: Exception) {
+
+                e.printStackTrace()
+            }
+
+            tvSelectedFile.text =
+                "Selected: $selectedFileName"
+
+            Toast.makeText(
+                this,
+                "File selected successfully",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+
+    // =========================================================
+    // ON CREATE
+    // =========================================================
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,15 +113,18 @@ class AddDocumentActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_document)
 
         initializeViews()
+        setupBackButton()
         setupCategorySpinner()
-        loadFolders()
+        setupFolderSpinner()
         setupDatePickers()
-        setupClicks()
+        setupFilePicker()
+        setupSaveButton()
     }
 
-    // ---------------------------------------------------------
+
+    // =========================================================
     // INITIALIZE VIEWS
-    // ---------------------------------------------------------
+    // =========================================================
 
     private fun initializeViews() {
 
@@ -87,11 +148,32 @@ class AddDocumentActivity : AppCompatActivity() {
 
         etNotes =
             findViewById(R.id.etNotes)
+
+        btnSave =
+            findViewById(R.id.btnSave)
+
+        tvSelectedFile =
+            findViewById(R.id.tvSelectedFile)
     }
 
-    // ---------------------------------------------------------
-    // CATEGORY
-    // ---------------------------------------------------------
+
+    // =========================================================
+    // BACK BUTTON
+    // =========================================================
+
+    private fun setupBackButton() {
+
+        findViewById<ImageButton>(R.id.btnBack)
+            .setOnClickListener {
+
+                onBackPressedDispatcher.onBackPressed()
+            }
+    }
+
+
+    // =========================================================
+    // CATEGORY SPINNER
+    // =========================================================
 
     private fun setupCategorySpinner() {
 
@@ -108,17 +190,18 @@ class AddDocumentActivity : AppCompatActivity() {
         spinnerCategory.adapter = adapter
     }
 
-    // ---------------------------------------------------------
-    // LOAD FOLDERS
-    // ---------------------------------------------------------
 
-    private fun loadFolders() {
+    // =========================================================
+    // FOLDER SPINNER
+    // =========================================================
 
-        folderIds.clear()
-        folderNames.clear()
+    private fun setupFolderSpinner() {
 
-        folderIds.add("")
+        val folderNames = ArrayList<String>()
+        val folderIds = ArrayList<String>()
+
         folderNames.add("No Folder")
+        folderIds.add("")
 
         val preferences =
             getSharedPreferences(
@@ -142,16 +225,17 @@ class AddDocumentActivity : AppCompatActivity() {
                 val folder =
                     folders.getJSONObject(i)
 
-                folderIds.add(
+                val id =
                     folder.optString("id")
-                )
 
-                folderNames.add(
+                val name =
                     folder.optString(
                         "name",
-                        "Folder"
+                        "Unnamed Folder"
                     )
-                )
+
+                folderIds.add(id)
+                folderNames.add(name)
             }
 
         } catch (e: Exception) {
@@ -170,106 +254,140 @@ class AddDocumentActivity : AppCompatActivity() {
         )
 
         spinnerFolder.adapter = adapter
+
+        // Keep folder IDs separately from displayed names
+        spinnerFolder.tag = folderIds
     }
 
-    // ---------------------------------------------------------
+
+    // =========================================================
     // DATE PICKERS
-    // ---------------------------------------------------------
+    // =========================================================
 
     private fun setupDatePickers() {
 
+        val calendar =
+            Calendar.getInstance()
+
+
+        // Issue Date
         tvIssueDate.setOnClickListener {
 
-            showDatePicker(true)
+            val picker =
+                DatePickerDialog(
+                    this,
+                    { _, year, month, dayOfMonth ->
+
+                        calendar.set(
+                            year,
+                            month,
+                            dayOfMonth
+                        )
+
+                        tvIssueDate.text =
+                            dateFormat.format(
+                                calendar.time
+                            )
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+                )
+
+            picker.show()
         }
 
+
+        // Expiry Date
         tvExpiryDate.setOnClickListener {
 
-            showDatePicker(false)
+            val expiryCalendar =
+                Calendar.getInstance()
+
+            val picker =
+                DatePickerDialog(
+                    this,
+                    { _, year, month, dayOfMonth ->
+
+                        expiryCalendar.set(
+                            year,
+                            month,
+                            dayOfMonth
+                        )
+
+                        tvExpiryDate.text =
+                            dateFormat.format(
+                                expiryCalendar.time
+                            )
+                    },
+                    expiryCalendar.get(Calendar.YEAR),
+                    expiryCalendar.get(Calendar.MONTH),
+                    expiryCalendar.get(Calendar.DAY_OF_MONTH)
+                )
+
+            picker.show()
         }
     }
 
-    private fun showDatePicker(
-        isIssueDate: Boolean
-    ) {
 
-        val calendar = Calendar.getInstance()
+    // =========================================================
+    // FILE PICKER
+    // =========================================================
 
-        val dialog = DatePickerDialog(
-            this,
-            { _, year, month, dayOfMonth ->
-
-                val selectedCalendar =
-                    Calendar.getInstance()
-
-                selectedCalendar.set(
-                    year,
-                    month,
-                    dayOfMonth,
-                    0,
-                    0,
-                    0
-                )
-
-                selectedCalendar.set(
-                    Calendar.MILLISECOND,
-                    0
-                )
-
-                val millis =
-                    selectedCalendar.timeInMillis
-
-                if (isIssueDate) {
-
-                    issueDateMillis = millis
-
-                    tvIssueDate.text =
-                        displayFormat.format(
-                            selectedCalendar.time
-                        )
-
-                } else {
-
-                    expiryDateMillis = millis
-
-                    tvExpiryDate.text =
-                        displayFormat.format(
-                            selectedCalendar.time
-                        )
-                }
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-
-        dialog.show()
-    }
-
-    // ---------------------------------------------------------
-    // BUTTONS
-    // ---------------------------------------------------------
-
-    private fun setupClicks() {
-
-        findViewById<TextView>(
-            R.id.btnBack
-        ).setOnClickListener {
-
-            onBackPressedDispatcher.onBackPressed()
-        }
+    private fun setupFilePicker() {
 
         findViewById<MaterialCardView>(
-            R.id.btnSaveDocument
+            R.id.btnBrowserFile
         ).setOnClickListener {
+
+            filePickerLauncher.launch(
+                arrayOf(
+                    "image/*",
+                    "application/pdf",
+                    "application/msword",
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
+            )
+        }
+
+
+        // Sample scan
+        findViewById<TextView>(
+            R.id.btnUseSample
+        ).setOnClickListener {
+
+            selectedFileUri = null
+            selectedFileName = ""
+            selectedFileType = ""
+
+            tvSelectedFile.text =
+                "Sample scan selected"
+
+            Toast.makeText(
+                this,
+                "Sample scan selected",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+
+    // =========================================================
+    // SAVE BUTTON
+    // =========================================================
+
+    private fun setupSaveButton() {
+
+        btnSave.setOnClickListener {
 
             saveDocument()
         }
     }
 
-    // ---------------------------------------------------------
+
+    // =========================================================
     // SAVE DOCUMENT
-    // ---------------------------------------------------------
+    // =========================================================
 
     private fun saveDocument() {
 
@@ -283,12 +401,32 @@ class AddDocumentActivity : AppCompatActivity() {
                 .toString()
                 .trim()
 
+        val category =
+            spinnerCategory.selectedItem
+                ?.toString()
+                ?.trim()
+                ?: ""
+
+        val issueDate =
+            tvIssueDate.text
+                .toString()
+                .trim()
+
+        val expiryDate =
+            tvExpiryDate.text
+                .toString()
+                .trim()
+
         val notes =
             etNotes.text
                 .toString()
                 .trim()
 
-        // Validate name
+
+        // =====================================================
+        // VALIDATION
+        // =====================================================
+
         if (name.isEmpty()) {
 
             etDocumentName.error =
@@ -299,20 +437,26 @@ class AddDocumentActivity : AppCompatActivity() {
             return
         }
 
-        // Validate issue date
-        if (issueDateMillis == 0L) {
+
+        if (
+            category.isEmpty() ||
+            category == "Select Category"
+        ) {
 
             Toast.makeText(
                 this,
-                "Please select issue date",
+                "Please select a category",
                 Toast.LENGTH_SHORT
             ).show()
 
             return
         }
 
-        // Validate expiry date
-        if (expiryDateMillis == 0L) {
+
+        if (
+            expiryDate.isEmpty() ||
+            expiryDate == "Select Expiry Date"
+        ) {
 
             Toast.makeText(
                 this,
@@ -323,35 +467,127 @@ class AddDocumentActivity : AppCompatActivity() {
             return
         }
 
-        // Expiry must be after issue
-        if (expiryDateMillis <= issueDateMillis) {
 
-            Toast.makeText(
-                this,
-                "Expiry date must be after issue date",
-                Toast.LENGTH_SHORT
-            ).show()
+        // =====================================================
+        // DATE VALIDATION
+        // =====================================================
 
-            return
+        if (
+            issueDate.isNotEmpty() &&
+            issueDate != "Select Issue Date"
+        ) {
+
+            try {
+
+                val issue =
+                    dateFormat.parse(issueDate)
+
+                val expiry =
+                    dateFormat.parse(expiryDate)
+
+                if (
+                    issue != null &&
+                    expiry != null &&
+                    expiry.before(issue)
+                ) {
+
+                    Toast.makeText(
+                        this,
+                        "Expiry date cannot be before issue date",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    return
+                }
+
+            } catch (e: Exception) {
+
+                e.printStackTrace()
+            }
         }
 
-        val category =
-            spinnerCategory
-                .selectedItem
-                .toString()
 
-        val folderPosition =
+        // =====================================================
+        // GET FOLDER ID
+        // =====================================================
+
+        val folderIds =
+            spinnerFolder.tag as? ArrayList<String>
+
+        val selectedPosition =
             spinnerFolder.selectedItemPosition
 
         val folderId =
             if (
-                folderPosition >= 0 &&
-                folderPosition < folderIds.size
+                folderIds != null &&
+                selectedPosition >= 0 &&
+                selectedPosition < folderIds.size
             ) {
-                folderIds[folderPosition]
+
+                folderIds[selectedPosition]
+
             } else {
+
                 ""
             }
+
+
+        // =====================================================
+        // COPY ACTUAL FILE INTO APP STORAGE
+        // =====================================================
+
+        var localFilePath = ""
+
+        if (selectedFileUri != null) {
+
+            localFilePath =
+                copyFileToAppStorage(
+                    selectedFileUri!!
+                )
+
+            if (localFilePath.isEmpty()) {
+
+                Toast.makeText(
+                    this,
+                    "Unable to save the selected file",
+                    Toast.LENGTH_LONG
+                ).show()
+
+                return
+            }
+        }
+
+
+        // =====================================================
+        // READ EXISTING DOCUMENTS
+        // =====================================================
+
+        val preferences =
+            getSharedPreferences(
+                "DocumentStorage",
+                Context.MODE_PRIVATE
+            )
+
+        val data =
+            preferences.getString(
+                "documents",
+                "[]"
+            ) ?: "[]"
+
+        val documents =
+            try {
+
+                JSONArray(data)
+
+            } catch (e: Exception) {
+
+                JSONArray()
+            }
+
+
+        // =====================================================
+        // CREATE DOCUMENT JSON
+        // =====================================================
 
         val document =
             JSONObject()
@@ -371,7 +607,7 @@ class AddDocumentActivity : AppCompatActivity() {
             category
         )
 
-        // Keep category too for compatibility
+        // Compatibility with older code
         document.put(
             "category",
             category
@@ -384,12 +620,12 @@ class AddDocumentActivity : AppCompatActivity() {
 
         document.put(
             "issueDate",
-            issueDateMillis.toString()
+            issueDate
         )
 
         document.put(
             "expiryDate",
-            expiryDateMillis.toString()
+            expiryDate
         )
 
         document.put(
@@ -402,46 +638,207 @@ class AddDocumentActivity : AppCompatActivity() {
             notes
         )
 
-        val preferences =
-            getSharedPreferences(
-                preferencesName,
-                Context.MODE_PRIVATE
-            )
 
-        val oldData =
-            preferences.getString(
-                documentsKey,
-                "[]"
-            ) ?: "[]"
+        // =====================================================
+        // FILE INFORMATION
+        // =====================================================
 
-        val documents = try {
+        document.put(
+            "fileName",
+            selectedFileName
+        )
 
-            JSONArray(oldData)
+        document.put(
+            "fileMimeType",
+            selectedFileType
+        )
 
-        } catch (e: Exception) {
+        document.put(
+            "filePath",
+            localFilePath
+        )
 
-            JSONArray()
-        }
+
+        // Original URI kept for compatibility
+        document.put(
+            "fileUri",
+            selectedFileUri?.toString() ?: ""
+        )
+
+
+        // =====================================================
+        // ADD DOCUMENT
+        // =====================================================
 
         documents.put(document)
 
-        // Save document
+
+        // =====================================================
+        // SAVE DOCUMENT JSON
+        // =====================================================
+
         preferences.edit()
             .putString(
-                documentsKey,
+                "documents",
                 documents.toString()
             )
             .apply()
 
-        // Update reminder schedule
-        ReminderScheduler.schedule(this)
+
+        // =====================================================
+        // SUCCESS
+        // =====================================================
 
         Toast.makeText(
             this,
-            "Document added successfully",
+            "Document saved successfully",
             Toast.LENGTH_SHORT
         ).show()
 
         finish()
+    }
+
+
+    // =========================================================
+    // COPY SELECTED FILE TO APP INTERNAL STORAGE
+    // =========================================================
+
+    private fun copyFileToAppStorage(
+        uri: Uri
+    ): String {
+
+        return try {
+
+            val originalName =
+                getFileName(uri)
+
+            val safeName =
+                originalName
+                    .replace(
+                        Regex("[^a-zA-Z0-9._-]"),
+                        "_"
+                    )
+
+            val uniqueName =
+                "${System.currentTimeMillis()}_$safeName"
+
+
+            // App internal folder
+            val documentsFolder =
+                File(
+                    filesDir,
+                    "documents"
+                )
+
+            if (!documentsFolder.exists()) {
+
+                documentsFolder.mkdirs()
+            }
+
+
+            val destinationFile =
+                File(
+                    documentsFolder,
+                    uniqueName
+                )
+
+
+            val inputStream =
+                contentResolver
+                    .openInputStream(uri)
+
+            if (inputStream == null) {
+
+                return ""
+            }
+
+
+            inputStream.use { input ->
+
+                FileOutputStream(
+                    destinationFile
+                ).use { output ->
+
+                    val buffer =
+                        ByteArray(8192)
+
+                    var bytesRead: Int
+
+                    while (
+                        input.read(buffer)
+                            .also {
+                                bytesRead = it
+                            } != -1
+                    ) {
+
+                        output.write(
+                            buffer,
+                            0,
+                            bytesRead
+                        )
+                    }
+
+                    output.flush()
+                }
+            }
+
+
+            destinationFile.absolutePath
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            ""
+        }
+    }
+
+
+    // =========================================================
+    // GET FILE NAME
+    // =========================================================
+
+    private fun getFileName(
+        uri: Uri
+    ): String {
+
+        var fileName =
+            "document"
+
+        try {
+
+            contentResolver.query(
+                uri,
+                arrayOf(
+                    OpenableColumns.DISPLAY_NAME
+                ),
+                null,
+                null,
+                null
+            )?.use { cursor ->
+
+                val nameIndex =
+                    cursor.getColumnIndex(
+                        OpenableColumns.DISPLAY_NAME
+                    )
+
+                if (
+                    nameIndex >= 0 &&
+                    cursor.moveToFirst()
+                ) {
+
+                    fileName =
+                        cursor.getString(
+                            nameIndex
+                        )
+                }
+            }
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+        }
+
+        return fileName
     }
 }

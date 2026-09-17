@@ -3,7 +3,7 @@ package com.example.expiry_reminder_project
 import android.content.Context
 import android.os.Bundle
 import android.widget.EditText
-import android.widget.TextView
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.card.MaterialCardView
@@ -14,27 +14,24 @@ import java.util.UUID
 class AddFolderActivity : AppCompatActivity() {
 
     private lateinit var etFolderName: EditText
-    private lateinit var etDescription: EditText
+    private lateinit var etFolderDescription: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(
-            R.layout.activity_add_folder
-        )
+        setContentView(R.layout.activity_add_folder)
 
         etFolderName =
             findViewById(R.id.etFolderName)
 
-        etDescription =
-            findViewById(R.id.etDescription)
+        etFolderDescription =
+            findViewById(R.id.etFolderDescription)
 
-        findViewById<TextView>(
+        findViewById<ImageButton>(
             R.id.btnBack
         ).setOnClickListener {
 
-            onBackPressedDispatcher
-                .onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
 
         findViewById<MaterialCardView>(
@@ -53,22 +50,19 @@ class AddFolderActivity : AppCompatActivity() {
                 .trim()
 
         val description =
-            etDescription.text
+            etFolderDescription.text
                 .toString()
                 .trim()
 
         if (name.isEmpty()) {
 
             etFolderName.error =
-                "Enter folder name"
+                "Folder name is required"
 
             etFolderName.requestFocus()
 
             return
         }
-
-        val folderId =
-            UUID.randomUUID().toString()
 
         val preferences =
             getSharedPreferences(
@@ -80,59 +74,58 @@ class AddFolderActivity : AppCompatActivity() {
             preferences.getString(
                 "folders",
                 "[]"
-            )
+            ) ?: "[]"
 
-        try {
-
-            val foldersArray =
+        val folders =
+            try {
                 JSONArray(oldData)
+            } catch (e: Exception) {
+                JSONArray()
+            }
 
-            val folderObject =
-                JSONObject()
+        val folder =
+            JSONObject()
 
-            folderObject.put(
-                "id",
-                folderId
+        folder.put(
+            "id",
+            UUID.randomUUID().toString()
+        )
+
+        folder.put(
+            "name",
+            name
+        )
+
+        folder.put(
+            "folderName",
+            name
+        )
+
+        folder.put(
+            "description",
+            description
+        )
+
+        folder.put(
+            "createdAt",
+            System.currentTimeMillis()
+        )
+
+        folders.put(folder)
+
+        preferences.edit()
+            .putString(
+                "folders",
+                folders.toString()
             )
+            .apply()
 
-            folderObject.put(
-                "name",
-                name
-            )
+        Toast.makeText(
+            this,
+            "Folder created successfully",
+            Toast.LENGTH_SHORT
+        ).show()
 
-            folderObject.put(
-                "description",
-                description
-            )
-
-            foldersArray.put(
-                folderObject
-            )
-
-            preferences.edit()
-                .putString(
-                    "folders",
-                    foldersArray.toString()
-                )
-                .apply()
-
-            Toast.makeText(
-                this,
-                "Folder created successfully",
-                Toast.LENGTH_SHORT
-            ).show()
-
-            finish()
-
-        } catch (e: Exception) {
-
-            e.printStackTrace()
-
-            Toast.makeText(
-                this,
-                "Unable to create folder",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+        finish()
     }
 }

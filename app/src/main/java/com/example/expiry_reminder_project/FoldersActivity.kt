@@ -4,88 +4,34 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.expiry_reminder_project.adapter.FolderAdapter
-import com.example.expiry_reminder_project.model.Folder
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import com.google.android.material.card.MaterialCardView
 import org.json.JSONArray
 
 class FoldersActivity : AppCompatActivity() {
 
-    private lateinit var recyclerFolders: RecyclerView
-    private lateinit var tvEmptyFolders: TextView
-    private lateinit var tvFolderCount: TextView
-    private lateinit var adapter: FolderAdapter
+    private lateinit var folderContainer: ConstraintLayout
+    private lateinit var tvEmpty: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_folders)
 
-        recyclerFolders = findViewById(R.id.recyclerFolders)
-        tvEmptyFolders = findViewById(R.id.tvEmptyFolders)
-        tvFolderCount = findViewById(R.id.tvFolderCount)
+        folderContainer =
+            findViewById(R.id.folderContainer)
 
-        setupRecyclerView()
-        setupClicks()
-        loadFolders()
-    }
+        tvEmpty =
+            findViewById(R.id.tvEmpty)
 
-    private fun setupRecyclerView() {
-
-        adapter = FolderAdapter(
-            mutableListOf(),
-
-            { folder ->
-                val intent =
-                    Intent(
-                        this,
-                        FolderDocumentsActivity::class.java
-                    )
-
-                intent.putExtra(
-                    "folder_id",
-                    folder.id
-                )
-
-                intent.putExtra(
-                    "folder_name",
-                    folder.name
-                )
-
-                startActivity(intent)
-            },
-
-            { folder ->
-                val intent =
-                    Intent(
-                        this,
-                        EditFolderActivity::class.java
-                    )
-
-                intent.putExtra(
-                    "folder_id",
-                    folder.id
-                )
-
-                startActivity(intent)
-            }
-        )
-
-        recyclerFolders.layoutManager =
-            LinearLayoutManager(this)
-
-        recyclerFolders.adapter = adapter
-    }
-
-    private fun setupClicks() {
-
-        findViewById<TextView>(
+        findViewById<ImageButton>(
             R.id.btnBack
         ).setOnClickListener {
+
             onBackPressedDispatcher.onBackPressed()
         }
 
@@ -100,43 +46,50 @@ class FoldersActivity : AppCompatActivity() {
                 )
             )
         }
+
+        loadFolders()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (::folderContainer.isInitialized) {
+            loadFolders()
+        }
     }
 
     private fun loadFolders() {
 
-        val folders = getFolders()
+        folderContainer.removeAllViews()
 
-        adapter.updateList(folders)
+        val emptyView =
+            TextView(this)
 
-        tvFolderCount.text =
-            if (folders.size == 1) {
-                "1 Folder"
-            } else {
-                "${folders.size} Folders"
-            }
+        emptyView.id =
+            View.generateViewId()
 
-        if (folders.isEmpty()) {
+        emptyView.text =
+            "No folders created yet"
 
-            recyclerFolders.visibility =
-                View.GONE
+        emptyView.gravity =
+            android.view.Gravity.CENTER
 
-            tvEmptyFolders.visibility =
-                View.VISIBLE
+        emptyView.setTextColor(
+            getColor(R.color.text_secondary)
+        )
 
-        } else {
+        emptyView.textSize = 15f
 
-            recyclerFolders.visibility =
-                View.VISIBLE
+        emptyView.setPadding(
+            20,
+            40,
+            20,
+            40
+        )
 
-            tvEmptyFolders.visibility =
-                View.GONE
-        }
-    }
-
-    private fun getFolders(): MutableList<Folder> {
-
-        val folders =
-            mutableListOf<Folder>()
+        folderContainer.addView(
+            emptyView
+        )
 
         val preferences =
             getSharedPreferences(
@@ -148,45 +101,299 @@ class FoldersActivity : AppCompatActivity() {
             preferences.getString(
                 "folders",
                 "[]"
-            )
+            ) ?: "[]"
 
-        try {
-
-            val foldersArray =
+        val folders =
+            try {
                 JSONArray(data)
-
-            for (
-            i in 0 until foldersArray.length()
-            ) {
-
-                val folder =
-                    foldersArray.getJSONObject(i)
-
-                folders.add(
-                    Folder(
-                        id = folder.optString("id"),
-                        name = folder.optString("name"),
-                        description =
-                            folder.optString(
-                                "description"
-                            )
-                    )
-                )
+            } catch (e: Exception) {
+                JSONArray()
             }
 
-        } catch (e: Exception) {
-            e.printStackTrace()
+        if (folders.length() == 0) {
+            return
         }
 
-        return folders
+        folderContainer.removeAllViews()
+
+        var previousId: Int? = null
+
+        for (i in 0 until folders.length()) {
+
+            val folder =
+                folders.getJSONObject(i)
+
+            val folderId =
+                folder.optString("id")
+
+            val folderName =
+                folder.optString(
+                    "name",
+                    folder.optString(
+                        "folderName",
+                        "Folder"
+                    )
+                )
+
+            val description =
+                folder.optString(
+                    "description",
+                    ""
+                )
+
+            val card =
+                MaterialCardView(this)
+
+            card.id =
+                View.generateViewId()
+
+            card.layoutParams =
+                ConstraintLayout.LayoutParams(
+                    ConstraintLayout.LayoutParams.MATCH_PARENT,
+                    105.dp()
+                )
+
+            card.radius =
+                18.dp().toFloat()
+
+            card.cardElevation =
+                2.dp().toFloat()
+
+            card.setCardBackgroundColor(
+                getColor(
+                    R.color.card_white
+                )
+            )
+
+            card.strokeWidth =
+                1.dp()
+
+            card.strokeColor =
+                getColor(
+                    R.color.border
+                )
+
+            card.isClickable = true
+            card.isFocusable = true
+
+            val inner =
+                ConstraintLayout(this)
+
+            inner.layoutParams =
+                ConstraintLayout.LayoutParams(
+                    ConstraintLayout.LayoutParams.MATCH_PARENT,
+                    ConstraintLayout.LayoutParams.MATCH_PARENT
+                )
+
+            val icon =
+                TextView(this)
+
+            icon.id =
+                View.generateViewId()
+
+            icon.text = "📁"
+            icon.textSize = 25f
+            icon.gravity =
+                android.view.Gravity.CENTER
+
+            icon.setBackgroundResource(
+                R.drawable.bg_avatar
+            )
+
+            val title =
+                TextView(this)
+
+            title.id =
+                View.generateViewId()
+
+            title.text =
+                folderName
+
+            title.setTextColor(
+                getColor(
+                    R.color.text_primary
+                )
+            )
+
+            title.textSize = 16f
+            title.setTypeface(
+                null,
+                android.graphics.Typeface.BOLD
+            )
+
+            val sub =
+                TextView(this)
+
+            sub.id =
+                View.generateViewId()
+
+            sub.text =
+                if (description.isBlank()) {
+                    "Tap to view documents"
+                } else {
+                    description
+                }
+
+            sub.setTextColor(
+                getColor(
+                    R.color.text_secondary
+                )
+            )
+
+            sub.textSize = 13f
+
+            inner.addView(icon)
+            inner.addView(title)
+            inner.addView(sub)
+
+            val set =
+                ConstraintSet()
+
+            set.clone(inner)
+
+            set.constrainWidth(
+                icon.id,
+                52.dp()
+            )
+
+            set.constrainHeight(
+                icon.id,
+                52.dp()
+            )
+
+            set.connect(
+                icon.id,
+                ConstraintSet.START,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.START,
+                16.dp()
+            )
+
+            set.connect(
+                icon.id,
+                ConstraintSet.TOP,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.TOP,
+                16.dp()
+            )
+
+            set.connect(
+                title.id,
+                ConstraintSet.START,
+                icon.id,
+                ConstraintSet.END,
+                14.dp()
+            )
+
+            set.connect(
+                title.id,
+                ConstraintSet.TOP,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.TOP,
+                20.dp()
+            )
+
+            set.connect(
+                title.id,
+                ConstraintSet.END,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.END,
+                16.dp()
+            )
+
+            set.connect(
+                sub.id,
+                ConstraintSet.START,
+                icon.id,
+                ConstraintSet.END,
+                14.dp()
+            )
+
+            set.connect(
+                sub.id,
+                ConstraintSet.TOP,
+                title.id,
+                ConstraintSet.BOTTOM,
+                4.dp()
+            )
+
+            set.connect(
+                sub.id,
+                ConstraintSet.END,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.END,
+                16.dp()
+            )
+
+            set.applyTo(inner)
+
+            card.addView(inner)
+
+            folderContainer.addView(card)
+
+            val params =
+                card.layoutParams
+                        as ConstraintLayout.LayoutParams
+
+            params.width =
+                ConstraintLayout.LayoutParams.MATCH_PARENT
+
+            params.height =
+                105.dp()
+
+            params.topMargin =
+                if (previousId == null) {
+                    0
+                } else {
+                    12.dp()
+                }
+
+            if (previousId == null) {
+
+                params.topToTop =
+                    ConstraintSet.PARENT_ID
+
+            } else {
+
+                params.topToBottom =
+                    previousId!!
+            }
+
+            params.startToStart =
+                ConstraintSet.PARENT_ID
+
+            params.endToEnd =
+                ConstraintSet.PARENT_ID
+
+            card.layoutParams =
+                params
+
+            previousId =
+                card.id
+
+            card.setOnClickListener {
+
+                val intent =
+                    Intent(
+                        this,
+                        FolderDocumentsActivity::class.java
+                    )
+
+                intent.putExtra(
+                    "folder_id",
+                    folderId
+                )
+
+                startActivity(intent)
+            }
+        }
     }
 
-    override fun onResume() {
+    private fun Int.dp(): Int {
 
-        super.onResume()
-
-        if (::adapter.isInitialized) {
-            loadFolders()
-        }
+        return (
+                this *
+                        resources.displayMetrics.density
+                ).toInt()
     }
 }

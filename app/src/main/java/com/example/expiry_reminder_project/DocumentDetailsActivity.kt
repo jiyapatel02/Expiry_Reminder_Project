@@ -3,6 +3,7 @@ package com.example.expiry_reminder_project
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -33,7 +34,7 @@ class DocumentDetailsActivity : AppCompatActivity() {
                 ?: intent.getStringExtra("documentId")
                         ?: ""
 
-        findViewById<TextView>(R.id.btnBack)
+        findViewById<ImageButton>(R.id.btnBack)
             .setOnClickListener {
                 onBackPressedDispatcher.onBackPressed()
             }

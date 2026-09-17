@@ -5,311 +5,659 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7FAFC">
+    android:background="@color/background">
 
-    <!-- Back Button -->
-    <TextView
-        android:id="@+id/btnBack"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="18dp"
-        android:gravity="center"
-        android:text="‹"
-        android:textColor="#17212B"
-        android:textSize="34sp"
+    <!-- ========================= -->
+    <!-- TOP HEADER -->
+    <!-- ========================= -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topHeader"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:background="@color/card_white"
+        android:elevation="4dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <!-- Page Title -->
-    <TextView
-        android:id="@+id/tvPageTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="Add Document"
-        android:textColor="#17212B"
-        android:textSize="21sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="@id/btnBack"
-        app:layout_constraintBottom_toBottomOf="@id/btnBack"
-        app:layout_constraintStart_toEndOf="@id/btnBack" />
-
-    <!-- Heading -->
-    <TextView
-        android:id="@+id/tvHeading"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="18dp"
-        android:layout_marginEnd="24dp"
-        android:text="Add a new document"
-        android:textColor="#17212B"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Description -->
-    <TextView
-        android:id="@+id/tvDescription"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="24dp"
-        android:text="Keep track of your document and its expiry date."
-        android:textColor="#66727F"
-        android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@id/tvHeading"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Document Name -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardDocumentName"
-        android:layout_width="0dp"
-        android:layout_height="62dp"
-        android:layout_marginStart="22dp"
-        android:layout_marginTop="22dp"
-        android:layout_marginEnd="22dp"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="1dp"
-        app:strokeColor="#DCE6EF"
-        app:strokeWidth="1dp"
-        app:layout_constraintTop_toBottomOf="@id/tvDescription"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <EditText
-            android:id="@+id/etDocumentName"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
             android:background="@android:color/transparent"
-            android:hint="Document Name"
-            android:inputType="textCapSentences"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:textColor="#17212B"
-            android:textColorHint="#9AA6B2"
-            android:textSize="15sp" />
-
-    </com.google.android.material.card.MaterialCardView>
-
-
-    <!-- Document Number -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardDocumentNumber"
-        android:layout_width="0dp"
-        android:layout_height="62dp"
-        android:layout_marginStart="22dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="22dp"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="1dp"
-        app:strokeColor="#DCE6EF"
-        app:strokeWidth="1dp"
-        app:layout_constraintTop_toBottomOf="@id/cardDocumentName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <EditText
-            android:id="@+id/etDocumentNumber"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:hint="Document Number (optional)"
-            android:inputType="text"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:textColor="#17212B"
-            android:textColorHint="#9AA6B2"
-            android:textSize="15sp" />
-
-    </com.google.android.material.card.MaterialCardView>
-
-
-    <!-- Category -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardCategory"
-        android:layout_width="0dp"
-        android:layout_height="62dp"
-        android:layout_marginStart="22dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="22dp"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="1dp"
-        app:strokeColor="#DCE6EF"
-        app:strokeWidth="1dp"
-        app:layout_constraintTop_toBottomOf="@id/cardDocumentNumber"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <Spinner
-            android:id="@+id/spinnerCategory"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:background="@android:color/transparent" />
-
-    </com.google.android.material.card.MaterialCardView>
-
-
-    <!-- Folder -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardFolder"
-        android:layout_width="0dp"
-        android:layout_height="62dp"
-        android:layout_marginStart="22dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="22dp"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="1dp"
-        app:strokeColor="#DCE6EF"
-        app:strokeWidth="1dp"
-        app:layout_constraintTop_toBottomOf="@id/cardCategory"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <Spinner
-            android:id="@+id/spinnerFolder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:background="@android:color/transparent" />
-
-    </com.google.android.material.card.MaterialCardView>
-
-
-    <!-- Issue Date -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardIssueDate"
-        android:layout_width="0dp"
-        android:layout_height="62dp"
-        android:layout_marginStart="22dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="7dp"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="1dp"
-        app:strokeColor="#DCE6EF"
-        app:strokeWidth="1dp"
-        app:layout_constraintTop_toBottomOf="@id/cardFolder"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/cardExpiryDate">
+            android:contentDescription="Back"
+            android:padding="12dp"
+            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/tvIssueDate"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="10dp"
-            android:text="Issue Date"
-            android:textColor="#9AA6B2"
-            android:textSize="14sp" />
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="Add Document"
+            android:textColor="@color/text_primary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnBack"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <!-- Expiry Date -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardExpiryDate"
+    <!-- ========================= -->
+    <!-- SCROLL CONTENT -->
+    <!-- ========================= -->
+
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="0dp"
-        android:layout_height="62dp"
-        android:layout_marginStart="7dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="22dp"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="1dp"
-        app:strokeColor="#DCE6EF"
-        app:strokeWidth="1dp"
-        app:layout_constraintTop_toBottomOf="@id/cardFolder"
-        app:layout_constraintStart_toEndOf="@id/cardIssueDate"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <TextView
-            android:id="@+id/tvExpiryDate"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="10dp"
-            android:text="Expiry Date"
-            android:textColor="#9AA6B2"
-            android:textSize="14sp" />
-
-    </com.google.android.material.card.MaterialCardView>
-
-
-    <!-- Notes -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardNotes"
-        android:layout_width="0dp"
-        android:layout_height="105dp"
-        android:layout_marginStart="22dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="22dp"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="1dp"
-        app:strokeColor="#DCE6EF"
-        app:strokeWidth="1dp"
-        app:layout_constraintTop_toBottomOf="@id/cardIssueDate"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"
+        app:layout_constraintTop_toBottomOf="@id/topHeader"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <EditText
-            android:id="@+id/etNotes"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:gravity="top"
-            android:hint="Notes (optional)"
-            android:inputType="textCapSentences|textMultiLine"
-            android:padding="16dp"
-            android:textColor="#17212B"
-            android:textColorHint="#9AA6B2"
-            android:textSize="14sp" />
-
-    </com.google.android.material.card.MaterialCardView>
+            android:layout_height="wrap_content"
+            android:padding="16dp">
 
 
-    <!-- Save -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/btnSaveDocument"
-        android:layout_width="0dp"
-        android:layout_height="58dp"
-        android:layout_marginStart="22dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="22dp"
-        android:layout_marginBottom="20dp"
-        app:cardBackgroundColor="#1976D2"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="2dp"
-        app:layout_constraintTop_toBottomOf="@id/cardNotes"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+            <!-- ========================= -->
+            <!-- UPLOAD DOCUMENT CARD -->
+            <!-- ========================= -->
 
-        <TextView
-            android:id="@+id/btnSave"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="SAVE DOCUMENT"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardUpload"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/card_white"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="2dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-    </com.google.android.material.card.MaterialCardView>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:id="@+id/tvUploadHeading"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Document Attachment"
+                        android:textColor="@color/text_primary"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvUploadDescription"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="Upload a document from your device, Files or Google Drive"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvUploadHeading"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+
+                    <!-- Upload icon -->
+
+                    <TextView
+                        android:id="@+id/tvUploadIcon"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginTop="18dp"
+                        android:background="@drawable/bg_avatar"
+                        android:gravity="center"
+                        android:text="📄"
+                        android:textSize="28sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvUploadDescription"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+
+                    <!-- Browse File -->
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/btnBrowserFile"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:cardBackgroundColor="@color/primary_teal"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvUploadIcon"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="📁  Browser File"
+                            android:textColor="@color/card_white"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                    </com.google.android.material.card.MaterialCardView>
+
+
+                    <!-- Selected file -->
+
+                    <TextView
+                        android:id="@+id/tvSelectedFile"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="No document selected"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp"
+                        android:maxLines="2"
+                        android:ellipsize="middle"
+                        android:gravity="center"
+                        app:layout_constraintTop_toBottomOf="@id/btnBrowserFile"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+
+                    <!-- Sample scan -->
+
+                    <TextView
+                        android:id="@+id/btnUseSample"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="6dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:text="Use Sample Scan"
+                        android:textColor="@color/primary_teal"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@id/tvSelectedFile"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- ========================= -->
+            <!-- DOCUMENT INFORMATION -->
+            <!-- ========================= -->
+
+            <TextView
+                android:id="@+id/tvInformationTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:text="Document Information"
+                android:textColor="@color/text_primary"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/cardUpload"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+
+            <!-- ========================= -->
+            <!-- DOCUMENT NAME -->
+            <!-- ========================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDocumentName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="@color/card_white"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/tvInformationTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:id="@+id/tvDocumentNameLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Document Name"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <EditText
+                        android:id="@+id/etDocumentName"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:hint="e.g. Passport"
+                        android:inputType="textCapSentences"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_hint"
+                        android:textSize="15sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvDocumentNameLabel"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- ========================= -->
+            <!-- DOCUMENT NUMBER -->
+            <!-- ========================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDocumentNumber"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="@color/card_white"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/cardDocumentName"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:id="@+id/tvDocumentNumberLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Document Number"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <EditText
+                        android:id="@+id/etDocumentNumber"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:hint="Enter document number"
+                        android:inputType="text"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_hint"
+                        android:textSize="15sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvDocumentNumberLabel"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- ========================= -->
+            <!-- CATEGORY -->
+            <!-- ========================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardCategory"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="@color/card_white"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/cardDocumentNumber"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:id="@+id/tvCategoryLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Category"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <Spinner
+                        android:id="@+id/spinnerCategory"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvCategoryLabel"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- ========================= -->
+            <!-- FOLDER -->
+            <!-- ========================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardFolder"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="@color/card_white"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/cardCategory"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:id="@+id/tvFolderLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Folder"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <Spinner
+                        android:id="@+id/spinnerFolder"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvFolderLabel"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- ========================= -->
+            <!-- ISSUE DATE -->
+            <!-- ========================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardIssueDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="@color/card_white"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/cardFolder"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:id="@+id/tvIssueDateLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Issue Date"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvIssueDate"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:gravity="center_vertical"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="Select Issue Date"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="15sp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:layout_constraintTop_toBottomOf="@id/tvIssueDateLabel"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- ========================= -->
+            <!-- EXPIRY DATE -->
+            <!-- ========================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardExpiryDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="@color/card_white"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/cardIssueDate"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:id="@+id/tvExpiryDateLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Expiry Date"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvExpiryDate"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:gravity="center_vertical"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="Select Expiry Date"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="15sp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:layout_constraintTop_toBottomOf="@id/tvExpiryDateLabel"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- ========================= -->
+            <!-- NOTES -->
+            <!-- ========================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardNotes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="@color/card_white"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/cardExpiryDate"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:id="@+id/tvNotesLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Notes"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <EditText
+                        android:id="@+id/etNotes"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:gravity="top|start"
+                        android:hint="Add notes about this document"
+                        android:inputType="textMultiLine"
+                        android:padding="14dp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_hint"
+                        android:textSize="15sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvNotesLabel"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- ========================= -->
+            <!-- SAVE BUTTON -->
+            <!-- ========================= -->
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnSave"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="18dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/primary_teal"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="2dp"
+                app:layout_constraintTop_toBottomOf="@id/cardNotes"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="Save Document"
+                    android:textColor="@color/card_white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
