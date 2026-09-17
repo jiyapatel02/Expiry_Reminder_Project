@@ -7,10 +7,6 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- ===================================================== -->
-    <!-- HEADER -->
-    <!-- ===================================================== -->
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topHeader"
         android:layout_width="0dp"
@@ -20,8 +16,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <!-- Back Arrow -->
 
         <ImageButton
             android:id="@+id/btnBack"
@@ -35,8 +29,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- Title -->
 
         <TextView
             android:id="@+id/tvTitle"
@@ -54,11 +46,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-    <!-- ===================================================== -->
-    <!-- SUBTITLE -->
-    <!-- ===================================================== -->
-
     <TextView
         android:id="@+id/tvSubtitle"
         android:layout_width="0dp"
@@ -72,11 +59,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topHeader" />
-
-
-    <!-- ===================================================== -->
-    <!-- REMINDER LIST -->
-    <!-- ===================================================== -->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerReminders"
@@ -95,10 +77,6 @@
         app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
 
 
-    <!-- ===================================================== -->
-    <!-- EMPTY STATE -->
-    <!-- ===================================================== -->
-
     <TextView
         android:id="@+id/tvEmpty"
         android:layout_width="0dp"
@@ -114,11 +92,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
-
-
-    <!-- ===================================================== -->
-    <!-- BOTTOM NAVIGATION -->
-    <!-- ===================================================== -->
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bottomNavigation"
@@ -140,8 +113,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- HOME -->
-
             <TextView
                 android:id="@+id/navHome"
                 android:layout_width="0dp"
@@ -152,8 +123,6 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@id/navDocuments"
                 app:layout_constraintStart_toStartOf="parent" />
-
-            <!-- DOCUMENTS -->
 
             <TextView
                 android:id="@+id/navDocuments"
@@ -166,8 +135,6 @@
                 app:layout_constraintEnd_toStartOf="@id/navRenewal"
                 app:layout_constraintStart_toEndOf="@id/navHome" />
 
-            <!-- RENEWAL -->
-
             <TextView
                 android:id="@+id/navRenewal"
                 android:layout_width="0dp"
@@ -178,8 +145,6 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@id/navSettings"
                 app:layout_constraintStart_toEndOf="@id/navDocuments" />
-
-            <!-- SETTINGS -->
 
             <TextView
                 android:id="@+id/navSettings"

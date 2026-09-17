@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         loadDocuments()
 
         NotificationHelper.createChannel(this)
-        ReminderScheduler.schedule(this)
+        ReminderScheduler.scheduleDailyReminder(this)
 
         requestNotificationPermission()
     }
@@ -72,82 +72,70 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClicks() {
 
-        // Profile
         findViewById<TextView>(R.id.tvProfile).setOnClickListener {
             startActivity(
                 Intent(this, ProfileActivity::class.java)
             )
         }
 
-        // Add Document
         findViewById<MaterialCardView>(R.id.cardAddDocument).setOnClickListener {
             startActivity(
                 Intent(this, AddDocumentActivity::class.java)
             )
         }
 
-        // All Documents
         findViewById<MaterialCardView>(R.id.cardAllDocuments).setOnClickListener {
             startActivity(
                 Intent(this, DocumentsActivity::class.java)
             )
         }
 
-        // Folders
         findViewById<MaterialCardView>(R.id.cardFolders).setOnClickListener {
             startActivity(
                 Intent(this, FoldersActivity::class.java)
             )
         }
 
-        // Bottom Navigation - Home
         findViewById<TextView>(R.id.navHome).setOnClickListener {
             // Already on Home
         }
 
-        // Bottom Navigation - Documents
         findViewById<TextView>(R.id.navDocuments).setOnClickListener {
             startActivity(
                 Intent(this, DocumentsActivity::class.java)
             )
         }
 
-        // Bottom Navigation - Renewal
         findViewById<TextView>(R.id.navRenewal).setOnClickListener {
             startActivity(
                 Intent(this, RenewalActivity::class.java)
             )
         }
 
-        // Bottom Navigation - Settings
         findViewById<TextView>(R.id.navSettings).setOnClickListener {
             startActivity(
                 Intent(this, SettingsActivity::class.java)
             )
         }
 
-        // All Filter
         findViewById<TextView>(R.id.filterAll).setOnClickListener {
             currentFilter = "All"
             updateFilterButton()
             applyFilters()
         }
 
-        // Valid Filter
         findViewById<TextView>(R.id.filterValid).setOnClickListener {
             currentFilter = "VALID"
             updateFilterButton()
             applyFilters()
         }
 
-        // Expiring Soon Filter
         findViewById<TextView>(R.id.filterSoon).setOnClickListener {
             currentFilter = "EXPIRING SOON"
             updateFilterButton()
             applyFilters()
         }
 
-        // Expired Filter
         findViewById<TextView>(R.id.filterExpired).setOnClickListener {
             currentFilter = "EXPIRED"
             updateFilterButton()
@@ -401,7 +389,7 @@ class MainActivity : AppCompatActivity() {
 
             loadDocuments()
 
-            ReminderScheduler.schedule(this)
+            ReminderScheduler.scheduleDailyReminder(this)
         }
     }
 }

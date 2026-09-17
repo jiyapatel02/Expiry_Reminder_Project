@@ -4,5 +4,7 @@
         <item>7 days before</item>
         <item>14 days before</item>
         <item>30 days before</item>
+        <item>3 months before</item>
+        <item>6 months before</item>
     </string-array>
 </resources>

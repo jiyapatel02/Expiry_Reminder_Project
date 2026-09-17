@@ -64,9 +64,6 @@ class EditDocumentActivity : AppCompatActivity() {
         setupUpdateButton()
     }
 
-    // ---------------------------------------------------------
-    // INITIALIZE VIEWS
-    // ---------------------------------------------------------
 
     private fun initializeViews() {
 
@@ -80,10 +77,6 @@ class EditDocumentActivity : AppCompatActivity() {
         btnUpdateDocument = findViewById(R.id.btnUpdateDocument)
     }
 
-    // ---------------------------------------------------------
-    // BACK BUTTON
-    // ---------------------------------------------------------
-
     private fun setupBackButton() {
 
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
@@ -91,9 +84,6 @@ class EditDocumentActivity : AppCompatActivity() {
         }
     }
 
-    // ---------------------------------------------------------
-    // CATEGORY SPINNER
-    // ---------------------------------------------------------
 
     private fun setupCategorySpinner() {
 
@@ -109,11 +99,6 @@ class EditDocumentActivity : AppCompatActivity() {
 
         spinnerCategory.adapter = adapter
     }
-
-    // ---------------------------------------------------------
-    // LOAD FOLDERS
-    // ---------------------------------------------------------
-
     private fun loadFolders() {
 
         val folderNames = ArrayList<String>()
@@ -170,11 +155,6 @@ class EditDocumentActivity : AppCompatActivity() {
 
         spinnerFolder.tag = folderIds
     }
-
-    // ---------------------------------------------------------
-    // LOAD EXISTING DOCUMENT
-    // ---------------------------------------------------------
-
     private fun loadDocument() {
 
         if (documentId.isEmpty()) {
@@ -273,10 +253,6 @@ class EditDocumentActivity : AppCompatActivity() {
         }
     }
 
-    // ---------------------------------------------------------
-    // CATEGORY SELECTION
-    // ---------------------------------------------------------
-
     private fun setCategorySelection(category: String) {
 
         for (i in categories.indices) {
@@ -293,10 +269,6 @@ class EditDocumentActivity : AppCompatActivity() {
         }
     }
 
-    // ---------------------------------------------------------
-    // FOLDER SELECTION
-    // ---------------------------------------------------------
-
     private fun setFolderSelection(folderId: String) {
 
         val ids = spinnerFolder.tag as? ArrayList<String>
@@ -311,10 +283,6 @@ class EditDocumentActivity : AppCompatActivity() {
             }
         }
     }
-
-    // ---------------------------------------------------------
-    // DATE PICKERS
-    // ---------------------------------------------------------
 
     private fun setupDatePickers() {
 
@@ -378,22 +346,12 @@ class EditDocumentActivity : AppCompatActivity() {
             day
         ).show()
     }
-
-    // ---------------------------------------------------------
-    // UPDATE BUTTON
-    // ---------------------------------------------------------
-
     private fun setupUpdateButton() {
 
         btnUpdateDocument.setOnClickListener {
             updateDocument()
         }
     }
-
-    // ---------------------------------------------------------
-    // UPDATE DOCUMENT
-    // ---------------------------------------------------------
-
     private fun updateDocument() {
 
         val name = etDocumentName.text.toString().trim()
@@ -412,10 +370,6 @@ class EditDocumentActivity : AppCompatActivity() {
 
         val notes =
             etNotes.text.toString().trim()
-
-        // -----------------------------------------------------
-        // VALIDATION
-        // -----------------------------------------------------
 
         if (name.isEmpty()) {
 
@@ -476,11 +430,6 @@ class EditDocumentActivity : AppCompatActivity() {
 
             return
         }
-
-        // -----------------------------------------------------
-        // DATE VALIDATION
-        // -----------------------------------------------------
-
         try {
 
             val issue =
@@ -515,10 +464,6 @@ class EditDocumentActivity : AppCompatActivity() {
             return
         }
 
-        // -----------------------------------------------------
-        // GET SELECTED FOLDER
-        // -----------------------------------------------------
-
         val folderIds =
             spinnerFolder.tag as? ArrayList<String>
 
@@ -535,10 +480,6 @@ class EditDocumentActivity : AppCompatActivity() {
             } else {
                 ""
             }
-
-        // -----------------------------------------------------
-        // UPDATE JSON
-        // -----------------------------------------------------
 
         val preferences = getSharedPreferences(
             "DocumentStorage",

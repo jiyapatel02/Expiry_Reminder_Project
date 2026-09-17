@@ -30,7 +30,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- Status strip -->
             <View
                 android:id="@+id/statusStrip"
                 android:layout_width="5dp"
@@ -39,7 +38,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Document icon -->
             <TextView
                 android:id="@+id/tvDocumentIcon"
                 android:layout_width="42dp"
@@ -54,7 +52,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Document name -->
             <TextView
                 android:id="@+id/tvDocumentName"
                 android:layout_width="0dp"
@@ -71,7 +68,7 @@
                 app:layout_constraintStart_toEndOf="@id/tvDocumentIcon"
                 app:layout_constraintTop_toTopOf="@id/tvDocumentIcon" />
 
-            <!-- Status -->
+
             <TextView
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
@@ -87,7 +84,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tvDocumentIcon" />
 
-            <!-- Document number -->
             <TextView
                 android:id="@+id/tvDocumentNumber"
                 android:layout_width="0dp"
@@ -102,7 +98,6 @@
                 app:layout_constraintStart_toStartOf="@id/tvDocumentName"
                 app:layout_constraintTop_toBottomOf="@id/tvDocumentName" />
 
-            <!-- Expiry date -->
             <TextView
                 android:id="@+id/tvExpiry"
                 android:layout_width="0dp"
@@ -116,7 +111,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvDocumentIcon" />
 
-            <!-- Days remaining -->
             <TextView
                 android:id="@+id/tvDaysRemaining"
                 android:layout_width="0dp"
@@ -131,7 +125,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvExpiry" />
 
-            <!-- View button -->
             <TextView
                 android:id="@+id/tvView"
                 android:layout_width="wrap_content"
@@ -148,7 +141,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvDaysRemaining" />
 
-            <!-- Renew button -->
             <TextView
                 android:id="@+id/tvRenew"
                 android:layout_width="wrap_content"

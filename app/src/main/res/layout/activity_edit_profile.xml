@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- Top Header -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topHeader"
         android:layout_width="0dp"
@@ -72,7 +71,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Name Card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/nameCard"
                 android:layout_width="0dp"
@@ -125,7 +123,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Email Card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/emailCard"
                 android:layout_width="0dp"
@@ -178,7 +175,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Save Button -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnSave"
                 android:layout_width="0dp"

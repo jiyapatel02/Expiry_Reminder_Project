@@ -7,9 +7,6 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- ===================================================== -->
-    <!-- HEADER -->
-    <!-- ===================================================== -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topHeader"
@@ -20,8 +17,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <!-- Back Arrow -->
 
         <ImageButton
             android:id="@+id/btnBack"
@@ -35,8 +30,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- Title -->
 
         <TextView
             android:id="@+id/tvTitle"
@@ -53,11 +46,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <!-- ===================================================== -->
-    <!-- FORM -->
-    <!-- ===================================================== -->
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -79,10 +67,6 @@
             android:paddingEnd="20dp"
             android:paddingBottom="30dp">
 
-            <!-- ================================================= -->
-            <!-- DOCUMENT NAME -->
-            <!-- ================================================= -->
-
             <EditText
                 android:id="@+id/etDocumentName"
                 android:layout_width="0dp"
@@ -98,11 +82,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-
-            <!-- ================================================= -->
-            <!-- DOCUMENT NUMBER -->
-            <!-- ================================================= -->
 
             <EditText
                 android:id="@+id/etDocumentNumber"
@@ -122,10 +101,6 @@
                 app:layout_constraintTop_toBottomOf="@id/etDocumentName" />
 
 
-            <!-- ================================================= -->
-            <!-- CATEGORY -->
-            <!-- ================================================= -->
-
             <Spinner
                 android:id="@+id/spinnerCategory"
                 android:layout_width="0dp"
@@ -139,10 +114,6 @@
                 app:layout_constraintTop_toBottomOf="@id/etDocumentNumber" />
 
 
-            <!-- ================================================= -->
-            <!-- FOLDER -->
-            <!-- ================================================= -->
-
             <Spinner
                 android:id="@+id/spinnerFolder"
                 android:layout_width="0dp"
@@ -154,11 +125,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/spinnerCategory" />
-
-
-            <!-- ================================================= -->
-            <!-- ISSUE DATE -->
-            <!-- ================================================= -->
 
             <TextView
                 android:id="@+id/tvIssueDate"
@@ -177,10 +143,6 @@
                 app:layout_constraintTop_toBottomOf="@id/spinnerFolder" />
 
 
-            <!-- ================================================= -->
-            <!-- EXPIRY DATE -->
-            <!-- ================================================= -->
-
             <TextView
                 android:id="@+id/tvExpiryDate"
                 android:layout_width="0dp"
@@ -197,10 +159,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvIssueDate" />
 
-
-            <!-- ================================================= -->
-            <!-- NOTES -->
-            <!-- ================================================= -->
 
             <EditText
                 android:id="@+id/etNotes"
@@ -219,10 +177,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvExpiryDate" />
 
-
-            <!-- ================================================= -->
-            <!-- UPDATE BUTTON -->
-            <!-- ================================================= -->
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnUpdateDocument"

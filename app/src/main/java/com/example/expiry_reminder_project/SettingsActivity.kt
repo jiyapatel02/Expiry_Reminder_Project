@@ -36,15 +36,11 @@ class SettingsActivity : AppCompatActivity() {
         setupBottomNavigation()
     }
 
-    // ---------------- BACK ----------------
-
     private fun setupBackButton() {
         findViewById<android.widget.ImageButton>(R.id.btnBack).setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
     }
-
-    // ---------------- LOAD SETTINGS ----------------
 
     private fun loadSettings() {
 
@@ -69,8 +65,6 @@ class SettingsActivity : AppCompatActivity() {
 
         spReminderPeriod.setSelection(spinnerPosition)
     }
-
-    // ---------------- NOTIFICATIONS ----------------
 
     private fun setupNotificationListener() {
 
@@ -103,8 +97,6 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
     }
-
-    // ---------------- REMINDER PERIOD ----------------
 
     private fun setupReminderListener() {
 
@@ -140,8 +132,6 @@ class SettingsActivity : AppCompatActivity() {
             }
     }
 
-    // ---------------- THEME ----------------
-
     private fun setupTheme() {
 
         findViewById<MaterialCardView>(R.id.cardTheme)
@@ -154,8 +144,6 @@ class SettingsActivity : AppCompatActivity() {
                 ).show()
             }
     }
-
-    // ---------------- HELP ----------------
 
     private fun setupHelp() {
 
@@ -171,8 +159,6 @@ class SettingsActivity : AppCompatActivity() {
             }
     }
 
-    // ---------------- ABOUT ----------------
-
     private fun setupAbout() {
 
         findViewById<MaterialCardView>(R.id.cardAbout)
@@ -186,8 +172,6 @@ class SettingsActivity : AppCompatActivity() {
                 )
             }
     }
-
-    // ---------------- BOTTOM NAVIGATION ----------------
 
     private fun setupBottomNavigation() {
 
@@ -223,7 +207,7 @@ class SettingsActivity : AppCompatActivity() {
 
         findViewById<android.widget.TextView>(R.id.navSettings)
             .setOnClickListener {
-                // Already on Settings
+
             }
     }
 }

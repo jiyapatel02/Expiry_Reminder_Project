@@ -15,7 +15,7 @@ class BootReceiver : BroadcastReceiver() {
             Intent.ACTION_BOOT_COMPLETED
         ) {
 
-            ReminderScheduler.schedule(context)
+            ReminderScheduler.scheduleDailyReminder(context)
         }
     }
 }

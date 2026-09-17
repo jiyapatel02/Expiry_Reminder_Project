@@ -7,9 +7,6 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- ========================= -->
-    <!-- TOP HEADER -->
-    <!-- ========================= -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topHeader"
@@ -52,10 +49,6 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <!-- ========================= -->
-    <!-- SCROLL CONTENT -->
-    <!-- ========================= -->
-
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
@@ -72,11 +65,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp">
-
-
-            <!-- ========================= -->
-            <!-- UPLOAD DOCUMENT CARD -->
-            <!-- ========================= -->
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardUpload"
@@ -120,9 +108,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 
-
-                    <!-- Upload icon -->
-
                     <TextView
                         android:id="@+id/tvUploadIcon"
                         android:layout_width="64dp"
@@ -136,8 +121,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 
-
-                    <!-- Browse File -->
 
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/btnBrowserFile"
@@ -157,15 +140,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"
-                            android:text="📁  Browser File"
+                            android:text="📁  Browse File"
                             android:textColor="@color/card_white"
                             android:textSize="15sp"
                             android:textStyle="bold" />
 
                     </com.google.android.material.card.MaterialCardView>
 
-
-                    <!-- Selected file -->
 
                     <TextView
                         android:id="@+id/tvSelectedFile"
@@ -182,8 +163,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 
-
-                    <!-- Sample scan -->
 
                     <TextView
                         android:id="@+id/btnUseSample"
@@ -209,10 +188,6 @@
             </com.google.android.material.card.MaterialCardView>
 
 
-            <!-- ========================= -->
-            <!-- DOCUMENT INFORMATION -->
-            <!-- ========================= -->
-
             <TextView
                 android:id="@+id/tvInformationTitle"
                 android:layout_width="0dp"
@@ -225,11 +200,6 @@
                 app:layout_constraintTop_toBottomOf="@id/cardUpload"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
-
-
-            <!-- ========================= -->
-            <!-- DOCUMENT NAME -->
-            <!-- ========================= -->
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardDocumentName"
@@ -277,6 +247,7 @@
                         android:textSize="15sp"
                         app:layout_constraintTop_toBottomOf="@id/tvDocumentNameLabel"
                         app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginBottom="0dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -284,10 +255,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-
-            <!-- ========================= -->
-            <!-- DOCUMENT NUMBER -->
-            <!-- ========================= -->
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardDocumentNumber"
@@ -342,11 +309,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-
-            <!-- ========================= -->
-            <!-- CATEGORY -->
-            <!-- ========================= -->
-
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardCategory"
                 android:layout_width="0dp"
@@ -395,11 +357,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-
-            <!-- ========================= -->
-            <!-- FOLDER -->
-            <!-- ========================= -->
-
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardFolder"
                 android:layout_width="0dp"
@@ -447,11 +404,6 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
-
-
-            <!-- ========================= -->
-            <!-- ISSUE DATE -->
-            <!-- ========================= -->
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardIssueDate"
@@ -506,11 +458,6 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
-
-
-            <!-- ========================= -->
-            <!-- EXPIRY DATE -->
-            <!-- ========================= -->
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardExpiryDate"
@@ -567,10 +514,6 @@
             </com.google.android.material.card.MaterialCardView>
 
 
-            <!-- ========================= -->
-            <!-- NOTES -->
-            <!-- ========================= -->
-
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardNotes"
                 android:layout_width="0dp"
@@ -624,22 +567,46 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardReminder"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="14dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/primary_light"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/primary_teal"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/cardNotes"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- ========================= -->
-            <!-- SAVE BUTTON -->
-            <!-- ========================= -->
+                <TextView
+                    android:id="@+id/tvReminderButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="🔔  Set Reminder"
+                    android:textColor="@color/primary_teal"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </com.google.android.material.card.MaterialCardView>
+
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnSave"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="14dp"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardBackgroundColor="@color/primary_teal"
                 app:cardCornerRadius="15dp"
                 app:cardElevation="2dp"
-                app:layout_constraintTop_toBottomOf="@id/cardNotes"
+                app:layout_constraintTop_toBottomOf="@id/cardReminder"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent">
@@ -654,7 +621,6 @@
                     android:textStyle="bold" />
 
             </com.google.android.material.card.MaterialCardView>
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
