@@ -21,9 +21,7 @@ class SplashActivity : AppCompatActivity() {
                     LoginActivity::class.java
                 )
             )
-
             finish()
-
         }, 2000)
     }
 }
