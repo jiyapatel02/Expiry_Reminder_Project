@@ -25,9 +25,6 @@ class RemindersActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_reminders)
 
-        // ---------------------------------------------------------
-        // BACK BUTTON
-        // ---------------------------------------------------------
 
         findViewById<ImageButton>(
             R.id.btnBack
@@ -36,10 +33,6 @@ class RemindersActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
-
-        // ---------------------------------------------------------
-        // RECYCLER VIEW
-        // ---------------------------------------------------------
 
         recyclerReminders =
             findViewById(R.id.recyclerReminders)
@@ -59,17 +52,8 @@ class RemindersActivity : AppCompatActivity() {
         recyclerReminders.adapter =
             adapter
 
-
-        // ---------------------------------------------------------
-        // LOAD REMINDERS
-        // ---------------------------------------------------------
-
         loadReminders()
 
-
-        // ---------------------------------------------------------
-        // BOTTOM NAVIGATION - HOME
-        // ---------------------------------------------------------
 
         findViewById<TextView>(
             R.id.navHome
@@ -89,11 +73,6 @@ class RemindersActivity : AppCompatActivity() {
             finish()
         }
 
-
-        // ---------------------------------------------------------
-        // BOTTOM NAVIGATION - DOCUMENTS
-        // ---------------------------------------------------------
-
         findViewById<TextView>(
             R.id.navDocuments
         ).setOnClickListener {
@@ -106,10 +85,6 @@ class RemindersActivity : AppCompatActivity() {
             )
         }
 
-
-        // ---------------------------------------------------------
-        // BOTTOM NAVIGATION - RENEWAL
-        // ---------------------------------------------------------
 
         findViewById<TextView>(
             R.id.navRenewal
@@ -124,10 +99,6 @@ class RemindersActivity : AppCompatActivity() {
         }
 
 
-        // ---------------------------------------------------------
-        // BOTTOM NAVIGATION - SETTINGS
-        // ---------------------------------------------------------
-
         findViewById<TextView>(
             R.id.navSettings
         ).setOnClickListener {
@@ -141,10 +112,6 @@ class RemindersActivity : AppCompatActivity() {
         }
     }
 
-
-    // ---------------------------------------------------------
-    // LOAD REMINDERS
-    // ---------------------------------------------------------
 
     private fun loadReminders() {
 
@@ -239,11 +206,6 @@ class RemindersActivity : AppCompatActivity() {
             e.printStackTrace()
         }
 
-
-        // ---------------------------------------------------------
-        // EMPTY STATE
-        // ---------------------------------------------------------
-
         if (reminders.isEmpty()) {
 
             recyclerReminders.visibility =
@@ -269,10 +231,6 @@ class RemindersActivity : AppCompatActivity() {
         }
     }
 
-
-    // ---------------------------------------------------------
-    // REFRESH
-    // ---------------------------------------------------------
 
     override fun onResume() {
 

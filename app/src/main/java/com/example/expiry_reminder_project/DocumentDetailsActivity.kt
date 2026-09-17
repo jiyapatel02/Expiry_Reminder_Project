@@ -6,230 +6,338 @@ import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.example.expiry_reminder_project.utils.DateUtils
 import com.google.android.material.card.MaterialCardView
+import com.example.expiry_reminder_project.utils.DateUtils
 import org.json.JSONArray
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.io.File
+
 
 class DocumentDetailsActivity : AppCompatActivity() {
 
-    private var documentId = ""
+    private var documentId: String = ""
 
-    private val preferencesName = "DocumentStorage"
-    private val documentsKey = "documents"
+    private lateinit var tvDocumentName: TextView
+    private lateinit var tvCategory: TextView
+    private lateinit var tvStatus: TextView
+    private lateinit var tvDocumentNumber: TextView
+    private lateinit var tvIssueDate: TextView
+    private lateinit var tvExpiryDate: TextView
+    private lateinit var tvNotes: TextView
 
-    private val displayFormat =
-        SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_document_details)
+        setContentView(
+            R.layout.activity_document_details
+        )
 
         documentId =
             intent.getStringExtra("document_id")
-                ?: intent.getStringExtra("documentId")
-                        ?: ""
+                ?: ""
 
-        findViewById<ImageButton>(R.id.btnBack)
-            .setOnClickListener {
-                onBackPressedDispatcher.onBackPressed()
-            }
 
-        findViewById<MaterialCardView>(R.id.cardEdit)
-            .setOnClickListener {
+        initializeViews()
 
-                val intent =
-                    Intent(
-                        this,
-                        EditDocumentActivity::class.java
-                    )
+        setupBackButton()
 
-                intent.putExtra(
-                    "document_id",
-                    documentId
-                )
-
-                startActivity(intent)
-            }
-
-        findViewById<MaterialCardView>(R.id.cardDelete)
-            .setOnClickListener {
-                showDeleteDialog()
-            }
+        setupButtons()
 
         loadDocument()
     }
 
-    private fun loadDocument() {
+    private fun initializeViews() {
 
-        val documents = getDocuments()
+        tvDocumentName =
+            findViewById(R.id.tvDocumentName)
 
-        for (i in 0 until documents.length()) {
+        tvCategory =
+            findViewById(R.id.tvCategory)
 
-            val document =
-                documents.getJSONObject(i)
+        tvStatus =
+            findViewById(R.id.tvStatus)
 
-            if (document.optString("id") == documentId) {
+        tvDocumentNumber =
+            findViewById(R.id.tvDocumentNumber)
 
-                val name =
-                    document.optString(
-                        "name",
-                        "Unnamed Document"
-                    )
+        tvIssueDate =
+            findViewById(R.id.tvIssueDate)
 
-                val category =
-                    document.optString(
-                        "type",
-                        document.optString(
-                            "category",
-                            "Other"
-                        )
-                    )
+        tvExpiryDate =
+            findViewById(R.id.tvExpiryDate)
 
-                val documentNumber =
-                    document.optString(
-                        "documentNumber",
-                        ""
-                    )
+        tvNotes =
+            findViewById(R.id.tvNotes)
+    }
+    private fun setupBackButton() {
 
-                val issueDate =
-                    formatDate(
-                        document.optString(
-                            "issueDate"
-                        )
-                    )
+        findViewById<ImageButton>(
+            R.id.btnBack
+        ).setOnClickListener {
 
-                val expiryDate =
-                    formatDate(
-                        document.optString(
-                            "expiryDate"
-                        )
-                    )
-
-                val notes =
-                    document.optString(
-                        "notes",
-                        ""
-                    )
-
-                val status =
-                    DateUtils.getStatus(
-                        document.optString(
-                            "expiryDate"
-                        )
-                    )
-
-                findViewById<TextView>(
-                    R.id.tvDocumentName
-                ).text = name
-
-                findViewById<TextView>(
-                    R.id.tvCategory
-                ).text = category
-
-                findViewById<TextView>(
-                    R.id.tvDocumentNumber
-                ).text =
-                    if (documentNumber.isBlank()) {
-                        "Not added"
-                    } else {
-                        documentNumber
-                    }
-
-                findViewById<TextView>(
-                    R.id.tvIssueDate
-                ).text = issueDate
-
-                findViewById<TextView>(
-                    R.id.tvExpiryDate
-                ).text = expiryDate
-
-                findViewById<TextView>(
-                    R.id.tvNotes
-                ).text =
-                    if (notes.isBlank()) {
-                        "No notes added"
-                    } else {
-                        notes
-                    }
-
-                updateStatus(status)
-
-                return
-            }
+            onBackPressedDispatcher.onBackPressed()
         }
-
-        Toast.makeText(
-            this,
-            "Document not found",
-            Toast.LENGTH_SHORT
-        ).show()
-
-        finish()
     }
 
-    private fun updateStatus(status: String) {
+    private fun setupButtons() {
 
-        val tvStatus =
-            findViewById<TextView>(
-                R.id.tvStatus
+        findViewById<MaterialCardView>(
+            R.id.cardEdit
+        ).setOnClickListener {
+
+            val intent =
+                Intent(
+                    this,
+                    EditDocumentActivity::class.java
+                )
+
+            intent.putExtra(
+                "document_id",
+                documentId
             )
 
-        when (status) {
+            startActivity(intent)
+        }
+        findViewById<MaterialCardView>(
+            R.id.cardReminder
+        ).setOnClickListener {
+
+            showReminderDialog()
+        }
+        findViewById<MaterialCardView>(
+            R.id.cardDelete
+        ).setOnClickListener {
+
+            showDeleteConfirmation()
+        }
+    }
+
+    private fun loadDocument() {
+
+        val preferences =
+            getSharedPreferences(
+                "DocumentStorage",
+                Context.MODE_PRIVATE
+            )
+
+
+        val data =
+            preferences.getString(
+                "documents",
+                "[]"
+            ) ?: "[]"
+
+
+        try {
+
+            val documents =
+                JSONArray(data)
+
+
+            var found = false
+
+
+            for (i in 0 until documents.length()) {
+
+                val document =
+                    documents.getJSONObject(i)
+
+
+                if (
+                    document.optString("id")
+                    == documentId
+                ) {
+
+                    found = true
+
+
+                    val name =
+                        document.optString(
+                            "name",
+                            "Document"
+                        )
+
+
+                    val category =
+                        document.optString(
+                            "type",
+                            document.optString(
+                                "category",
+                                "Other"
+                            )
+                        )
+
+
+                    val documentNumber =
+                        document.optString(
+                            "documentNumber",
+                            ""
+                        )
+
+
+                    val issueDate =
+                        document.optString(
+                            "issueDate",
+                            ""
+                        )
+
+
+                    val expiryDate =
+                        document.optString(
+                            "expiryDate",
+                            ""
+                        )
+
+
+                    val notes =
+                        document.optString(
+                            "notes",
+                            ""
+                        )
+
+
+                    tvDocumentName.text =
+                        name
+
+
+                    tvCategory.text =
+                        category
+
+
+                    tvDocumentNumber.text =
+                        if (
+                            documentNumber.isBlank()
+                        ) {
+                            "Not added"
+                        } else {
+                            documentNumber
+                        }
+
+
+                    tvIssueDate.text =
+                        if (
+                            issueDate.isBlank()
+                        ) {
+                            "Not available"
+                        } else {
+                            issueDate
+                        }
+
+
+                    tvExpiryDate.text =
+                        if (
+                            expiryDate.isBlank()
+                        ) {
+                            "Not available"
+                        } else {
+                            expiryDate
+                        }
+
+
+                    tvNotes.text =
+                        if (
+                            notes.isBlank()
+                        ) {
+                            "No notes added"
+                        } else {
+                            notes
+                        }
+
+
+                    // -----------------------------
+                    // Status
+                    // -----------------------------
+
+                    val status =
+                        if (expiryDate.isBlank()) {
+
+                            "VALID"
+
+                        } else {
+
+                            DateUtils.getStatus(
+                                expiryDate
+                            )
+                        }
+
+
+                    tvStatus.text =
+                        status
+
+
+                    updateStatusColor(
+                        status
+                    )
+
+
+                    return
+                }
+            }
+
+
+            if (!found) {
+
+                Toast.makeText(
+                    this,
+                    "Document not found",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                finish()
+            }
+
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            Toast.makeText(
+                this,
+                "Unable to load document",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+    private fun updateStatusColor(
+        status: String
+    ) {
+
+        when (status.uppercase()) {
 
             "VALID" -> {
-
-                tvStatus.text = "VALID"
 
                 tvStatus.setTextColor(
                     getColor(
                         R.color.status_valid
                     )
                 )
-
-                tvStatus.setBackgroundResource(
-                    R.drawable.bg_status_valid
-                )
             }
 
-            "EXPIRING SOON" -> {
 
-                tvStatus.text =
-                    "EXPIRING SOON"
+            "EXPIRING SOON" -> {
 
                 tvStatus.setTextColor(
                     getColor(
                         R.color.status_due_soon
                     )
                 )
-
-                tvStatus.setBackgroundResource(
-                    R.drawable.bg_status_soon
-                )
             }
 
-            "EXPIRED" -> {
 
-                tvStatus.text = "EXPIRED"
+            "EXPIRED" -> {
 
                 tvStatus.setTextColor(
                     getColor(
                         R.color.status_expired
                     )
                 )
-
-                tvStatus.setBackgroundResource(
-                    R.drawable.bg_status_expired
-                )
             }
 
-            else -> {
 
-                tvStatus.text = status
+            else -> {
 
                 tvStatus.setTextColor(
                     getColor(
@@ -240,120 +348,358 @@ class DocumentDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun formatDate(value: String): String {
+    private fun showReminderDialog() {
 
-        if (value.isBlank()) {
-            return "Not available"
-        }
-
-        return try {
-
-            val millis =
-                value.toLong()
-
-            displayFormat.format(
-                Date(millis)
+        val options =
+            arrayOf(
+                "7 days before",
+                "14 days before",
+                "30 days before",
+                "3 months before",
+                "6 months before"
             )
 
-        } catch (e: Exception) {
-
-            value
-        }
-    }
-
-    private fun getDocuments(): JSONArray {
 
         val preferences =
             getSharedPreferences(
-                preferencesName,
+                "DocumentStorage",
                 Context.MODE_PRIVATE
             )
 
+
         val data =
             preferences.getString(
-                documentsKey,
+                "documents",
                 "[]"
-            )
+            ) ?: "[]"
 
-        return try {
-            JSONArray(data)
+
+        var currentReminder =
+            "7 days before"
+
+
+        // Find currently saved reminder
+        try {
+
+            val documents =
+                JSONArray(data)
+
+
+            for (i in 0 until documents.length()) {
+
+                val document =
+                    documents.getJSONObject(i)
+
+
+                if (
+                    document.optString("id")
+                    == documentId
+                ) {
+
+                    currentReminder =
+                        document.optString(
+                            "reminderPeriod",
+                            "7 days before"
+                        )
+
+                    break
+                }
+            }
+
         } catch (e: Exception) {
-            JSONArray()
+
+            e.printStackTrace()
         }
-    }
 
-    private fun saveDocuments(
-        documents: JSONArray
-    ) {
 
-        getSharedPreferences(
-            preferencesName,
-            Context.MODE_PRIVATE
-        )
-            .edit()
-            .putString(
-                documentsKey,
-                documents.toString()
+        var selectedIndex =
+            options.indexOf(
+                currentReminder
             )
-            .apply()
-    }
 
-    private fun showDeleteDialog() {
 
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Delete Document")
-            .setMessage(
-                "Are you sure you want to delete this document?"
+        if (selectedIndex < 0) {
+            selectedIndex = 0
+        }
+
+
+        AlertDialog.Builder(this)
+
+            .setTitle(
+                "Set Reminder"
             )
+
+            .setSingleChoiceItems(
+                options,
+                selectedIndex
+            ) { dialog, which ->
+
+                val selectedReminder =
+                    options[which]
+
+
+                saveReminder(
+                    selectedReminder
+                )
+
+
+                dialog.dismiss()
+            }
+
             .setNegativeButton(
                 "Cancel",
                 null
             )
+
+            .show()
+    }
+
+    private fun saveReminder(
+        reminderPeriod: String
+    ) {
+
+        val preferences =
+            getSharedPreferences(
+                "DocumentStorage",
+                Context.MODE_PRIVATE
+            )
+
+
+        val data =
+            preferences.getString(
+                "documents",
+                "[]"
+            ) ?: "[]"
+
+
+        try {
+
+            val documents =
+                JSONArray(data)
+
+
+            var updated = false
+
+
+            for (i in 0 until documents.length()) {
+
+                val document =
+                    documents.getJSONObject(i)
+
+
+                if (
+                    document.optString("id")
+                    == documentId
+                ) {
+
+                    document.put(
+                        "reminderPeriod",
+                        reminderPeriod
+                    )
+
+
+                    // Reset notification flag
+                    document.put(
+                        "lastReminderDate",
+                        ""
+                    )
+
+
+                    updated = true
+
+                    break
+                }
+            }
+
+
+            if (updated) {
+
+                preferences.edit()
+                    .putString(
+                        "documents",
+                        documents.toString()
+                    )
+                    .apply()
+
+
+                // Make sure daily checking is running
+                ReminderScheduler
+                    .scheduleDailyReminder(
+                        this
+                    )
+
+
+                Toast.makeText(
+                    this,
+                    "Reminder set: $reminderPeriod",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+            } else {
+
+                Toast.makeText(
+                    this,
+                    "Document not found",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            Toast.makeText(
+                this,
+                "Unable to set reminder",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun showDeleteConfirmation() {
+
+        AlertDialog.Builder(this)
+
+            .setTitle(
+                "Delete Document"
+            )
+
+            .setMessage(
+                "Are you sure you want to delete this document?"
+            )
+
+            .setNegativeButton(
+                "Cancel",
+                null
+            )
+
             .setPositiveButton(
                 "Delete"
             ) { _, _ ->
 
                 deleteDocument()
             }
+
             .show()
     }
 
     private fun deleteDocument() {
 
-        val oldDocuments =
-            getDocuments()
+        val preferences =
+            getSharedPreferences(
+                "DocumentStorage",
+                Context.MODE_PRIVATE
+            )
 
-        val newDocuments =
-            JSONArray()
 
-        for (i in 0 until oldDocuments.length()) {
+        val data =
+            preferences.getString(
+                "documents",
+                "[]"
+            ) ?: "[]"
 
-            val document =
-                oldDocuments.getJSONObject(i)
+
+        try {
+
+            val documents =
+                JSONArray(data)
+
+
+            val remainingDocuments =
+                JSONArray()
+
+
+            var deletedFilePath =
+                ""
+
+
+            for (i in 0 until documents.length()) {
+
+                val document =
+                    documents.getJSONObject(i)
+
+
+                if (
+                    document.optString("id")
+                    == documentId
+                ) {
+
+                    // Get saved attachment path
+                    deletedFilePath =
+                        document.optString(
+                            "filePath",
+                            ""
+                        )
+
+                } else {
+
+                    remainingDocuments.put(
+                        document
+                    )
+                }
+            }
 
             if (
-                document.optString("id")
-                != documentId
+                deletedFilePath.isNotBlank()
             ) {
-                newDocuments.put(document)
+
+                try {
+
+                    val file =
+                        File(
+                            deletedFilePath
+                        )
+
+                    if (file.exists()) {
+                        file.delete()
+                    }
+
+                } catch (e: Exception) {
+
+                    e.printStackTrace()
+                }
             }
+
+
+            preferences.edit()
+                .putString(
+                    "documents",
+                    remainingDocuments.toString()
+                )
+                .apply()
+
+
+            Toast.makeText(
+                this,
+                "Document deleted",
+                Toast.LENGTH_SHORT
+            ).show()
+
+
+            finish()
+
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            Toast.makeText(
+                this,
+                "Unable to delete document",
+                Toast.LENGTH_SHORT
+            ).show()
         }
-
-        saveDocuments(newDocuments)
-
-        Toast.makeText(
-            this,
-            "Document deleted",
-            Toast.LENGTH_SHORT
-        ).show()
-
-        finish()
     }
 
     override fun onResume() {
+
         super.onResume()
 
-        if (documentId.isNotBlank()) {
+        if (
+            ::tvDocumentName.isInitialized
+        ) {
+
             loadDocument()
         }
     }

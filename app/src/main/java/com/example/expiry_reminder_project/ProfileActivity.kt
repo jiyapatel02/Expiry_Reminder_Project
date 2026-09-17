@@ -21,8 +21,6 @@ class ProfileActivity : AppCompatActivity() {
         loadProfile()
     }
 
-    // ---------------- BACK BUTTON ----------------
-
     private fun setupBackButton() {
 
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
@@ -30,11 +28,8 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    // ---------------- PROFILE ACTIONS ----------------
-
     private fun setupProfileActions() {
 
-        // Edit Profile
         findViewById<MaterialCardView>(R.id.btnEditProfile)
             .setOnClickListener {
 
@@ -46,7 +41,6 @@ class ProfileActivity : AppCompatActivity() {
                 )
             }
 
-        // Change Password
         findViewById<MaterialCardView>(R.id.cardChangePassword)
             .setOnClickListener {
 
@@ -58,7 +52,6 @@ class ProfileActivity : AppCompatActivity() {
                 )
             }
 
-        // Privacy & Security
         findViewById<MaterialCardView>(R.id.cardPrivacy)
             .setOnClickListener {
                 Toast.makeText(
@@ -68,7 +61,6 @@ class ProfileActivity : AppCompatActivity() {
                 ).show()
             }
 
-        // Notification Settings
         findViewById<MaterialCardView>(R.id.cardNotifications)
             .setOnClickListener {
 
@@ -80,7 +72,6 @@ class ProfileActivity : AppCompatActivity() {
                 )
             }
 
-        // App Settings
         findViewById<MaterialCardView>(R.id.cardSettings)
             .setOnClickListener {
 
@@ -92,7 +83,6 @@ class ProfileActivity : AppCompatActivity() {
                 )
             }
 
-        // Logout
         findViewById<MaterialCardView>(R.id.btnLogout)
             .setOnClickListener {
 
@@ -100,7 +90,6 @@ class ProfileActivity : AppCompatActivity() {
             }
     }
 
-    // ---------------- LOAD PROFILE ----------------
 
     private fun loadProfile() {
 
@@ -136,7 +125,6 @@ class ProfileActivity : AppCompatActivity() {
                 ?: "U"
     }
 
-    // ---------------- LOGOUT CONFIRMATION ----------------
 
     private fun showLogoutConfirmation() {
 
@@ -157,8 +145,6 @@ class ProfileActivity : AppCompatActivity() {
             }
             .show()
     }
-
-    // ---------------- LOGOUT ----------------
 
     private fun logout() {
 
@@ -188,7 +174,6 @@ class ProfileActivity : AppCompatActivity() {
         finish()
     }
 
-    // ---------------- REFRESH PROFILE ----------------
 
     override fun onResume() {
 

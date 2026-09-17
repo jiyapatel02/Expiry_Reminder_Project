@@ -42,10 +42,6 @@ class DocumentsActivity : AppCompatActivity() {
         loadDocuments()
     }
 
-    // ---------------------------------------------------------
-    // INITIALIZE
-    // ---------------------------------------------------------
-
     private fun initializeViews() {
 
         recyclerDocuments =
@@ -59,11 +55,6 @@ class DocumentsActivity : AppCompatActivity() {
 
         updateFilterStyle()
     }
-
-    // ---------------------------------------------------------
-    // RECYCLER VIEW
-    // ---------------------------------------------------------
-
     private fun setupRecyclerView() {
 
         adapter = DocumentAdapter(
@@ -78,10 +69,6 @@ class DocumentsActivity : AppCompatActivity() {
             adapter
     }
 
-    // ---------------------------------------------------------
-    // CLICK EVENTS
-    // ---------------------------------------------------------
-
     private fun setupClicks() {
 
         // Back button
@@ -93,8 +80,6 @@ class DocumentsActivity : AppCompatActivity() {
                 .onBackPressed()
         }
 
-
-        // Add document
         findViewById<MaterialCardView>(
             R.id.btnAddDocument
         ).setOnClickListener {
@@ -107,8 +92,6 @@ class DocumentsActivity : AppCompatActivity() {
             )
         }
 
-
-        // All
         findViewById<TextView>(
             R.id.filterAll
         ).setOnClickListener {
@@ -119,8 +102,6 @@ class DocumentsActivity : AppCompatActivity() {
             applyFilters()
         }
 
-
-        // Valid
         findViewById<TextView>(
             R.id.filterValid
         ).setOnClickListener {
@@ -131,8 +112,6 @@ class DocumentsActivity : AppCompatActivity() {
             applyFilters()
         }
 
-
-        // Expiring soon
         findViewById<TextView>(
             R.id.filterSoon
         ).setOnClickListener {
@@ -143,8 +122,6 @@ class DocumentsActivity : AppCompatActivity() {
             applyFilters()
         }
 
-
-        // Expired
         findViewById<TextView>(
             R.id.filterExpired
         ).setOnClickListener {
@@ -155,8 +132,6 @@ class DocumentsActivity : AppCompatActivity() {
             applyFilters()
         }
 
-
-        // Bottom navigation - Home
         findViewById<TextView>(
             R.id.navHome
         ).setOnClickListener {
@@ -175,16 +150,12 @@ class DocumentsActivity : AppCompatActivity() {
             finish()
         }
 
-
-        // Bottom navigation - Documents
         findViewById<TextView>(
             R.id.navDocuments
         ).setOnClickListener {
             // Already on Documents
         }
 
-
-        // Bottom navigation - Renewal
         findViewById<TextView>(
             R.id.navRenewal
         ).setOnClickListener {
@@ -197,8 +168,6 @@ class DocumentsActivity : AppCompatActivity() {
             )
         }
 
-
-        // Bottom navigation - Settings
         findViewById<TextView>(
             R.id.navSettings
         ).setOnClickListener {
@@ -211,10 +180,6 @@ class DocumentsActivity : AppCompatActivity() {
             )
         }
     }
-
-    // ---------------------------------------------------------
-    // SEARCH
-    // ---------------------------------------------------------
 
     private fun setupSearch() {
 
@@ -246,10 +211,6 @@ class DocumentsActivity : AppCompatActivity() {
             }
         )
     }
-
-    // ---------------------------------------------------------
-    // LOAD DOCUMENTS
-    // ---------------------------------------------------------
 
     private fun loadDocuments() {
 
@@ -334,10 +295,6 @@ class DocumentsActivity : AppCompatActivity() {
         applyFilters()
     }
 
-    // ---------------------------------------------------------
-    // SEARCH + FILTER
-    // ---------------------------------------------------------
-
     private fun applyFilters() {
 
         val searchText =
@@ -384,10 +341,6 @@ class DocumentsActivity : AppCompatActivity() {
         )
     }
 
-    // ---------------------------------------------------------
-    // EMPTY STATE
-    // ---------------------------------------------------------
-
     private fun updateEmptyState(
         isEmpty: Boolean
     ) {
@@ -416,10 +369,6 @@ class DocumentsActivity : AppCompatActivity() {
                 View.GONE
         }
     }
-
-    // ---------------------------------------------------------
-    // FILTER STYLE
-    // ---------------------------------------------------------
 
     private fun updateFilterStyle() {
 
@@ -494,10 +443,6 @@ class DocumentsActivity : AppCompatActivity() {
             )
         }
     }
-
-    // ---------------------------------------------------------
-    // REFRESH
-    // ---------------------------------------------------------
 
     override fun onResume() {
 

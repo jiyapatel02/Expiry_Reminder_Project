@@ -3,8 +3,10 @@ package com.example.expiry_reminder_project
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.example.expiry_reminder_project.utils.DateUtils
 import org.json.JSONArray
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class ReminderReceiver : BroadcastReceiver() {
 
@@ -13,14 +15,23 @@ class ReminderReceiver : BroadcastReceiver() {
         intent: Intent?
     ) {
 
-        val preferences = context.getSharedPreferences(
-            "ExpiryReminder",
-            Context.MODE_PRIVATE
-        )
+        checkAllDocuments(context)
+    }
 
-        // Check whether notifications are enabled
+
+    private fun checkAllDocuments(
+        context: Context
+    ) {
+
+        val settings =
+            context.getSharedPreferences(
+                "ExpiryReminder",
+                Context.MODE_PRIVATE
+            )
+
+        // Notification ON/OFF
         val notificationsEnabled =
-            preferences.getBoolean(
+            settings.getBoolean(
                 "notifications",
                 true
             )
@@ -29,11 +40,6 @@ class ReminderReceiver : BroadcastReceiver() {
             return
         }
 
-        val reminderPeriod =
-            preferences.getInt(
-                "reminder_period",
-                7
-            )
 
         val documentPreferences =
             context.getSharedPreferences(
@@ -47,119 +53,287 @@ class ReminderReceiver : BroadcastReceiver() {
                 "[]"
             ) ?: "[]"
 
-        val documents = try {
-            JSONArray(data)
-        } catch (e: Exception) {
-            JSONArray()
-        }
 
-        for (i in 0 until documents.length()) {
-
-            val document =
-                documents.getJSONObject(i)
-
-            val id =
-                document.optString("id")
-
-            val name =
-                document.optString(
-                    "name",
-                    "Document"
-                )
-
-            val expiryDate =
-                document.optString(
-                    "expiryDate",
-                    ""
-                )
-
-            if (expiryDate.isBlank()) {
-                continue
+        val documents =
+            try {
+                JSONArray(data)
+            } catch (e: Exception) {
+                JSONArray()
             }
 
-            val status =
-                DateUtils.getStatus(expiryDate)
 
-            val days =
-                DateUtils.getDaysRemaining(expiryDate)
+        // Check every document
+        for (i in 0 until documents.length()) {
 
-            when (status) {
+            try {
 
-                "EXPIRED" -> {
+                val document =
+                    documents.getJSONObject(i)
 
-                    sendOncePerDay(
-                        context,
-                        id,
-                        "Document Expired",
-                        "$name has expired."
+                val documentId =
+                    document.optString("id")
+
+                val documentName =
+                    document.optString(
+                        "name",
+                        "Document"
                     )
+
+                val expiryDate =
+                    document.optString(
+                        "expiryDate",
+                        ""
+                    )
+
+                // Each document has its own reminder
+                val reminderPeriod =
+                    document.optString(
+                        "reminderPeriod",
+                        "7 days before"
+                    )
+
+                if (
+                    documentId.isEmpty() ||
+                    expiryDate.isEmpty()
+                ) {
+                    continue
                 }
 
-                "EXPIRING SOON" -> {
 
-                    if (days <= reminderPeriod) {
+                checkDocument(
+                    context,
+                    documentId,
+                    documentName,
+                    expiryDate,
+                    reminderPeriod
+                )
 
-                        val message =
-                            if (days == 0L) {
-                                "$name expires today."
-                            } else {
-                                "$name expires in $days days."
-                            }
+            } catch (e: Exception) {
 
-                        sendOncePerDay(
-                            context,
-                            id,
-                            "Document Expiry Reminder",
-                            message
-                        )
-                    }
-                }
+                e.printStackTrace()
             }
         }
     }
 
-    private fun sendOncePerDay(
+
+    private fun checkDocument(
         context: Context,
         documentId: String,
-        title: String,
-        message: String
+        documentName: String,
+        expiryDate: String,
+        reminderPeriod: String
     ) {
 
-        val preferences =
-            context.getSharedPreferences(
-                "ReminderNotifications",
-                Context.MODE_PRIVATE
+        val dateFormat =
+            SimpleDateFormat(
+                "dd/MM/yyyy",
+                Locale.getDefault()
             )
 
-        val today =
-            java.text.SimpleDateFormat(
-                "yyyy-MM-dd",
-                java.util.Locale.getDefault()
-            ).format(java.util.Date())
 
-        val key =
-            "last_notification_$documentId"
+        val expiry =
+            try {
+                dateFormat.parse(expiryDate)
+            } catch (e: Exception) {
+                null
+            }
 
-        val lastNotification =
-            preferences.getString(
-                key,
-                ""
-            )
 
-        // Prevent duplicate notifications on the same day
-        if (lastNotification == today) {
+        if (expiry == null) {
             return
         }
 
-        NotificationHelper.showNotification(
-            context,
-            documentId.hashCode(),
-            title,
-            message
+
+        val today =
+            Calendar.getInstance()
+
+        today.set(
+            Calendar.HOUR_OF_DAY,
+            0
         )
 
-        preferences.edit()
-            .putString(key, today)
-            .apply()
+        today.set(
+            Calendar.MINUTE,
+            0
+        )
+
+        today.set(
+            Calendar.SECOND,
+            0
+        )
+
+        today.set(
+            Calendar.MILLISECOND,
+            0
+        )
+
+
+        val expiryCalendar =
+            Calendar.getInstance()
+
+        expiryCalendar.time =
+            expiry
+
+        expiryCalendar.set(
+            Calendar.HOUR_OF_DAY,
+            0
+        )
+
+        expiryCalendar.set(
+            Calendar.MINUTE,
+            0
+        )
+
+        expiryCalendar.set(
+            Calendar.SECOND,
+            0
+        )
+
+        expiryCalendar.set(
+            Calendar.MILLISECOND,
+            0
+        )
+
+        if (
+            expiryCalendar.before(today)
+        ) {
+
+            sendNotification(
+                context,
+                documentId,
+                documentName,
+                expiryDate,
+                "$documentName has expired. " +
+                        "Please renew it as soon as possible."
+            )
+
+            return
+        }
+
+
+        val reminderDate =
+            Calendar.getInstance()
+
+        reminderDate.time =
+            today.time
+
+
+        when (reminderPeriod) {
+
+            "7 days before" -> {
+
+                reminderDate.add(
+                    Calendar.DAY_OF_YEAR,
+                    7
+                )
+            }
+
+            "14 days before" -> {
+
+                reminderDate.add(
+                    Calendar.DAY_OF_YEAR,
+                    14
+                )
+            }
+
+            "30 days before" -> {
+
+                reminderDate.add(
+                    Calendar.DAY_OF_YEAR,
+                    30
+                )
+            }
+
+            "3 months before" -> {
+
+                reminderDate.add(
+                    Calendar.MONTH,
+                    3
+                )
+            }
+
+            "6 months before" -> {
+
+                reminderDate.add(
+                    Calendar.MONTH,
+                    6
+                )
+            }
+
+            else -> {
+
+                reminderDate.add(
+                    Calendar.DAY_OF_YEAR,
+                    7
+                )
+            }
+        }
+
+
+        if (
+            !expiryCalendar.after(reminderDate)
+        ) {
+
+            val difference =
+                expiryCalendar.timeInMillis -
+                        today.timeInMillis
+
+            val daysRemaining =
+                difference /
+                        (
+                                1000L *
+                                        60L *
+                                        60L *
+                                        24L
+                                )
+
+
+            val message =
+                if (daysRemaining == 0L) {
+
+                    "$documentName expires today. " +
+                            "Please renew it today."
+
+                } else {
+
+                    "$documentName expires in " +
+                            "$daysRemaining days " +
+                            "on $expiryDate. " +
+                            "Please renew it before expiry."
+                }
+
+
+            sendNotification(
+                context,
+                documentId,
+                documentName,
+                expiryDate,
+                message
+            )
+        }
+    }
+
+
+    private fun sendNotification(
+        context: Context,
+        documentId: String,
+        documentName: String,
+        expiryDate: String,
+        message: String
+    ) {
+
+        val notificationId =
+            documentId.hashCode()
+                .and(0x7FFFFFFF)
+
+
+        NotificationHelper.showDocumentReminder(
+            context,
+            notificationId,
+            documentId,
+            documentName,
+            expiryDate,
+            message
+        )
     }
 }

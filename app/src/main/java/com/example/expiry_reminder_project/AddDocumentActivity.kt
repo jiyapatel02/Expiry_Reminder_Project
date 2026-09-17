@@ -13,6 +13,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.card.MaterialCardView
 import org.json.JSONArray
@@ -28,39 +29,50 @@ class AddDocumentActivity : AppCompatActivity() {
 
     private lateinit var etDocumentName: EditText
     private lateinit var etDocumentNumber: EditText
+
     private lateinit var spinnerCategory: Spinner
     private lateinit var spinnerFolder: Spinner
+
     private lateinit var tvIssueDate: TextView
     private lateinit var tvExpiryDate: TextView
+
     private lateinit var etNotes: EditText
-    private lateinit var btnSave: MaterialCardView
+
     private lateinit var tvSelectedFile: TextView
+    private lateinit var tvReminderButton: TextView
 
-    // Selected file information
     private var selectedFileUri: Uri? = null
-    private var selectedFileName: String = ""
-    private var selectedFileType: String = ""
 
-    private val categories = arrayOf(
-        "Select Category",
-        "Identity",
-        "Education",
-        "Finance",
-        "Insurance",
-        "Vehicle",
-        "Medical",
-        "Employment",
-        "Property",
-        "Other"
-    )
+    private var selectedFileName = ""
+
+    private var selectedFileType = ""
+
+    private var selectedFilePath = ""
+
+    private var selectedReminderPeriod = ""
+
+    private var selectedFolderId = ""
+
 
     private val dateFormat =
-        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        SimpleDateFormat(
+            "dd/MM/yyyy",
+            Locale.getDefault()
+        )
 
-
-    // =========================================================
-    // FILE PICKER
-    // =========================================================
+    private val categories =
+        arrayOf(
+            "Select Category",
+            "Identity",
+            "Education",
+            "Finance",
+            "Insurance",
+            "Vehicle",
+            "Medical",
+            "Employment",
+            "Property",
+            "Other"
+        )
 
     private val filePickerLauncher =
         registerForActivityResult(
@@ -70,16 +82,15 @@ class AddDocumentActivity : AppCompatActivity() {
             if (uri == null) {
                 return@registerForActivityResult
             }
-
             selectedFileUri = uri
 
-            selectedFileName = getFileName(uri)
+            selectedFileName =
+                getFileName(uri)
 
             selectedFileType =
                 contentResolver.getType(uri)
                     ?: "application/octet-stream"
 
-            // Keep permission if the selected provider supports it
             try {
 
                 contentResolver.takePersistableUriPermission(
@@ -92,8 +103,10 @@ class AddDocumentActivity : AppCompatActivity() {
                 e.printStackTrace()
             }
 
+
             tvSelectedFile.text =
                 "Selected: $selectedFileName"
+
 
             Toast.makeText(
                 this,
@@ -102,106 +115,158 @@ class AddDocumentActivity : AppCompatActivity() {
             ).show()
         }
 
+    override fun onCreate(
+        savedInstanceState: Bundle?
+    ) {
 
-    // =========================================================
-    // ON CREATE
-    // =========================================================
+        super.onCreate(
+            savedInstanceState
+        )
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        setContentView(
+            R.layout.activity_add_document
+        )
 
-        setContentView(R.layout.activity_add_document)
 
         initializeViews()
+
         setupBackButton()
+
         setupCategorySpinner()
-        setupFolderSpinner()
+
+        loadFolders()
+
         setupDatePickers()
+
         setupFilePicker()
+
+        setupReminderButton()
+
         setupSaveButton()
+
+        selectedFolderId =
+            intent.getStringExtra(
+                "folder_id"
+            ) ?: ""
+
+
+        if (
+            selectedFolderId.isNotEmpty()
+        ) {
+
+            spinnerFolder.post {
+
+                selectFolderById(
+                    selectedFolderId
+                )
+            }
+        }
     }
-
-
-    // =========================================================
-    // INITIALIZE VIEWS
-    // =========================================================
 
     private fun initializeViews() {
 
         etDocumentName =
-            findViewById(R.id.etDocumentName)
+            findViewById(
+                R.id.etDocumentName
+            )
+
 
         etDocumentNumber =
-            findViewById(R.id.etDocumentNumber)
+            findViewById(
+                R.id.etDocumentNumber
+            )
+
 
         spinnerCategory =
-            findViewById(R.id.spinnerCategory)
+            findViewById(
+                R.id.spinnerCategory
+            )
+
 
         spinnerFolder =
-            findViewById(R.id.spinnerFolder)
+            findViewById(
+                R.id.spinnerFolder
+            )
+
 
         tvIssueDate =
-            findViewById(R.id.tvIssueDate)
+            findViewById(
+                R.id.tvIssueDate
+            )
+
 
         tvExpiryDate =
-            findViewById(R.id.tvExpiryDate)
+            findViewById(
+                R.id.tvExpiryDate
+            )
+
 
         etNotes =
-            findViewById(R.id.etNotes)
+            findViewById(
+                R.id.etNotes
+            )
 
-        btnSave =
-            findViewById(R.id.btnSave)
 
         tvSelectedFile =
-            findViewById(R.id.tvSelectedFile)
+            findViewById(
+                R.id.tvSelectedFile
+            )
+
+
+        tvReminderButton =
+            findViewById(
+                R.id.tvReminderButton
+            )
     }
-
-
-    // =========================================================
-    // BACK BUTTON
-    // =========================================================
 
     private fun setupBackButton() {
 
-        findViewById<ImageButton>(R.id.btnBack)
-            .setOnClickListener {
+        findViewById<ImageButton>(
+            R.id.btnBack
+        ).setOnClickListener {
 
-                onBackPressedDispatcher.onBackPressed()
-            }
+            onBackPressedDispatcher
+                .onBackPressed()
+        }
     }
-
-
-    // =========================================================
-    // CATEGORY SPINNER
-    // =========================================================
 
     private fun setupCategorySpinner() {
 
-        val adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_item,
-            categories
-        )
+        val adapter =
+            ArrayAdapter(
+                this,
+                android.R.layout.simple_spinner_item,
+                categories
+            )
+
 
         adapter.setDropDownViewResource(
             android.R.layout.simple_spinner_dropdown_item
         )
 
-        spinnerCategory.adapter = adapter
+
+        spinnerCategory.adapter =
+            adapter
     }
 
+    private fun loadFolders() {
 
-    // =========================================================
-    // FOLDER SPINNER
-    // =========================================================
+        val folderNames =
+            mutableListOf<String>()
 
-    private fun setupFolderSpinner() {
+        val folderIds =
+            mutableListOf<String>()
 
-        val folderNames = ArrayList<String>()
-        val folderIds = ArrayList<String>()
 
-        folderNames.add("No Folder")
-        folderIds.add("")
+        // Default
+        folderNames.add(
+            "No Folder"
+        )
+
+        folderIds.add(
+            ""
+        )
+
 
         val preferences =
             getSharedPreferences(
@@ -209,33 +274,49 @@ class AddDocumentActivity : AppCompatActivity() {
                 Context.MODE_PRIVATE
             )
 
+
         val data =
             preferences.getString(
                 "folders",
                 "[]"
             ) ?: "[]"
 
+
         try {
 
             val folders =
                 JSONArray(data)
 
-            for (i in 0 until folders.length()) {
+
+            for (
+            i in 0 until folders.length()
+            ) {
 
                 val folder =
                     folders.getJSONObject(i)
 
+
                 val id =
-                    folder.optString("id")
+                    folder.optString(
+                        "id"
+                    )
+
 
                 val name =
                     folder.optString(
                         "name",
-                        "Unnamed Folder"
+                        "Folder"
                     )
 
-                folderIds.add(id)
-                folderNames.add(name)
+
+                folderIds.add(
+                    id
+                )
+
+
+                folderNames.add(
+                    name
+                )
             }
 
         } catch (e: Exception) {
@@ -243,97 +324,113 @@ class AddDocumentActivity : AppCompatActivity() {
             e.printStackTrace()
         }
 
-        val adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_item,
-            folderNames
-        )
+
+        val adapter =
+            ArrayAdapter(
+                this,
+                android.R.layout.simple_spinner_item,
+                folderNames
+            )
+
 
         adapter.setDropDownViewResource(
             android.R.layout.simple_spinner_dropdown_item
         )
 
-        spinnerFolder.adapter = adapter
 
-        // Keep folder IDs separately from displayed names
-        spinnerFolder.tag = folderIds
+        spinnerFolder.adapter =
+            adapter
+
+
+        // Store IDs inside Spinner tag
+        spinnerFolder.tag =
+            folderIds
     }
 
+    private fun selectFolderById(
+        folderId: String
+    ) {
 
-    // =========================================================
-    // DATE PICKERS
-    // =========================================================
+        val folderIds =
+            spinnerFolder.tag
+                    as? List<*>
+                ?: return
+
+
+        val position =
+            folderIds.indexOf(
+                folderId
+            )
+
+
+        if (position >= 0) {
+
+            spinnerFolder.setSelection(
+                position
+            )
+        }
+    }
 
     private fun setupDatePickers() {
+
+        tvIssueDate.setOnClickListener {
+
+            showDatePicker(
+                tvIssueDate
+            )
+        }
+
+
+        tvExpiryDate.setOnClickListener {
+
+            showDatePicker(
+                tvExpiryDate
+            )
+        }
+    }
+    private fun showDatePicker(
+        target: TextView
+    ) {
 
         val calendar =
             Calendar.getInstance()
 
 
-        // Issue Date
-        tvIssueDate.setOnClickListener {
+        val dialog =
+            DatePickerDialog(
+                this,
 
-            val picker =
-                DatePickerDialog(
-                    this,
-                    { _, year, month, dayOfMonth ->
+                { _, year, month, day ->
 
-                        calendar.set(
-                            year,
-                            month,
-                            dayOfMonth
+                    calendar.set(
+                        year,
+                        month,
+                        day
+                    )
+
+
+                    target.text =
+                        dateFormat.format(
+                            calendar.time
                         )
+                },
 
-                        tvIssueDate.text =
-                            dateFormat.format(
-                                calendar.time
-                            )
-                    },
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH)
+                calendar.get(
+                    Calendar.YEAR
+                ),
+
+                calendar.get(
+                    Calendar.MONTH
+                ),
+
+                calendar.get(
+                    Calendar.DAY_OF_MONTH
                 )
-
-            picker.show()
-        }
+            )
 
 
-        // Expiry Date
-        tvExpiryDate.setOnClickListener {
-
-            val expiryCalendar =
-                Calendar.getInstance()
-
-            val picker =
-                DatePickerDialog(
-                    this,
-                    { _, year, month, dayOfMonth ->
-
-                        expiryCalendar.set(
-                            year,
-                            month,
-                            dayOfMonth
-                        )
-
-                        tvExpiryDate.text =
-                            dateFormat.format(
-                                expiryCalendar.time
-                            )
-                    },
-                    expiryCalendar.get(Calendar.YEAR),
-                    expiryCalendar.get(Calendar.MONTH),
-                    expiryCalendar.get(Calendar.DAY_OF_MONTH)
-                )
-
-            picker.show()
-        }
+        dialog.show()
     }
-
-
-    // =========================================================
-    // FILE PICKER
-    // =========================================================
-
     private fun setupFilePicker() {
 
         findViewById<MaterialCardView>(
@@ -349,16 +446,18 @@ class AddDocumentActivity : AppCompatActivity() {
                 )
             )
         }
-
-
-        // Sample scan
         findViewById<TextView>(
             R.id.btnUseSample
         ).setOnClickListener {
 
             selectedFileUri = null
+
             selectedFileName = ""
+
             selectedFileType = ""
+
+            selectedFilePath = ""
+
 
             tvSelectedFile.text =
                 "Sample scan selected"
@@ -371,23 +470,82 @@ class AddDocumentActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupReminderButton() {
 
-    // =========================================================
-    // SAVE BUTTON
-    // =========================================================
+        findViewById<MaterialCardView>(
+            R.id.cardReminder
+        ).setOnClickListener {
+
+            showReminderDialog()
+        }
+    }
+    private fun showReminderDialog() {
+
+        val options =
+            arrayOf(
+                "7 days before",
+                "14 days before",
+                "30 days before",
+                "3 months before",
+                "6 months before"
+            )
+
+        var selectedIndex =
+            options.indexOf(
+                selectedReminderPeriod
+            )
+
+        if (selectedIndex < 0) {
+
+            selectedIndex = 0
+        }
+
+        AlertDialog.Builder(this)
+
+            .setTitle(
+                "Set Reminder"
+            )
+
+            .setSingleChoiceItems(
+                options,
+                selectedIndex
+            ) { dialog, which ->
+
+                selectedReminderPeriod =
+                    options[which]
+
+
+                tvReminderButton.text =
+                    "🔔  Reminder: $selectedReminderPeriod"
+
+
+                Toast.makeText(
+                    this,
+                    "Reminder set: $selectedReminderPeriod",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+
+                dialog.dismiss()
+            }
+
+            .setNegativeButton(
+                "Cancel",
+                null
+            )
+
+            .show()
+    }
 
     private fun setupSaveButton() {
 
-        btnSave.setOnClickListener {
+        findViewById<MaterialCardView>(
+            R.id.btnSave
+        ).setOnClickListener {
 
             saveDocument()
         }
     }
-
-
-    // =========================================================
-    // SAVE DOCUMENT
-    // =========================================================
 
     private fun saveDocument() {
 
@@ -396,36 +554,35 @@ class AddDocumentActivity : AppCompatActivity() {
                 .toString()
                 .trim()
 
-        val documentNumber =
+
+        val number =
             etDocumentNumber.text
                 .toString()
                 .trim()
 
+
         val category =
             spinnerCategory.selectedItem
                 ?.toString()
-                ?.trim()
                 ?: ""
+
 
         val issueDate =
             tvIssueDate.text
                 .toString()
                 .trim()
 
+
         val expiryDate =
             tvExpiryDate.text
                 .toString()
                 .trim()
 
+
         val notes =
             etNotes.text
                 .toString()
                 .trim()
-
-
-        // =====================================================
-        // VALIDATION
-        // =====================================================
 
         if (name.isEmpty()) {
 
@@ -437,10 +594,9 @@ class AddDocumentActivity : AppCompatActivity() {
             return
         }
 
-
         if (
-            category.isEmpty() ||
-            category == "Select Category"
+            category ==
+            "Select Category"
         ) {
 
             Toast.makeText(
@@ -452,11 +608,7 @@ class AddDocumentActivity : AppCompatActivity() {
             return
         }
 
-
-        if (
-            expiryDate.isEmpty() ||
-            expiryDate == "Select Expiry Date"
-        ) {
+        if (expiryDate.isEmpty()) {
 
             Toast.makeText(
                 this,
@@ -467,134 +619,46 @@ class AddDocumentActivity : AppCompatActivity() {
             return
         }
 
-
-        // =====================================================
-        // DATE VALIDATION
-        // =====================================================
-
-        if (
-            issueDate.isNotEmpty() &&
-            issueDate != "Select Issue Date"
-        ) {
-
-            try {
-
-                val issue =
-                    dateFormat.parse(issueDate)
-
-                val expiry =
-                    dateFormat.parse(expiryDate)
-
-                if (
-                    issue != null &&
-                    expiry != null &&
-                    expiry.before(issue)
-                ) {
-
-                    Toast.makeText(
-                        this,
-                        "Expiry date cannot be before issue date",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                    return
-                }
-
-            } catch (e: Exception) {
-
-                e.printStackTrace()
-            }
-        }
-
-
-        // =====================================================
-        // GET FOLDER ID
-        // =====================================================
+        var folderId = ""
 
         val folderIds =
-            spinnerFolder.tag as? ArrayList<String>
-
-        val selectedPosition =
-            spinnerFolder.selectedItemPosition
-
-        val folderId =
-            if (
-                folderIds != null &&
-                selectedPosition >= 0 &&
-                selectedPosition < folderIds.size
-            ) {
-
-                folderIds[selectedPosition]
-
-            } else {
-
-                ""
-            }
+            spinnerFolder.tag
+                    as? List<*>
 
 
-        // =====================================================
-        // COPY ACTUAL FILE INTO APP STORAGE
-        // =====================================================
+        if (
+            folderIds != null &&
+            spinnerFolder.selectedItemPosition <
+            folderIds.size
+        ) {
 
-        var localFilePath = ""
-
-        if (selectedFileUri != null) {
-
-            localFilePath =
-                copyFileToAppStorage(
-                    selectedFileUri!!
-                )
-
-            if (localFilePath.isEmpty()) {
-
-                Toast.makeText(
-                    this,
-                    "Unable to save the selected file",
-                    Toast.LENGTH_LONG
-                ).show()
-
-                return
-            }
+            folderId =
+                folderIds[
+                    spinnerFolder.selectedItemPosition
+                ]?.toString()
+                    ?: ""
         }
 
+        val documentId =
+            UUID.randomUUID().toString()
 
-        // =====================================================
-        // READ EXISTING DOCUMENTS
-        // =====================================================
+        if (
+            selectedFileUri != null
+        ) {
 
-        val preferences =
-            getSharedPreferences(
-                "DocumentStorage",
-                Context.MODE_PRIVATE
-            )
-
-        val data =
-            preferences.getString(
-                "documents",
-                "[]"
-            ) ?: "[]"
-
-        val documents =
-            try {
-
-                JSONArray(data)
-
-            } catch (e: Exception) {
-
-                JSONArray()
-            }
-
-
-        // =====================================================
-        // CREATE DOCUMENT JSON
-        // =====================================================
+            selectedFilePath =
+                copyFileToAppStorage(
+                    selectedFileUri!!,
+                    documentId
+                )
+        }
 
         val document =
             JSONObject()
 
         document.put(
             "id",
-            UUID.randomUUID().toString()
+            documentId
         )
 
         document.put(
@@ -607,7 +671,6 @@ class AddDocumentActivity : AppCompatActivity() {
             category
         )
 
-        // Compatibility with older code
         document.put(
             "category",
             category
@@ -615,7 +678,7 @@ class AddDocumentActivity : AppCompatActivity() {
 
         document.put(
             "documentNumber",
-            documentNumber
+            number
         )
 
         document.put(
@@ -638,44 +701,72 @@ class AddDocumentActivity : AppCompatActivity() {
             notes
         )
 
-
-        // =====================================================
-        // FILE INFORMATION
-        // =====================================================
-
         document.put(
             "fileName",
             selectedFileName
         )
+
 
         document.put(
             "fileMimeType",
             selectedFileType
         )
 
+
         document.put(
             "filePath",
-            localFilePath
+            selectedFilePath
         )
 
 
-        // Original URI kept for compatibility
         document.put(
             "fileUri",
-            selectedFileUri?.toString() ?: ""
+            selectedFileUri
+                ?.toString()
+                ?: ""
+        )
+
+        document.put(
+            "reminderPeriod",
+            selectedReminderPeriod
         )
 
 
-        // =====================================================
-        // ADD DOCUMENT
-        // =====================================================
+        document.put(
+            "reminderEnabled",
+            selectedReminderPeriod.isNotEmpty()
+        )
+        val preferences =
+            getSharedPreferences(
+                "DocumentStorage",
+                Context.MODE_PRIVATE
+            )
 
-        documents.put(document)
+
+        val oldData =
+            preferences.getString(
+                "documents",
+                "[]"
+            ) ?: "[]"
 
 
-        // =====================================================
-        // SAVE DOCUMENT JSON
-        // =====================================================
+        val documents =
+            try {
+
+                JSONArray(
+                    oldData
+                )
+
+            } catch (e: Exception) {
+
+                JSONArray()
+            }
+
+
+        documents.put(
+            document
+        )
+
 
         preferences.edit()
             .putString(
@@ -684,62 +775,80 @@ class AddDocumentActivity : AppCompatActivity() {
             )
             .apply()
 
+        if (
+            selectedReminderPeriod.isNotEmpty()
+        ) {
 
-        // =====================================================
-        // SUCCESS
-        // =====================================================
+            ReminderScheduler
+                .scheduleDailyReminder(
+                    this
+                )
+        }
+
+        val message =
+            if (
+                selectedReminderPeriod
+                    .isNotEmpty()
+            ) {
+
+                "Document saved with $selectedReminderPeriod reminder"
+
+            } else {
+
+                "Document saved successfully"
+            }
 
         Toast.makeText(
             this,
-            "Document saved successfully",
+            message,
             Toast.LENGTH_SHORT
         ).show()
+
 
         finish()
     }
 
-
-    // =========================================================
-    // COPY SELECTED FILE TO APP INTERNAL STORAGE
-    // =========================================================
-
     private fun copyFileToAppStorage(
-        uri: Uri
+        uri: Uri,
+        documentId: String
     ): String {
 
         return try {
 
-            val originalName =
-                getFileName(uri)
-
-            val safeName =
-                originalName
-                    .replace(
-                        Regex("[^a-zA-Z0-9._-]"),
-                        "_"
-                    )
-
-            val uniqueName =
-                "${System.currentTimeMillis()}_$safeName"
-
-
-            // App internal folder
-            val documentsFolder =
+            val documentsDirectory =
                 File(
                     filesDir,
                     "documents"
                 )
 
-            if (!documentsFolder.exists()) {
 
-                documentsFolder.mkdirs()
+            if (
+                !documentsDirectory.exists()
+            ) {
+
+                documentsDirectory.mkdirs()
             }
 
 
-            val destinationFile =
+            val originalName =
+                getFileName(
+                    uri
+                )
+
+
+            val safeName =
+                originalName.replace(
+                    Regex(
+                        "[^a-zA-Z0-9._-]"
+                    ),
+                    "_"
+                )
+
+
+            val file =
                 File(
-                    documentsFolder,
-                    uniqueName
+                    documentsDirectory,
+                    "${documentId}_$safeName"
                 )
 
 
@@ -747,98 +856,111 @@ class AddDocumentActivity : AppCompatActivity() {
                 contentResolver
                     .openInputStream(uri)
 
-            if (inputStream == null) {
+
+            if (
+                inputStream == null
+            ) {
 
                 return ""
             }
 
 
+            val outputStream =
+                FileOutputStream(
+                    file
+                )
+
+
             inputStream.use { input ->
 
-                FileOutputStream(
-                    destinationFile
-                ).use { output ->
+                outputStream.use { output ->
 
-                    val buffer =
-                        ByteArray(8192)
-
-                    var bytesRead: Int
-
-                    while (
-                        input.read(buffer)
-                            .also {
-                                bytesRead = it
-                            } != -1
-                    ) {
-
-                        output.write(
-                            buffer,
-                            0,
-                            bytesRead
-                        )
-                    }
-
-                    output.flush()
+                    input.copyTo(
+                        output
+                    )
                 }
             }
 
 
-            destinationFile.absolutePath
+            file.absolutePath
 
         } catch (e: Exception) {
 
             e.printStackTrace()
+
+
+            Toast.makeText(
+                this,
+                "Could not save selected file",
+                Toast.LENGTH_SHORT
+            ).show()
+
 
             ""
         }
     }
 
-
-    // =========================================================
-    // GET FILE NAME
-    // =========================================================
-
     private fun getFileName(
         uri: Uri
     ): String {
 
-        var fileName =
-            "document"
+        var result: String? = null
 
-        try {
 
-            contentResolver.query(
-                uri,
-                arrayOf(
-                    OpenableColumns.DISPLAY_NAME
-                ),
-                null,
-                null,
-                null
-            )?.use { cursor ->
+        if (
+            uri.scheme ==
+            "content"
+        ) {
 
-                val nameIndex =
-                    cursor.getColumnIndex(
+            val cursor =
+                contentResolver.query(
+                    uri,
+                    arrayOf(
                         OpenableColumns.DISPLAY_NAME
-                    )
+                    ),
+                    null,
+                    null,
+                    null
+                )
+
+
+            cursor?.use {
 
                 if (
-                    nameIndex >= 0 &&
-                    cursor.moveToFirst()
+                    it.moveToFirst()
                 ) {
 
-                    fileName =
-                        cursor.getString(
-                            nameIndex
+                    val index =
+                        it.getColumnIndex(
+                            OpenableColumns.DISPLAY_NAME
                         )
+
+
+                    if (
+                        index >= 0
+                    ) {
+
+                        result =
+                            it.getString(
+                                index
+                            )
+                    }
                 }
             }
-
-        } catch (e: Exception) {
-
-            e.printStackTrace()
         }
 
-        return fileName
+        if (
+            result == null
+        ) {
+
+            result =
+                uri.path
+                    ?.substringAfterLast(
+                        '/'
+                    )
+        }
+
+        return result
+            ?: "document"
     }
 }

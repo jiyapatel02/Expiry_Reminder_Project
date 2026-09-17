@@ -8,9 +8,9 @@ import java.util.Calendar
 
 object ReminderScheduler {
 
-    private const val REQUEST_CODE = 1001
+    private const val REQUEST_CODE = 5001
 
-    fun schedule(context: Context) {
+    fun scheduleDailyReminder(context: Context) {
 
         val alarmManager =
             context.getSystemService(
@@ -32,9 +32,10 @@ object ReminderScheduler {
                         PendingIntent.FLAG_IMMUTABLE
             )
 
-        // First notification check at 9:00 AM
-        val calendar = Calendar.getInstance()
+        val calendar =
+            Calendar.getInstance()
 
+        // Run every day at 9:00 AM
         calendar.set(
             Calendar.HOUR_OF_DAY,
             9
@@ -55,27 +56,26 @@ object ReminderScheduler {
             0
         )
 
-        // If 9 AM has already passed,
-        // run tomorrow
-        if (calendar.timeInMillis <= System.currentTimeMillis()) {
+        if (
+            calendar.timeInMillis <=
+            System.currentTimeMillis()
+        ) {
+
             calendar.add(
                 Calendar.DAY_OF_YEAR,
                 1
             )
         }
 
-        val interval =
-            AlarmManager.INTERVAL_DAY
-
         alarmManager.setInexactRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            interval,
+            AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
     }
 
-    fun cancel(context: Context) {
+    fun cancelDailyReminder(context: Context) {
 
         val alarmManager =
             context.getSystemService(
@@ -97,6 +97,8 @@ object ReminderScheduler {
                         PendingIntent.FLAG_IMMUTABLE
             )
 
-        alarmManager.cancel(pendingIntent)
+        alarmManager.cancel(
+            pendingIntent
+        )
     }
 }

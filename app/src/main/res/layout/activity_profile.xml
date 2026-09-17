@@ -7,9 +7,6 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-
-    <!-- ================= TOP HEADER ================= -->
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topHeader"
         android:layout_width="0dp"
@@ -19,9 +16,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-
-
-        <!-- Proper Back Arrow -->
 
         <ImageButton
             android:id="@+id/btnBack"
@@ -35,9 +29,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
-
-
-        <!-- Page Title -->
 
         <TextView
             android:id="@+id/tvTitle"
@@ -53,8 +44,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-    <!-- ================= SCROLL CONTENT ================= -->
 
     <ScrollView
         android:id="@+id/profileScroll"
@@ -76,8 +65,6 @@
             android:layout_height="wrap_content">
 
 
-            <!-- ================= PROFILE CARD ================= -->
-
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/profileCard"
                 android:layout_width="0dp"
@@ -97,9 +84,6 @@
                     android:layout_height="match_parent"
                     android:padding="18dp">
 
-
-                    <!-- Avatar -->
-
                     <TextView
                         android:id="@+id/tvAvatar"
                         android:layout_width="64dp"
@@ -114,9 +98,6 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent" />
 
-
-                    <!-- Name -->
-
                     <TextView
                         android:id="@+id/tvName"
                         android:layout_width="0dp"
@@ -129,9 +110,6 @@
                         app:layout_constraintStart_toEndOf="@id/tvAvatar"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/tvAvatar" />
-
-
-                    <!-- Email -->
 
                     <TextView
                         android:id="@+id/tvEmail"
@@ -149,9 +127,6 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
-
-
-            <!-- ================= EDIT PROFILE ================= -->
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnEditProfile"
@@ -179,9 +154,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-
-            <!-- ================= ACCOUNT TITLE ================= -->
-
             <TextView
                 android:id="@+id/tvAccountTitle"
                 android:layout_width="wrap_content"
@@ -193,9 +165,6 @@
                 android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/btnEditProfile"
                 app:layout_constraintStart_toStartOf="parent" />
-
-
-            <!-- ================= CHANGE PASSWORD ================= -->
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardChangePassword"
@@ -225,9 +194,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-
-            <!-- ================= PRIVACY ================= -->
-
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardPrivacy"
                 android:layout_width="0dp"
@@ -255,9 +221,6 @@
                     android:textSize="15sp" />
 
             </com.google.android.material.card.MaterialCardView>
-
-
-            <!-- ================= NOTIFICATION SETTINGS ================= -->
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardNotifications"
@@ -287,9 +250,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-
-            <!-- ================= APP SETTINGS ================= -->
-
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardSettings"
                 android:layout_width="0dp"
@@ -318,8 +278,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-
-            <!-- ================= LOGOUT ================= -->
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnLogout"
