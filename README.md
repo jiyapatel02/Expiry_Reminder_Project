@@ -121,31 +121,31 @@ All application screenshots are available in the [`screenshot`](https://github.c
 ## ➕ Add Document & 📋 My Documents
 
 <p align="center">
-  <img src="screenshot/3.png" width="220">
+  <img src="screenshot/3.jpeg" width="220">
   &nbsp;&nbsp;&nbsp;
-  <img src="screenshot/4.png" width="220">
+  <img src="screenshot/4.jpeg" width="220">
 </p>
 
 ## 📄 Document Details & ✏️ Edit Document
 
 <p align="center">
-  <img src="screenshot/5.png" width="220">
+  <img src="screenshot/5.jpeg" width="220">
   &nbsp;&nbsp;&nbsp;
-  <img src="screenshot/6.png" width="220">
+  <img src="screenshot/6.jpeg" width="220">
 </p>
 
 ## 🔔 Reminders & 🗂️ Folders
 
 <p align="center">
-  <img src="screenshot/7.png" width="220">
+  <img src="screenshot/7.jpeg" width="220">
   &nbsp;&nbsp;&nbsp;
-  <img src="screenshot/8.png" width="220">
+  <img src="screenshot/8.jpeg" width="220">
 </p>
 
 ## ⚙️ Settings & 👤 Profile
 
 <p align="center">
-  <img src="screenshot/9.png" width="220">
+  <img src="screenshot/9.jpeg" width="220">
   &nbsp;&nbsp;&nbsp;
   <img src="screenshot/10.png" width="220">
 </p>
@@ -284,13 +284,13 @@ Expiry_Reminder_Project/
 ├── screenshot/
 │   ├── 1.png
 │   ├── 2.png
-│   ├── 3.png
-│   ├── 4.png
-│   ├── 5.png
-│   ├── 6.png
-│   ├── 7.png
-│   ├── 8.png
-│   ├── 9.png
+│   ├── 3.jpeg
+│   ├── 4.jpeg
+│   ├── 5.jpeg
+│   ├── 6.jpeg
+│   ├── 7.jpeg
+│   ├── 8.jpeg
+│   ├── 9.jpeg
 │   └── 10.png
 │
 ├── .gitignore
@@ -421,7 +421,7 @@ This project was developed as an **academic Mobile Application Development proje
 
 **Jiya Patel**
 
-B.Tech Information Technology
+**B.Tech Information Technology**
 
 ### GitHub
 
