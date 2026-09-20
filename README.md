@@ -1,28 +1,14 @@
 # 📄 Digital Document Expiry Reminder
 
-An Android application designed to help users store, manage, and track important documents and their expiry dates in one place.
+> An Android application for storing, managing, organizing, and tracking important documents and their expiry dates.
 
-## 📌 About the Project
+## 📱 About the Project
 
-**Digital Document Expiry Reminder** is a Mobile Application Development project developed using **Kotlin and Android Studio**.
+**Digital Document Expiry Reminder** is an Android mobile application developed using **Kotlin and Android Studio**.
 
-The application helps users maintain important document records and monitor their expiry dates. It provides a simple dashboard-based interface where users can add documents, view saved documents, check expiry information, and manage reminder-related settings.
+The application helps users manage important documents such as identity cards, passports, driving licences, insurance documents, certificates, and other documents that have expiry dates.
 
-The project focuses on providing a clean, simple, and user-friendly solution for managing documents that require periodic renewal.
-
----
-
-## 🎯 Objectives
-
-The main objectives of the application are:
-
-* Store important document information digitally.
-* Keep track of document issue and expiry dates.
-* Display saved documents in one place.
-* Help users identify documents approaching expiry.
-* Provide expiry-related reminders.
-* Provide a simple and organized Android interface.
-* Store document information locally on the device.
+Users can add documents, store their details, view expiry information, edit or delete documents, organize documents into folders, and check reminders from one place.
 
 ---
 
@@ -30,175 +16,256 @@ The main objectives of the application are:
 
 ### 🔐 Login
 
-* User login screen.
-* Email / Username field.
-* Password field.
-* Simple and clean interface.
-* Navigation to the main application after login.
+* User login interface
+* Username / Email input
+* Password input
+* Simple and clean UI
+* Navigation to the main application
 
 ### 🏠 Home Dashboard
 
-The home screen provides access to the main features of the application.
+The Home Dashboard provides quick access to the main features of the application.
 
-Users can access:
-
+* Total document count
 * Add Document
-* My Documents / All Documents
+* My Documents
 * Reminders
+* Folders
 * Settings
 * Profile
 
-The dashboard also provides document-related information for quick reference.
-
 ### ➕ Add Document
 
-Users can add their important document information.
+Users can add important information about their documents:
 
-The document form includes information such as:
+* Document Name
+* Document Type
+* Document Number
+* Issue Date
+* Expiry Date
+* Folder
+* Notes
+
+### 📋 My Documents
+
+Users can view and manage all saved documents.
+
+* View documents
+* Search documents
+* View document details
+* Edit documents
+* Delete documents
+* Check expiry status
+
+### 📄 Document Details
+
+Users can open an individual document and view its complete information.
 
 * Document name
 * Document type
-* Document number/details
+* Document number
 * Issue date
 * Expiry date
-
-After saving, the document is stored locally and can be accessed from the document section.
-
-### 📋 All Documents
-
-The application provides a dedicated section for viewing saved documents.
-
-Users can:
-
-* View saved documents.
-* Check document details.
-* Check expiry dates.
-* View the total number of documents.
-* Manage stored document information.
+* Notes
+* Edit option
+* Delete option
 
 ### ⏰ Expiry Tracking
 
-The application tracks document expiry dates and helps users identify documents according to their expiry status.
+Documents can be identified based on their expiry dates.
 
-Typical document statuses include:
-
-| Status      | Meaning                             |
-| ----------- | ----------------------------------- |
-| 🟢 Valid    | Document is currently valid         |
-| 🟠 Due Soon | Document expiry is approaching      |
-| 🔴 Expired  | Document has passed its expiry date |
+| Status      | Description                    |
+| ----------- | ------------------------------ |
+| 🟢 Valid    | Document is currently valid    |
+| 🟠 Due Soon | Document expiry is approaching |
+| 🔴 Expired  | Document has already expired   |
 
 ### 🔔 Reminders
 
-The application includes reminder functionality for upcoming document expiries.
+The Reminders section helps users identify documents whose expiry dates are approaching.
 
-Users can manage reminder-related preferences through the application settings.
+### 🗂️ Folders
+
+Documents can be organized into folders.
+
+Users can:
+
+* Create folders
+* View folders
+* Edit folders
+* Delete folders
+* Organize documents
 
 ### ⚙️ Settings
 
-The Settings section provides options for managing application preferences, including notification/reminder settings.
+The Settings section provides application preference options.
 
 ### 👤 Profile
 
-The application provides access to the user's profile section from the main application interface.
+Users can access their profile from the application.
+
+---
+
+# 📸 Application Screenshots
+
+All application screenshots are available in the [`screenshot`](https://github.com/jiyapatel02/Expiry_Reminder_Project/tree/master/screenshot) folder.
+
+## 🔐 Login & 🏠 Home
+
+<p align="center">
+  <img src="screenshot/1.png" width="220">
+  &nbsp;&nbsp;&nbsp;
+  <img src="screenshot/2.png" width="220">
+</p>
+
+## ➕ Add Document & 📋 My Documents
+
+<p align="center">
+  <img src="screenshot/3.png" width="220">
+  &nbsp;&nbsp;&nbsp;
+  <img src="screenshot/4.png" width="220">
+</p>
+
+## 📄 Document Details & ✏️ Edit Document
+
+<p align="center">
+  <img src="screenshot/5.png" width="220">
+  &nbsp;&nbsp;&nbsp;
+  <img src="screenshot/6.png" width="220">
+</p>
+
+## 🔔 Reminders & 🗂️ Folders
+
+<p align="center">
+  <img src="screenshot/7.png" width="220">
+  &nbsp;&nbsp;&nbsp;
+  <img src="screenshot/8.png" width="220">
+</p>
+
+## ⚙️ Settings & 👤 Profile
+
+<p align="center">
+  <img src="screenshot/9.png" width="220">
+  &nbsp;&nbsp;&nbsp;
+  <img src="screenshot/10.png" width="220">
+</p>
 
 ---
 
 # 🔄 Application Flow
 
 ```text
-┌─────────────────┐
-│  Splash Screen  │
-└────────┬────────┘
-         ↓
-┌─────────────────┐
-│   Login Screen  │
-└────────┬────────┘
-         ↓
-┌─────────────────┐
-│ Home Dashboard  │
-└────────┬────────┘
-         │
-    ┌────┼────┬──────────┐
-    ↓    ↓    ↓          ↓
-   Add  Docs  Reminders Settings
-    │
-    ↓
-Save Document
-    │
-    ↓
-Expiry Tracking
+                         ┌─────────────────┐
+                         │  Login Screen   │
+                         └────────┬────────┘
+                                  │
+                                  ▼
+                         ┌─────────────────┐
+                         │ Home Dashboard  │
+                         └────────┬────────┘
+                                  │
+             ┌────────────────────┼────────────────────┐
+             │                    │                    │
+             ▼                    ▼                    ▼
+      ┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+      │Add Document │      │My Documents │      │  Reminders  │
+      └──────┬──────┘      └──────┬──────┘      └─────────────┘
+             │                    │
+             ▼                    ▼
+      ┌─────────────┐      ┌─────────────┐
+      │ Save Data   │      │   Details   │
+      └─────────────┘      └──────┬──────┘
+                                  │
+                           ┌──────┴──────┐
+                           │             │
+                           ▼             ▼
+                         Edit          Delete
+
+             ┌────────────────────┬────────────────────┐
+             │                    │                    │
+             ▼                    ▼                    ▼
+        ┌─────────┐          ┌─────────┐          ┌─────────┐
+        │ Folders │          │Settings │          │ Profile │
+        └─────────┘          └─────────┘          └─────────┘
 ```
 
 ---
 
 # 🛠️ Technologies Used
 
-| Technology            | Usage                                   |
+| Technology            | Purpose                                 |
 | --------------------- | --------------------------------------- |
 | **Kotlin**            | Android application development         |
 | **Android Studio**    | Development environment                 |
 | **XML**               | User interface design                   |
-| **ConstraintLayout**  | Screen layouts                          |
+| **ConstraintLayout**  | Application layouts                     |
 | **MaterialCardView**  | Card-based UI components                |
+| **RecyclerView**      | Displaying document lists               |
 | **SharedPreferences** | Local data storage                      |
-| **JSON**              | Document data representation            |
-| **Android SDK**       | Android application platform            |
+| **JSON**              | Data representation and storage         |
+| **Android SDK**       | Android platform development            |
 | **Gradle**            | Project build and dependency management |
 
 ---
 
 # 💾 Data Storage
 
-The application uses **SharedPreferences** for storing document information locally.
+The application uses **SharedPreferences** for local storage.
 
-Document records are maintained using **JSON**, allowing multiple documents to be stored and retrieved.
-
-The storage flow is:
+Document information is represented using **JSON**, allowing multiple document records to be stored and retrieved from the device.
 
 ```text
-SharedPreferences
-       ↓
-ExpiryReminder
-       ↓
-documents
-       ↓
-JSON Array
-       ↓
-Document Records
+              ┌──────────────────────┐
+              │   User enters data   │
+              └──────────┬───────────┘
+                         │
+                         ▼
+              ┌──────────────────────┐
+              │     Document Data    │
+              └──────────┬───────────┘
+                         │
+                         ▼
+              ┌──────────────────────┐
+              │      JSON Array      │
+              └──────────┬───────────┘
+                         │
+                         ▼
+              ┌──────────────────────┐
+              │  SharedPreferences   │
+              └──────────┬───────────┘
+                         │
+                         ▼
+              ┌──────────────────────┐
+              │    Application UI    │
+              └──────────────────────┘
 ```
 
-This allows the application to retrieve saved document information when the user opens the document section.
+The application stores data locally, so an external database or server is not required for the basic document-management functionality.
 
 ---
 
-# 🎨 User Interface
+# 🎨 UI Design
 
-The application uses a modern teal-based visual theme.
+The application follows a clean and professional **teal-based user interface**.
 
 ### Color Palette
 
-| Element        | Color     |
+| UI Element     | Color     |
 | -------------- | --------- |
 | Primary Teal   | `#087F73` |
 | Primary Dark   | `#05665C` |
 | Primary Light  | `#DDF4F0` |
 | Background     | `#F7FAF9` |
-| Card           | `#FFFFFF` |
+| Cards          | `#FFFFFF` |
 | Primary Text   | `#17201F` |
 | Secondary Text | `#66716F` |
 | Hint Text      | `#9AA5A3` |
-| Valid          | `#1B9A59` |
-| Due Soon       | `#D88900` |
-| Expired        | `#D93636` |
 
-The interface uses **ConstraintLayout** for screen layouts and **MaterialCardView** for card-based components.
+The application uses **ConstraintLayout** for layouts and **MaterialCardView** for modern card components.
 
 ---
 
-# 📂 Repository Structure
-
-The repository contains the following top-level project structure:
+# 📂 Project Structure
 
 ```text
 Expiry_Reminder_Project/
@@ -206,101 +273,62 @@ Expiry_Reminder_Project/
 ├── .idea/
 │
 ├── app/
-│   └── Android application source
+│   └── src/
+│       └── main/
+│           ├── java/
+│           ├── res/
+│           └── AndroidManifest.xml
 │
 ├── gradle/
-│   └── Gradle wrapper files
+│
+├── screenshot/
+│   ├── 1.png
+│   ├── 2.png
+│   ├── 3.png
+│   ├── 4.png
+│   ├── 5.png
+│   ├── 6.png
+│   ├── 7.png
+│   ├── 8.png
+│   ├── 9.png
+│   └── 10.png
 │
 ├── .gitignore
-│
 ├── README.md
-│
 ├── build.gradle.kts
-│
 ├── gradle.properties
-│
 ├── gradlew
-│
 ├── gradlew.bat
-│
 └── settings.gradle.kts
 ```
 
-### 📱 `app/`
-
-Contains the main Android application, including the source code, layouts, resources, manifest, and application configuration.
-
-### ⚙️ `gradle/`
-
-Contains Gradle wrapper-related files used for building the Android project.
-
-### 📄 `build.gradle.kts`
-
-Project-level Gradle build configuration.
-
-### 📄 `gradle.properties`
-
-Gradle project properties.
-
-### 📄 `settings.gradle.kts`
-
-Defines the Gradle project configuration and included modules.
-
-### 📄 `gradlew`
-
-Gradle wrapper script for Linux/macOS environments.
-
-### 📄 `gradlew.bat`
-
-Gradle wrapper script for Windows environments.
-
-### 📄 `.gitignore`
-
-Specifies files and directories that should not be committed to Git.
-
-### 📄 `.idea/`
-
-Android Studio project configuration.
-
 ---
 
-# 📱 Main Application Modules
+# 🧪 Application Testing
 
-The application follows a simple screen-based flow:
+The following major functions can be tested:
 
-```text
-Splash
-  ↓
-Login
-  ↓
-Home
-  ├── Add Document
-  ├── All Documents
-  ├── Reminders
-  ├── Settings
-  └── Profile
-```
-
----
-
-# 🧪 Testing
-
-The major application functionalities can be tested using the following workflow:
-
-| Test                   | Expected Result                        |
-| ---------------------- | -------------------------------------- |
-| Launch application     | Splash screen appears                  |
-| Open login             | Login screen appears                   |
-| Enter login details    | User proceeds to application           |
-| Open Add Document      | Document form appears                  |
-| Enter document details | Details are accepted                   |
-| Save document          | Document is stored                     |
-| Open All Documents     | Saved document is displayed            |
-| Add multiple documents | All saved documents are displayed      |
-| Check expiry           | Appropriate expiry status is displayed |
-| Open Reminders         | Reminder section opens                 |
-| Open Settings          | Settings section opens                 |
-| Open Profile           | Profile section opens                  |
+| Test Case                  | Expected Result                    |
+| -------------------------- | ---------------------------------- |
+| Launch application         | Application opens successfully     |
+| Open Login                 | Login screen is displayed          |
+| Enter login details        | User proceeds to the application   |
+| Open Add Document          | Document form is displayed         |
+| Enter document information | Information is accepted            |
+| Save document              | Document is stored locally         |
+| Open My Documents          | Saved document is displayed        |
+| Add multiple documents     | Documents are displayed correctly  |
+| Search document            | Matching document is displayed     |
+| Open document              | Document details are displayed     |
+| Edit document              | Updated information is saved       |
+| Delete document            | Document is removed                |
+| Check expiry date          | Correct expiry status is displayed |
+| Open Reminders             | Reminder section is displayed      |
+| Open Folders               | Folder section is displayed        |
+| Edit folder                | Folder information is updated      |
+| Delete folder              | Folder is removed                  |
+| Open Settings              | Settings page is displayed         |
+| Open Profile               | Profile page is displayed          |
 
 ---
 
@@ -308,12 +336,13 @@ The major application functionalities can be tested using the following workflow
 
 ## Prerequisites
 
-Make sure you have:
+Before running the project, make sure you have:
 
-* Android Studio installed.
-* Android SDK configured.
-* Kotlin support available.
-* An Android Emulator or physical Android device.
+* Android Studio installed
+* Android SDK configured
+* Kotlin support
+* Android Emulator or physical Android device
+* Internet connection for the initial Gradle synchronization
 
 ## Clone the Repository
 
@@ -321,7 +350,7 @@ Make sure you have:
 git clone https://github.com/jiyapatel02/Expiry_Reminder_Project.git
 ```
 
-## Open in Android Studio
+## Open the Project
 
 1. Open **Android Studio**.
 2. Select **Open**.
@@ -332,41 +361,59 @@ git clone https://github.com/jiyapatel02/Expiry_Reminder_Project.git
 
 ---
 
+# 📌 Project Information
+
+| Category                    | Details                          |
+| --------------------------- | -------------------------------- |
+| **Project Name**            | Digital Document Expiry Reminder |
+| **Project Type**            | Android Mobile Application       |
+| **Domain**                  | Mobile Application Development   |
+| **Programming Language**    | Kotlin                           |
+| **UI Technology**           | XML                              |
+| **Layout**                  | ConstraintLayout                 |
+| **Development Environment** | Android Studio                   |
+| **Local Storage**           | SharedPreferences                |
+| **Data Format**             | JSON                             |
+
+---
+
 # 🔮 Future Enhancements
 
-The application can be further improved with:
+The following features can be added in future versions:
 
-* ☁️ Cloud backup and synchronization.
-* 📷 Document image upload.
-* 📄 PDF document storage.
-* 📸 Document scanning using the camera.
-* 🔐 Biometric authentication.
-* 🔔 Advanced scheduled notifications.
-* 🔎 Search and filtering.
-* 🗂️ Document categories.
-* 📊 Document expiry statistics.
-* ☁️ Cloud storage integration.
-* 🔄 Backup and restore functionality.
+* ☁️ Cloud backup and synchronization
+* 📷 Document image upload
+* 📄 PDF document storage
+* 📸 Document scanning using camera
+* 🔐 Biometric authentication
+* 🔔 Advanced scheduled notifications
+* 🔎 Advanced search and filtering
+* 📊 Document expiry statistics
+* ☁️ Cloud storage integration
+* 🔄 Backup and restore
+* 🔑 Secure user authentication
 
 ---
 
 # 🎓 Academic Project
 
-**Project Name:** Digital Document Expiry Reminder
+This project was developed as an **academic Mobile Application Development project** to demonstrate practical Android development concepts.
 
-**Project Type:** Android Mobile Application
+### Concepts Demonstrated
 
-**Domain:** Mobile Application Development
-
-**Programming Language:** Kotlin
-
-**UI Technology:** XML
-
-**Development Environment:** Android Studio
-
-**Local Storage:** SharedPreferences
-
-**Data Format:** JSON
+* Kotlin programming
+* Android Activities
+* XML UI design
+* ConstraintLayout
+* Material UI components
+* RecyclerView
+* SharedPreferences
+* JSON data handling
+* CRUD operations
+* Date handling
+* Document management
+* Folder management
+* Application navigation
 
 ---
 
@@ -376,20 +423,24 @@ The application can be further improved with:
 
 B.Tech Information Technology
 
-GitHub:
-https://github.com/jiyapatel02
+### GitHub
 
-Project Repository:
-https://github.com/jiyapatel02/Expiry_Reminder_Project
+[Jiya Patel GitHub](https://github.com/jiyapatel02?utm_source=chatgpt.com)
+
+### Project Repository
+
+[Expiry Reminder Project](https://github.com/jiyapatel02/Expiry_Reminder_Project)
 
 ---
 
 # 📜 License
 
-This project was developed as an academic/educational project for demonstrating Android application development and mobile application concepts.
+This project was developed as an academic/educational project for demonstrating Android application development and Mobile Application Development concepts.
 
 ---
 
 ## ⭐ Project Summary
 
-**Digital Document Expiry Reminder** provides a centralized way to store important document information and monitor expiry dates. The application combines a clean Android interface, local storage, document management, and expiry tracking to make document management simpler and more organized.
+**Digital Document Expiry Reminder** provides a simple and organized solution for managing important documents and monitoring their expiry dates.
+
+The application combines a clean Android interface, local data storage, document management, folders, CRUD operations, and expiry tracking to make document management easier and more organized.
